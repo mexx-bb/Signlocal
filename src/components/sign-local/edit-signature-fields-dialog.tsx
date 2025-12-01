@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { SignatureField } from "@/app/page";
 import {
   DialogContent,
@@ -23,7 +23,12 @@ export function EditSignatureFieldsDialog({
   fields,
   onSave,
 }: EditSignatureFieldsDialogProps) {
-  const [editableFields, setEditableFields] = useState(fields);
+  const [editableFields, setEditableFields] = useState<SignatureField[]>([]);
+
+  useEffect(() => {
+    // Deep copy to prevent state mutation issues
+    setEditableFields(JSON.parse(JSON.stringify(fields)));
+  }, [fields]);
 
   const handleFieldNameChange = (id: string, newName: string) => {
     setEditableFields(
@@ -39,9 +44,10 @@ export function EditSignatureFieldsDialog({
 
   const handleAddField = () => {
     const newId = `field-${Date.now()}`;
+    // Add new fields at a default position which the user can then move
     setEditableFields([
       ...editableFields,
-      { id: newId, name: `New Field ${editableFields.length + 1}`, signature: null },
+      { id: newId, name: `New Field ${editableFields.length + 1}`, signature: null, x: 10, y: 10 },
     ]);
   };
   
@@ -92,7 +98,9 @@ export function EditSignatureFieldsDialog({
         <DialogClose asChild>
           <Button variant="outline">Cancel</Button>
         </DialogClose>
-        <Button onClick={handleSaveChanges}>Save Changes</Button>
+        <DialogClose asChild>
+            <Button onClick={handleSaveChanges}>Save Changes</Button>
+        </DialogClose>
       </DialogFooter>
     </DialogContent>
   );

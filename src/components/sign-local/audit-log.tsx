@@ -1,4 +1,6 @@
-import type { AuditLogEntry } from "@/app/page";
+"use client";
+import { useContext } from "react";
+import { AppContext } from "@/context/SignAppContext";
 import {
   Card,
   CardContent,
@@ -10,10 +12,49 @@ import { History } from "lucide-react";
 import { format } from 'date-fns';
 
 type AuditLogProps = {
-  entries: AuditLogEntry[];
+  isPage?: boolean;
 };
 
-export function AuditLog({ entries }: AuditLogProps) {
+export function AuditLog({ isPage = false }: AuditLogProps) {
+  const context = useContext(AppContext);
+  if (!context) {
+    throw new Error("AuditLog must be used within an AppProvider");
+  }
+  const { auditLog: entries } = context;
+
+  const content = (
+    <>
+      {entries.length === 0 ? (
+        <div className="text-center text-muted-foreground py-10">
+          <p>No actions have been recorded yet.</p>
+        </div>
+      ) : (
+        <ScrollArea className={isPage ? "h-[calc(100vh-20rem)]" : "h-[450px]"}>
+          <ul className="space-y-4">
+            {entries.map((entry, index) => (
+              <li key={index} className="flex gap-4 text-sm">
+                <div className="font-mono text-muted-foreground whitespace-nowrap">
+                  {format(entry.timestamp, 'HH:mm:ss')}
+                </div>
+                <div className="flex-grow">{entry.message}</div>
+              </li>
+            ))}
+          </ul>
+        </ScrollArea>
+      )}
+    </>
+  );
+
+  if (isPage) {
+    return (
+      <Card>
+        <CardContent className="pt-6">
+          {content}
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center gap-3">
@@ -21,24 +62,7 @@ export function AuditLog({ entries }: AuditLogProps) {
         <CardTitle className="font-headline">Audit Log</CardTitle>
       </CardHeader>
       <CardContent>
-        {entries.length === 0 ? (
-          <div className="text-center text-muted-foreground py-10">
-            <p>No actions have been recorded yet.</p>
-          </div>
-        ) : (
-          <ScrollArea className="h-[450px] pr-4">
-            <ul className="space-y-4">
-              {entries.map((entry, index) => (
-                <li key={index} className="flex gap-4 text-sm">
-                  <div className="font-mono text-muted-foreground whitespace-nowrap">
-                    {format(entry.timestamp, 'HH:mm:ss')}
-                  </div>
-                  <div className="flex-grow">{entry.message}</div>
-                </li>
-              ))}
-            </ul>
-          </ScrollArea>
-        )}
+        {content}
       </CardContent>
     </Card>
   );

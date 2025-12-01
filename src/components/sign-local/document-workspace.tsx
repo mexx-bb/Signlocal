@@ -1,70 +1,61 @@
-import type { AuditLogEntry, SignatureField } from "@/app/page";
+"use client";
+
+import { useContext } from "react";
+import { AppContext } from "@/context/SignAppContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Loader2, Printer, Save, Undo2 } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { FileText, Loader2, Printer, Save, Undo2, Users } from "lucide-react";
 import { SignatureFieldList } from "./signature-field-list";
-import { AuditLog } from "./audit-log";
 import { DocumentPreview } from "./document-preview";
 
-type DocumentWorkspaceProps = {
-  file: File;
-  signatureFields: SignatureField[];
-  auditLog: AuditLogEntry[];
-  onReset: () => void;
-  onAddSignature: (fieldId: string, signatureDataUrl: string) => void;
-  onExportPdf: () => void;
-  onPrint: () => void;
-  isProcessing: boolean;
-  onSetSignatureFields: (fields: SignatureField[]) => void;
-};
+export function DocumentWorkspace() {
+  const context = useContext(AppContext);
+  
+  if (!context) {
+    throw new Error("DocumentWorkspace must be used within an AppProvider");
+  }
 
-export function DocumentWorkspace({
-  file,
-  signatureFields,
-  auditLog,
-  onReset,
-  onAddSignature,
-  onExportPdf,
-  onPrint,
-  isProcessing,
-  onSetSignatureFields,
-}: DocumentWorkspaceProps) {
+  const {
+    file,
+    signatureFields,
+    handleReset,
+    handleExportPdf,
+    handlePrint,
+    isProcessing,
+  } = context;
+  
+  if(!file) return null;
+
   const allSigned = signatureFields.length > 0 && signatureFields.every((field) => field.signature !== null);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-      <div className="lg:col-span-2 space-y-8">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <div className="flex items-center gap-3">
-              <FileText className="w-6 h-6 text-primary" />
-              <CardTitle className="font-headline">{file.name}</CardTitle>
-            </div>
-            <Button variant="ghost" size="icon" onClick={onReset}>
-              <Undo2 className="w-5 h-5" />
-              <span className="sr-only">Load another document</span>
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <DocumentPreview file={file} />
-          </CardContent>
-        </Card>
-
-        <SignatureFieldList
-          fields={signatureFields}
-          onAddSignature={onAddSignature}
-          onSetFields={onSetSignatureFields}
-        />
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline">Finalize Document</CardTitle>
-          </CardHeader>
-          <CardContent className="flex flex-col sm:flex-row gap-4">
+    <div className="flex flex-col h-full gap-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between p-4">
+          <div className="flex items-center gap-3">
+            <FileText className="w-6 h-6 text-primary" />
+            <CardTitle className="font-headline text-xl">{file.name}</CardTitle>
+          </div>
+          <div className="flex items-center gap-2">
+            <Sheet>
+                <SheetTrigger asChild>
+                    <Button variant="outline">
+                        <Users className="mr-2 h-4 w-4" />
+                        Manage Signers ({signatureFields.length})
+                    </Button>
+                </SheetTrigger>
+                <SheetContent className="w-[400px] sm:w-[540px]">
+                    <SheetHeader>
+                        <SheetTitle className="font-headline">Manage Signature Fields</SheetTitle>
+                    </SheetHeader>
+                    <SignatureFieldList />
+                </SheetContent>
+            </Sheet>
+            
             <Button
-              onClick={onExportPdf}
+              onClick={handleExportPdf}
               disabled={!allSigned || isProcessing}
-              className="w-full sm:w-auto"
             >
               {isProcessing ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -75,20 +66,22 @@ export function DocumentWorkspace({
             </Button>
             <Button
               variant="outline"
-              onClick={onPrint}
+              onClick={handlePrint}
               disabled={!allSigned}
-              className="w-full sm:w-auto"
             >
               <Printer className="mr-2 h-4 w-4" />
               Print
             </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="lg:col-span-1">
-        <AuditLog entries={auditLog} />
-      </div>
+             <Button variant="ghost" size="icon" onClick={handleReset}>
+              <Undo2 className="w-5 h-5" />
+              <span className="sr-only">Load another document</span>
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
+      
+      <DocumentPreview />
+      
     </div>
   );
 }
