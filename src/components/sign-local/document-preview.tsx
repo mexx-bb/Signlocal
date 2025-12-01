@@ -286,7 +286,7 @@ export function DocumentPreview() {
             <div 
                 ref={previewRef}
                 className={cn(
-                    "p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card flex justify-center print-content print:border-none print:p-0 print:bg-transparent print:overflow-visible print:h-auto",
+                    "p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card flex justify-center print-content print:border-none print:p-0 print:bg-transparent print:overflow-visible print:h-auto print:justify-start",
                      file?.type.includes('word') && "prose prose-sm dark:prose-invert max-w-none"
                 )}
             >
@@ -320,12 +320,12 @@ export function DocumentPreview() {
                         file={file}
                         onLoadSuccess={onDocumentLoadSuccess}
                         onLoadError={(e) => setError(e.message)}
-                        className="space-y-4 print:space-y-0"
+                        className="space-y-4 print:space-y-0 print:w-full"
                      >
                         {Array.from(new Array(numPages), (el, index) => (
                            <div
                             key={`page_${index + 1}`}
-                            className={cn("relative shadow-lg print:shadow-none", isPlacing && "cursor-crosshair")}
+                            className={cn("relative shadow-lg print:shadow-none print:w-full print:h-full", isPlacing && "cursor-crosshair")}
                             onClick={(e) => handlePreviewClick(e, index + 1)}
                             onMouseMove={handleMouseMove}
                             onMouseUp={handleMouseUp}
@@ -335,7 +335,8 @@ export function DocumentPreview() {
                                 pageNumber={index + 1}
                                 renderTextLayer={true}
                                 renderAnnotationLayer={false}
-                                className="[&_.react-pdf__Page__textContent]:hidden print:[&_.react-pdf__Page__textContent]:block"
+                                className="[&_.react-pdf__Page__textContent]:hidden print:[&_.react-pdf__Page__textContent]:block print:w-full print:h-auto"
+                                canvasBackground="transparent"
                             />
                             {renderSignatureFields(index + 1)}
                            </div>
