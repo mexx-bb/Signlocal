@@ -5,7 +5,7 @@ import { AppContext } from "@/context/SignAppContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { FileText, Loader2, Printer, Save, Undo2, Users } from "lucide-react";
+import { FileText, Loader2, Printer, Save, Undo2, Users, PlusCircle } from "lucide-react";
 import { SignatureFieldList } from "./signature-field-list";
 import { DocumentPreview } from "./document-preview";
 
@@ -23,21 +23,31 @@ export function DocumentWorkspace() {
     handleExportPdf,
     handlePrint,
     isProcessing,
+    isPlacing,
+    setIsPlacing,
   } = context;
   
   if(!file) return null;
 
   const allSigned = signatureFields.length > 0 && signatureFields.every((field) => field.signature !== null);
 
+  const handleAddSignatureClick = () => {
+    setIsPlacing(true);
+  }
+
   return (
     <div className="flex flex-col h-full gap-4">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between p-4">
+        <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4">
           <div className="flex items-center gap-3">
             <FileText className="w-6 h-6 text-primary" />
             <CardTitle className="font-headline text-xl">{file.name}</CardTitle>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+             <Button variant={isPlacing ? "secondary" : "outline"} onClick={handleAddSignatureClick}>
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Signature Field
+            </Button>
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline">

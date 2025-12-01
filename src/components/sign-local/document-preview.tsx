@@ -30,7 +30,7 @@ export function DocumentPreview() {
         throw new Error("DocumentPreview must be used within an AppProvider");
     }
 
-    const { file, signatureFields, setSignatureFields, addAuditLog } = context;
+    const { file, signatureFields, setSignatureFields, addAuditLog, isPlacing, setIsPlacing } = context;
 
     useEffect(() => {
         if (!file) return;
@@ -107,7 +107,7 @@ export function DocumentPreview() {
     };
 
     const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!previewRef.current) return;
+        if (!isPlacing || !previewRef.current) return;
         
         const target = e.target as HTMLElement;
         if (target.closest('[data-signature-field="true"]')) {
@@ -129,6 +129,7 @@ export function DocumentPreview() {
         };
 
         setSignatureFields([...signatureFields, newField]);
+        setIsPlacing(false); // Deactivate placement mode after placing a field
     };
     
     const handleDeleteField = (e: React.MouseEvent<HTMLButtonElement>, fieldId: string) => {
@@ -172,7 +173,10 @@ export function DocumentPreview() {
         <TooltipProvider>
             <div 
                 ref={previewRef}
-                className="relative prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card cursor-crosshair"
+                className={cn(
+                    "relative prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card",
+                    isPlacing && "cursor-crosshair"
+                )}
                 onClick={handlePreviewClick}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}

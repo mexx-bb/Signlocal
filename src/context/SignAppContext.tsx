@@ -14,6 +14,8 @@ type AppContextType = {
     isProcessing: boolean;
     handleExportPdf: () => void;
     handlePrint: () => void;
+    isPlacing: boolean;
+    setIsPlacing: (isPlacing: boolean) => void;
 };
 
 export const AppContext = createContext<AppContextType | null>(null);

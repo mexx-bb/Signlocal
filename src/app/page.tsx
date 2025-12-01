@@ -24,6 +24,8 @@ export default function Home() {
   const [signatureFields, setSignatureFields] = useState<SignatureField[]>([]);
   const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isPlacing, setIsPlacing] = useState(false);
+
 
   const addAuditLog = (message: string) => {
     setAuditLog((prev) => [{ timestamp: new Date(), message }, ...prev]);
@@ -100,7 +102,7 @@ export default function Home() {
   };
 
   return (
-    <AppProvider value={{ file, signatureFields, auditLog, addAuditLog, setSignatureFields, handleAddSignature, handleReset, isProcessing, handleExportPdf, handlePrint }}>
+    <AppProvider value={{ file, signatureFields, auditLog, addAuditLog, setSignatureFields, handleAddSignature, handleReset, isProcessing, handleExportPdf, handlePrint, isPlacing, setIsPlacing }}>
         <div className="flex flex-col h-full bg-background text-foreground">
         <Header />
         <main className="flex-grow container mx-auto px-4 py-8">
