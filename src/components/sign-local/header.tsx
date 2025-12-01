@@ -22,7 +22,7 @@ export function Header({ className }: HeaderProps) {
             <Button asChild variant="ghost">
               <Link href="/audit">
                 <History className="mr-2 h-4 w-4" />
-                Audit Log
+                Audit-Protokoll
               </Link>
             </Button>
           </div>

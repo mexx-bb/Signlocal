@@ -118,15 +118,15 @@ export function SignaturePad({ fieldName, onSave }: SignaturePadProps) {
     <DialogContent className="max-w-xl">
       <DialogHeader>
         <DialogTitle className="font-headline">
-          Provide Signature for {fieldName}
+          Signatur für {fieldName} bereitstellen
         </DialogTitle>
       </DialogHeader>
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="draw">Draw</TabsTrigger>
-          <TabsTrigger value="upload">Upload</TabsTrigger>
-          <TabsTrigger value="placeholder">Use Placeholder</TabsTrigger>
+          <TabsTrigger value="draw">Zeichnen</TabsTrigger>
+          <TabsTrigger value="upload">Hochladen</TabsTrigger>
+          <TabsTrigger value="placeholder">Platzhalter verwenden</TabsTrigger>
         </TabsList>
         <TabsContent value="draw">
           <div className="relative">
@@ -142,19 +142,19 @@ export function SignaturePad({ fieldName, onSave }: SignaturePadProps) {
             />
              <Button variant="ghost" size="icon" className="absolute top-2 right-2" onClick={clearCanvas}>
                 <Eraser className="h-5 w-5"/>
-                <span className="sr-only">Clear canvas</span>
+                <span className="sr-only">Leinwand leeren</span>
              </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-2">Draw your signature in the box above.</p>
+          <p className="text-sm text-muted-foreground mt-2">Zeichnen Sie Ihre Signatur in das obige Feld.</p>
         </TabsContent>
         <TabsContent value="upload">
           <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-lg h-[200px]">
             {uploadedImage ? (
-                <Image src={uploadedImage} alt="Uploaded signature preview" width={200} height={100} className="max-h-full object-contain" />
+                <Image src={uploadedImage} alt="Vorschau der hochgeladenen Signatur" width={200} height={100} className="max-h-full object-contain" />
             ) : (
                 <>
                     <UploadCloud className="w-12 h-12 text-muted-foreground" />
-                    <p className="mt-2 text-sm text-muted-foreground">Upload an image of your signature</p>
+                    <p className="mt-2 text-sm text-muted-foreground">Laden Sie ein Bild Ihrer Signatur hoch</p>
                 </>
             )}
             <Input type="file" accept="image/*" onChange={handleImageUpload} className="mt-4"/>
@@ -163,19 +163,19 @@ export function SignaturePad({ fieldName, onSave }: SignaturePadProps) {
         <TabsContent value="placeholder">
             <div className="flex flex-col items-center justify-center p-4 border-2 border-dashed rounded-lg h-[200px] bg-muted">
                 {signaturePlaceholder && (
-                    <Image src={signaturePlaceholder.imageUrl} alt="Placeholder signature" width={300} height={150} data-ai-hint={signaturePlaceholder.imageHint} />
+                    <Image src={signaturePlaceholder.imageUrl} alt="Platzhalter-Signatur" width={300} height={150} data-ai-hint={signaturePlaceholder.imageHint} />
                 )}
-                <p className="mt-4 text-sm text-muted-foreground">A placeholder signature will be used.</p>
+                <p className="mt-4 text-sm text-muted-foreground">Es wird eine Platzhalter-Signatur verwendet.</p>
             </div>
         </TabsContent>
       </Tabs>
 
       <DialogFooter>
         <DialogClose asChild>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">Abbrechen</Button>
         </DialogClose>
         <DialogClose asChild>
-            <Button onClick={handleSave} className="bg-accent text-accent-foreground hover:bg-accent/90">Save Signature</Button>
+            <Button onClick={handleSave} className="bg-accent text-accent-foreground hover:bg-accent/90">Signatur speichern</Button>
         </DialogClose>
       </DialogFooter>
     </DialogContent>

@@ -26,8 +26,8 @@ export default function AuditPage() {
     <div className="flex flex-col h-full bg-background text-foreground">
     <Header />
     <main className="flex-grow container mx-auto px-4 py-8">
-        <h2 className="text-3xl font-bold font-headline mb-6">Audit Log</h2>
-        <p className="text-muted-foreground mb-8">This page shows the complete history of actions taken during the current signing session.</p>
+        <h2 className="text-3xl font-bold font-headline mb-6">Audit-Protokoll</h2>
+        <p className="text-muted-foreground mb-8">Diese Seite zeigt die vollständige Historie der Aktionen, die während der aktuellen Signatursitzung durchgeführt wurden.</p>
         <AuditLog isPage />
     </main>
     </div>

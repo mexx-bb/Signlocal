@@ -14,7 +14,7 @@ export function DocumentWorkspace() {
   const context = useContext(AppContext);
   
   if (!context) {
-    throw new Error("DocumentWorkspace must be used within an AppProvider");
+    throw new Error("DocumentWorkspace muss innerhalb eines AppProviders verwendet werden");
   }
 
   const {
@@ -47,18 +47,18 @@ export function DocumentWorkspace() {
           <div className="flex items-center gap-2 flex-wrap">
              <Button variant={isPlacing ? "secondary" : "outline"} onClick={handleAddSignatureClick} className={cn(isPlacing && "ring-2 ring-accent")}>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Add Signature Field
+                Signaturfeld hinzufügen
             </Button>
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline">
                         <Users className="mr-2 h-4 w-4" />
-                        Manage Signers ({signatureFields.length})
+                        Unterzeichner verwalten ({signatureFields.length})
                     </Button>
                 </SheetTrigger>
                 <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
                     <SheetHeader>
-                        <SheetTitle className="font-headline">Manage Signature Fields</SheetTitle>
+                        <SheetTitle className="font-headline">Signaturfelder verwalten</SheetTitle>
                     </SheetHeader>
                     <SignatureFieldList />
                 </SheetContent>
@@ -73,7 +73,7 @@ export function DocumentWorkspace() {
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              {isProcessing ? "Processing..." : "Save as PDF"}
+              {isProcessing ? "Verarbeite..." : "Als PDF speichern"}
             </Button>
             <Button
               variant="outline"
@@ -81,11 +81,11 @@ export function DocumentWorkspace() {
               disabled={!allSigned}
             >
               <Printer className="mr-2 h-4 w-4" />
-              Print
+              Drucken
             </Button>
              <Button variant="ghost" size="icon" onClick={handleReset}>
               <Undo2 className="w-5 h-5" />
-              <span className="sr-only">Load another document</span>
+              <span className="sr-only">Anderes Dokument laden</span>
             </Button>
           </div>
         </CardHeader>

@@ -38,7 +38,7 @@ export function DocumentPreview() {
     const previewRef = useRef<HTMLDivElement>(null);
 
     if (!context) {
-        throw new Error("DocumentPreview must be used within an AppProvider");
+        throw new Error("DocumentPreview muss innerhalb eines AppProviders verwendet werden");
     }
 
     const { file, signatureFields, setSignatureFields, addAuditLog, isPlacing, setIsPlacing } = context;
@@ -60,16 +60,16 @@ export function DocumentPreview() {
                         const result = await mammoth.convertToHtml({ arrayBuffer });
                         setDocHtml(result.value);
                     } catch (e: any) {
-                        console.error("Error converting document:", e);
-                        setError(e.message || "Failed to render the document.");
+                        console.error("Fehler bei der Konvertierung des Dokuments:", e);
+                        setError(e.message || "Das Dokument konnte nicht gerendert werden.");
                     } finally {
                         setIsLoading(false);
                     }
                 }
             };
             reader.onerror = (e) => {
-                console.error("FileReader error:", e);
-                setError("Failed to read the file.");
+                console.error("FileReader-Fehler:", e);
+                setError("Die Datei konnte nicht gelesen werden.");
                 setIsLoading(false);
             }
             reader.readAsArrayBuffer(file);
@@ -89,12 +89,12 @@ export function DocumentPreview() {
             if(field) {
                 let logMessage: string;
                 if (interaction.type === 'move') {
-                    logMessage = `Moved signature field "${field.name}" to (${field.x.toFixed(1)}%, ${field.y.toFixed(1)}%)`;
+                    logMessage = `Signaturfeld "${field.name}" auf (${field.x.toFixed(1)}%, ${field.y.toFixed(1)}%) verschoben`;
                 } else {
-                     logMessage = `Resized signature field "${field.name}" to ${field.width}x${field.height}px`;
+                     logMessage = `Größe des Signaturfelds "${field.name}" auf ${field.width}x${field.height}px geändert`;
                 }
                 
-                if(field.page) logMessage += ` on page ${field.page}`;
+                if(field.page) logMessage += ` auf Seite ${field.page}`;
                 logMessage += '.';
                 addAuditLog(logMessage);
             }
@@ -163,7 +163,7 @@ export function DocumentPreview() {
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         
         const newFieldId = `field-${Date.now()}`;
-        const newFieldName = `Signature ${signatureFields.length + 1}`
+        const newFieldName = `Signatur ${signatureFields.length + 1}`
         const newField: SignatureField = {
             id: newFieldId,
             name: newFieldName,
@@ -187,7 +187,7 @@ export function DocumentPreview() {
         const field = signatureFields.find(f => f.id === fieldId);
         if(field) {
             setSignatureFields(signatureFields.filter(f => f.id !== fieldId));
-            addAuditLog(`Signature field "${field.name}" removed.`);
+            addAuditLog(`Signaturfeld "${field.name}" entfernt.`);
         }
     }
 
@@ -214,7 +214,7 @@ export function DocumentPreview() {
                                 <CheckCircle2 className="absolute -top-2 -left-2 w-5 h-5 text-green-500 bg-white rounded-full print:hidden" />
                                 <Image
                                     src={field.signature}
-                                    alt={`Signature for ${field.name}`}
+                                    alt={`Signatur für ${field.name}`}
                                     fill
                                     className="object-contain"
                                     data-ai-hint="signature"
@@ -245,9 +245,9 @@ export function DocumentPreview() {
                 </TooltipTrigger>
                 <TooltipContent>
                     <p className='font-semibold'>{field.name}</p>
-                    {file?.type === 'application/pdf' && <p className='text-sm text-muted-foreground'>Page {field.page}</p>}
-                    <p className='text-sm text-muted-foreground'>{field.signature ? "Signed" : "Awaiting Signature"}</p>
-                    <p className='text-xs text-muted-foreground mt-1'>{field.signature ? "Drag to move, drag corner to resize" : "Click and drag to move"}</p>
+                    {file?.type === 'application/pdf' && <p className='text-sm text-muted-foreground'>Seite {field.page}</p>}
+                    <p className='text-sm text-muted-foreground'>{field.signature ? "Signiert" : "Wartet auf Signatur"}</p>
+                    <p className='text-xs text-muted-foreground mt-1'>{field.signature ? "Ziehen zum Verschieben, Ecke ziehen zur Größenänderung" : "Klicken und ziehen zum Verschieben"}</p>
                 </TooltipContent>
             </Tooltip>
         ));
@@ -272,9 +272,9 @@ export function DocumentPreview() {
         return (
              <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
+                <AlertTitle>Fehler</AlertTitle>
                 <AlertDescription>
-                    Could not display the document. Please ensure it's a valid file.
+                    Das Dokument konnte nicht angezeigt werden. Bitte stellen Sie sicher, dass es sich um eine gültige Datei handelt.
                     <p className="text-xs mt-2">{error}</p>
                 </AlertDescription>
             </Alert>

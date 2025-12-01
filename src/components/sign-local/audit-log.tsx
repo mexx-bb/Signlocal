@@ -18,7 +18,7 @@ type AuditLogProps = {
 export function AuditLog({ isPage = false }: AuditLogProps) {
   const context = useContext(AppContext);
   if (!context) {
-    throw new Error("AuditLog must be used within an AppProvider");
+    throw new Error("AuditLog muss innerhalb eines AppProviders verwendet werden");
   }
   const { auditLog: entries } = context;
 
@@ -26,7 +26,7 @@ export function AuditLog({ isPage = false }: AuditLogProps) {
     <>
       {entries.length === 0 ? (
         <div className="text-center text-muted-foreground py-10">
-          <p>No actions have been recorded yet.</p>
+          <p>Bisher wurden keine Aktionen aufgezeichnet.</p>
         </div>
       ) : (
         <ScrollArea className={isPage ? "h-[calc(100vh-20rem)]" : "h-[450px]"}>
@@ -59,7 +59,7 @@ export function AuditLog({ isPage = false }: AuditLogProps) {
     <Card className="h-full">
       <CardHeader className="flex flex-row items-center gap-3">
         <History className="w-6 h-6 text-primary" />
-        <CardTitle className="font-headline">Audit Log</CardTitle>
+        <CardTitle className="font-headline">Audit-Protokoll</CardTitle>
       </CardHeader>
       <CardContent>
         {content}

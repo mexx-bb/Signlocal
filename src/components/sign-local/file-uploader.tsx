@@ -55,11 +55,11 @@ export function FileUploader({ onFileChange }: FileUploaderProps) {
         onDrop={handleDrop}
         onClick={handleClick}
         role="button"
-        aria-label="File Uploader"
+        aria-label="Datei-Uploader"
       >
         <CardHeader>
           <CardTitle className="font-headline text-center">
-            Start a new Signing Process
+            Einen neuen Signaturprozess starten
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -71,9 +71,9 @@ export function FileUploader({ onFileChange }: FileUploaderProps) {
               )}
             />
             <p className="mt-4 text-lg font-semibold">
-              Drag & drop your .docx or .pdf file here
+              Ziehen Sie Ihre .docx- oder .pdf-Datei hierher
             </p>
-            <p className="text-muted-foreground">or click to select a file</p>
+            <p className="text-muted-foreground">oder klicken Sie, um eine Datei auszuwählen</p>
             <Input
               ref={fileInputRef}
               type="file"

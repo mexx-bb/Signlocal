@@ -45,9 +45,9 @@ export default function Home() {
       setFile(selectedFile);
       setSignatureFields([]);
       setAuditLog([]); // Reset log for new document
-      addAuditLog(`Document "${selectedFile.name}" loaded.`);
+      addAuditLog(`Dokument "${selectedFile.name}" geladen.`);
     } else {
-      alert("Please upload a valid .docx or .pdf file.");
+      alert("Bitte laden Sie eine gültige .docx- oder .pdf-Datei hoch.");
     }
   };
 
@@ -59,24 +59,24 @@ export default function Home() {
     if (fields.length > oldFields.length) {
       const newField = fields.find(f => !oldFields.some(of => of.id === f.id));
       if(newField) {
-        let logMessage = `Signature field "${newField.name}" added at position (${newField.x.toFixed(1)}%, ${newField.y.toFixed(1)}%)`;
+        let logMessage = `Signaturfeld "${newField.name}" an Position (${newField.x.toFixed(1)}%, ${newField.y.toFixed(1)}%) hinzugefügt`;
         if (newField.page) {
-          logMessage += ` on page ${newField.page}`;
+          logMessage += ` auf Seite ${newField.page}`;
         }
         logMessage += '.';
         addAuditLog(logMessage);
       }
     } else if (fields.length < oldFields.length) {
       const removedField = oldFields.find(of => !fields.some(f => f.id === of.id));
-      if(removedField) addAuditLog(`Signature field "${removedField.name}" removed.`);
+      if(removedField) addAuditLog(`Signaturfeld "${removedField.name}" entfernt.`);
     } else {
        const changedField = fields.find(f => {
-         const oldField = oldFields.find(of => of.id === changedField.id);
+         const oldField = oldFields.find(of => of.id === changedField?.id);
          return oldField && oldField.name !== f.name;
        });
        if(changedField) {
          const oldField = oldFields.find(of => of.id === changedField.id);
-         addAuditLog(`Signature field "${oldField?.name}" renamed to "${changedField.name}".`);
+         addAuditLog(`Signaturfeld "${oldField?.name}" umbenannt in "${changedField.name}".`);
        }
     }
   };
@@ -95,23 +95,23 @@ export default function Home() {
             f.id === fieldId ? { ...f, signature: signatureDataUrl } : f
           )
         );
-        addAuditLog(`Signature added for field "${field.name}".`);
+        addAuditLog(`Signatur für Feld "${field.name}" hinzugefügt.`);
     }
   };
 
   const handleExportPdf = () => {
     setIsProcessing(true);
-    addAuditLog("Starting PDF export process...");
+    addAuditLog("PDF-Exportprozess wird gestartet...");
     setTimeout(() => {
       setIsProcessing(false);
-      addAuditLog("PDF successfully generated and ready for download.");
+      addAuditLog("PDF erfolgreich erstellt und zum Download bereit.");
       // In a real app, this would trigger a download of the converted PDF
-      alert("PDF Exported (Simulated)");
+      alert("PDF exportiert (simuliert)");
     }, 2500);
   };
   
   const handlePrint = () => {
-    addAuditLog("Preparing document for printing...");
+    addAuditLog("Dokument wird für den Druck vorbereitet...");
     // A short timeout to allow the UI to update before printing
     setTimeout(() => {
         window.print();

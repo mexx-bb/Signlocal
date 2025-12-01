@@ -50,16 +50,16 @@ export function EditSignatureFieldsDialog({
   return (
     <DialogContent className="max-w-lg">
       <DialogHeader>
-        <DialogTitle className="font-headline">Edit Signature Fields</DialogTitle>
+        <DialogTitle className="font-headline">Signaturfelder bearbeiten</DialogTitle>
         <DialogDescription>
-            Rename or delete signature fields. You can add new fields by clicking the "Add Signature Field" button, then clicking on the document.
+            Benennen Sie Signaturfelder um oder löschen Sie sie. Sie können neue Felder hinzufügen, indem Sie auf die Schaltfläche "Signaturfeld hinzufügen" klicken und dann auf das Dokument klicken.
         </DialogDescription>
       </DialogHeader>
       <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
         {editableFields.map((field, index) => (
           <div key={field.id} className="flex items-center gap-2">
             <Label htmlFor={`field-name-${index}`} className="sr-only">
-                Field Name
+                Feldname
             </Label>
             <Input
               id={`field-name-${index}`}
@@ -73,27 +73,25 @@ export function EditSignatureFieldsDialog({
               size="icon"
               onClick={() => handleRemoveField(field.id)}
               disabled={!!field.signature}
-              aria-label="Remove field"
+              aria-label="Feld entfernen"
             >
               <X className="h-4 w-4" />
             </Button>
           </div>
         ))}
          {editableFields.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-4">No signature fields defined.</p>
+            <p className="text-sm text-muted-foreground text-center py-4">Keine Signaturfelder definiert.</p>
         )}
       </div>
 
       <DialogFooter>
         <DialogClose asChild>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outline">Abbrechen</Button>
         </DialogClose>
         <DialogClose asChild>
-            <Button onClick={handleSaveChanges}>Save Changes</Button>
+            <Button onClick={handleSaveChanges}>Änderungen speichern</Button>
         </DialogClose>
       </DialogFooter>
     </DialogContent>
   );
 }
-
-    

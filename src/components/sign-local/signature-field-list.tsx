@@ -16,7 +16,7 @@ export function SignatureFieldList() {
   const context = useContext(AppContext);
 
   if (!context) {
-    throw new Error("SignatureFieldList must be used within an AppProvider");
+    throw new Error("SignatureFieldList muss innerhalb eines AppProviders verwendet werden");
   }
 
   const { signatureFields, handleAddSignature, setSignatureFields, addAuditLog } = context;
@@ -25,7 +25,7 @@ export function SignatureFieldList() {
     const field = signatureFields.find(f => f.id === fieldId);
     if (field) {
         setSignatureFields(signatureFields.filter(f => f.id !== fieldId));
-        addAuditLog(`Signature field "${field.name}" removed.`);
+        addAuditLog(`Signaturfeld "${field.name}" entfernt.`);
     }
   }
 
@@ -36,7 +36,7 @@ export function SignatureFieldList() {
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
               <Edit className="mr-2 h-4 w-4" />
-              Edit Fields
+              Felder bearbeiten
             </Button>
           </DialogTrigger>
           <EditSignatureFieldsDialog 
@@ -53,8 +53,8 @@ export function SignatureFieldList() {
         <CardContent className="p-4">
           {signatureFields.length === 0 ? (
             <div className="text-center text-muted-foreground py-10">
-              <p className="mb-2">No signature fields have been placed.</p>
-              <p className="text-sm">Click the "Add Signature Field" button, then click on the document to place a field.</p>
+              <p className="mb-2">Es wurden keine Signaturfelder platziert.</p>
+              <p className="text-sm">Klicken Sie auf "Signaturfeld hinzufügen" und dann auf das Dokument, um ein Feld zu platzieren.</p>
             </div>
           ) : (
             <ul className="space-y-4">
@@ -72,7 +72,7 @@ export function SignatureFieldList() {
                     <div>
                       <h3 className="font-semibold text-lg">{field.name}</h3>
                       <p className="text-sm text-muted-foreground">
-                        Requires signature
+                        Benötigt Signatur
                       </p>
                     </div>
                   </div>
@@ -81,21 +81,21 @@ export function SignatureFieldList() {
                       <div className="flex items-center gap-4 flex-wrap">
                         <Image
                             src={field.signature}
-                            alt={`Signature for ${field.name}`}
+                            alt={`Signatur für ${field.name}`}
                             width={120}
                             height={60}
                             className="rounded-md bg-muted p-1 w-24 sm:w-32"
                             data-ai-hint="signature"
                           />
-                        <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Signed</Badge>
+                        <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Signiert</Badge>
                       </div>
                     ) : (
-                      <Badge variant="outline">Not Signed</Badge>
+                      <Badge variant="outline">Nicht signiert</Badge>
                     )}
                     <Dialog>
                       <DialogTrigger asChild>
                         <Button variant={field.signature ? "secondary" : "default"}>
-                          {field.signature ? "Change" : "Sign"}
+                          {field.signature ? "Ändern" : "Signieren"}
                         </Button>
                       </DialogTrigger>
                       <SignaturePad
@@ -107,7 +107,7 @@ export function SignatureFieldList() {
                     </Dialog>
                     <Button variant="ghost" size="icon" onClick={() => handleDeleteField(field.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
-                        <span className="sr-only">Delete Field</span>
+                        <span className="sr-only">Feld löschen</span>
                     </Button>
                   </div>
                 </li>
