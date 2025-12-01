@@ -15,6 +15,8 @@ export type SignatureField = {
   signature: string | null;
   x: number; // Position from left in %
   y: number; // Position from top in %
+  width?: number; // Width in px
+  height?: number; // Height in px
   page?: number; // Page number for PDFs
 };
 
@@ -90,7 +92,7 @@ export default function Home() {
     if(field) {
         setSignatureFields((prev) =>
           prev.map((f) =>
-            f.id === fieldId ? { ...f, signature: signatureDataUrl } : f
+            f.id === fieldId ? { ...f, signature: signatureDataUrl, width: 150, height: 75 } : f
           )
         );
         addAuditLog(`Signature added for field "${field.name}".`);
@@ -110,8 +112,10 @@ export default function Home() {
   
   const handlePrint = () => {
     addAuditLog("Preparing document for printing...");
-    alert("Printing... (Simulated)");
-    window.print();
+    // A short timeout to allow the UI to update before printing
+    setTimeout(() => {
+        window.print();
+    }, 100);
   };
   
   const renderContent = () => {

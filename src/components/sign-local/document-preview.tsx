@@ -18,12 +18,15 @@ import type { SignatureField } from '@/app/page';
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-
-type DragState = {
+type InteractionState = {
     fieldId: string;
-    offsetX: number;
-    offsetY: number;
+    type: 'move' | 'resize';
+    startX: number;
+    startY: number;
+    startWidth?: number;
+    startHeight?: number;
 };
+
 
 export function DocumentPreview() {
     const context = useContext(AppContext);
@@ -31,10 +34,8 @@ export function DocumentPreview() {
     const [numPages, setNumPages] = useState<number>();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [dragging, setDragging] = useState<DragState | null>(null);
+    const [interaction, setInteraction] = useState<InteractionState | null>(null);
     const previewRef = useRef<HTMLDivElement>(null);
-    const contentRef = useRef<HTMLDivElement>(null);
-
 
     if (!context) {
         throw new Error("DocumentPreview must be used within an AppProvider");
@@ -83,47 +84,63 @@ export function DocumentPreview() {
     }
     
     const handleMouseUp = () => {
-        if(dragging) {
-            const field = signatureFields.find(f => f.id === dragging.fieldId);
+        if(interaction) {
+            const field = signatureFields.find(f => f.id === interaction.fieldId);
             if(field) {
-                let logMessage = `Moved signature field "${field.name}" to (${field.x.toFixed(1)}%, ${field.y.toFixed(1)}%)`;
+                let logMessage: string;
+                if (interaction.type === 'move') {
+                    logMessage = `Moved signature field "${field.name}" to (${field.x.toFixed(1)}%, ${field.y.toFixed(1)}%)`;
+                } else {
+                     logMessage = `Resized signature field "${field.name}" to ${field.width}x${field.height}px`;
+                }
+                
                 if(field.page) logMessage += ` on page ${field.page}`;
                 logMessage += '.';
-                addAuditLog(logMessage);
+                addAuditlog(logMessage);
             }
         }
-        setDragging(null);
+        setInteraction(null);
     };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!dragging || !e.currentTarget) return;
+        if (!interaction || !e.currentTarget) return;
 
-        const rect = e.currentTarget.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        const parentRect = e.currentTarget.getBoundingClientRect();
         
-        setSignatureFields(
-            signatureFields.map(f =>
-                f.id === dragging.fieldId
-                    ? { ...f, x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) }
-                    : f
-            )
-        );
+        setSignatureFields(prevFields => prevFields.map(field => {
+            if (field.id !== interaction.fieldId) return field;
+
+            if (interaction.type === 'move') {
+                const x = ((e.clientX - parentRect.left) / parentRect.width) * 100;
+                const y = ((e.clientY - parentRect.top) / parentRect.height) * 100;
+                return { ...field, x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) };
+            }
+
+            if (interaction.type === 'resize' && interaction.startWidth && interaction.startHeight) {
+                const dx = e.clientX - interaction.startX;
+                const dy = e.clientY - interaction.startY;
+                const newWidth = Math.max(50, interaction.startWidth + dx);
+                const newHeight = Math.max(25, interaction.startHeight + dy);
+                return { ...field, width: newWidth, height: newHeight };
+            }
+            return field;
+        }));
     };
 
 
-    const handleFieldMouseDown = (e: React.MouseEvent<HTMLDivElement>, field: SignatureField) => {
-        if (field.signature) return; // Don't allow moving signed fields
+    const handleFieldMouseDown = (e: React.MouseEvent<HTMLDivElement>, fieldId: string, type: 'move' | 'resize') => {
         e.stopPropagation();
-        
-        const fieldElement = e.currentTarget;
-        const rect = fieldElement.getBoundingClientRect();
-        const parentRect = fieldElement.parentElement!.getBoundingClientRect();
+        const currentField = signatureFields.find(f => f.id === fieldId);
+        if (!currentField) return;
 
-        const offsetX = (e.clientX - rect.left) / parentRect.width * 100;
-        const offsetY = (e.clientY - rect.top) / parentRect.height * 100;
-
-        setDragging({ fieldId: field.id, offsetX, offsetY });
+        setInteraction({
+            fieldId,
+            type,
+            startX: e.clientX,
+            startY: e.clientY,
+            startWidth: currentField.width,
+            startHeight: currentField.height
+        });
     };
 
     const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>, pageNumber?: number) => {
@@ -173,28 +190,35 @@ export function DocumentPreview() {
                 <TooltipTrigger asChild>
                     <div
                         data-signature-field="true"
-                        onMouseDown={(e) => handleFieldMouseDown(e, field)}
                         className={cn(
-                            "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group z-10",
-                            !field.signature && "cursor-move",
-                            dragging && dragging.fieldId === field.id && "z-20"
+                            "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group z-10 print:border-transparent",
+                            interaction && interaction.fieldId === field.id && "z-20"
                         )}
-                        style={{ left: `${field.x}%`, top: `${field.y}%` }}
+                        style={{ left: `${field.x}%`, top: `${field.y}%`, width: field.width, height: field.height }}
                     >
                         {field.signature ? (
-                            <div className='flex items-center gap-2 bg-background/80 p-1 rounded border border-green-500'>
-                                <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                            <div 
+                                className='relative w-full h-full flex items-center justify-center p-1 rounded border border-green-500 hover:border-accent cursor-move print:border-none'
+                                onMouseDown={(e) => handleFieldMouseDown(e, field.id, 'move')}
+                            >
+                                <CheckCircle2 className="absolute -top-2 -left-2 w-5 h-5 text-green-500 bg-white rounded-full print:hidden" />
                                 <Image
                                     src={field.signature}
                                     alt={`Signature for ${field.name}`}
-                                    width={100}
-                                    height={50}
-                                    className="rounded-sm bg-muted"
+                                    fill
+                                    className="object-contain"
                                     data-ai-hint="signature"
+                                />
+                                <div 
+                                    className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-accent cursor-se-resize opacity-0 group-hover:opacity-100 transition-opacity print:hidden"
+                                    onMouseDown={(e) => handleFieldMouseDown(e, field.id, 'resize')}
                                 />
                             </div>
                         ) : (
-                            <div className='relative flex items-center gap-2 bg-background/80 p-2 rounded-lg border-2 border-dashed border-primary'>
+                             <div 
+                                onMouseDown={(e) => handleFieldMouseDown(e, field.id, 'move')}
+                                className='relative flex items-center justify-center gap-2 bg-background/80 p-2 rounded-lg border-2 border-dashed border-primary cursor-move print:hidden'
+                            >
                                 <PenSquare className="w-5 h-5 text-primary shrink-0" />
                                 <span className='font-semibold text-sm text-primary'>{field.name}</span>
                                 <Button
@@ -213,7 +237,7 @@ export function DocumentPreview() {
                     <p className='font-semibold'>{field.name}</p>
                     {file?.type === 'application/pdf' && <p className='text-sm text-muted-foreground'>Page {field.page}</p>}
                     <p className='text-sm text-muted-foreground'>{field.signature ? "Signed" : "Awaiting Signature"}</p>
-                     {!field.signature && <p className='text-xs text-muted-foreground mt-1'>Click and drag to move</p>}
+                    <p className='text-xs text-muted-foreground mt-1'>{field.signature ? "Drag to move, drag corner to resize" : "Click and drag to move"}</p>
                 </TooltipContent>
             </Tooltip>
         ));
@@ -255,17 +279,22 @@ export function DocumentPreview() {
                     "p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card flex justify-center",
                      file?.type.includes('word') && "prose prose-sm dark:prose-invert max-w-none"
                 )}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
             >
                 {file?.type.includes('word') && (
                      <div
-                        ref={contentRef}
                         className={cn("relative w-full", isPlacing && "cursor-crosshair")}
                         onClick={(e) => handlePreviewClick(e)}
                         onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseUp}
                     >
                         <style jsx global>{`
+                            @media print {
+                                .prose {
+                                    display: block;
+                                    overflow: visible;
+                                }
+                            }
                             .prose table { width: 100%; }
                             .prose th, .prose td { border: 1px solid hsl(var(--border)); padding: 0.5rem; }
                             .prose th { font-weight: bold; }
@@ -289,6 +318,8 @@ export function DocumentPreview() {
                             className={cn("relative shadow-lg", isPlacing && "cursor-crosshair")}
                             onClick={(e) => handlePreviewClick(e, index + 1)}
                             onMouseMove={handleMouseMove}
+                            onMouseUp={handleMouseUp}
+                            onMouseLeave={handleMouseUp}
                            >
                             <Page 
                                 pageNumber={index + 1}
