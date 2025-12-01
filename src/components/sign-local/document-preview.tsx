@@ -96,7 +96,7 @@ export function DocumentPreview() {
                 
                 if(field.page) logMessage += ` on page ${field.page}`;
                 logMessage += '.';
-                addAuditlog(logMessage);
+                addAuditLog(logMessage);
             }
         }
         setInteraction(null);
