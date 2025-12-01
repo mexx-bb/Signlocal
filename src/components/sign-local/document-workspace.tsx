@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Loader2, Printer, Save, Undo2 } from "lucide-react";
 import { SignatureFieldList } from "./signature-field-list";
 import { AuditLog } from "./audit-log";
+import { DocumentPreview } from "./document-preview";
 
 type DocumentWorkspaceProps = {
   file: File;
@@ -45,9 +46,7 @@ export function DocumentWorkspace({
             </Button>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">
-              Please provide signatures for the fields identified below.
-            </p>
+            <DocumentPreview file={file} />
           </CardContent>
         </Card>
 
