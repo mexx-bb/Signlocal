@@ -7,6 +7,7 @@ import { FileUploader } from "@/components/sign-local/file-uploader";
 import { DocumentWorkspace } from "@/components/sign-local/document-workspace";
 import { AppProvider } from "@/context/SignAppContext";
 import AuditPage from "./audit/page";
+import { exportToPdf } from "@/lib/pdf-export";
 
 
 export type SignatureField = {
@@ -99,15 +100,21 @@ export default function Home() {
     }
   };
 
-  const handleExportPdf = () => {
+  const handleExportPdf = async () => {
+    if (!file) return;
+
     setIsProcessing(true);
     addAuditLog("PDF-Exportprozess wird gestartet...");
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      await exportToPdf(file, signatureFields);
       addAuditLog("PDF erfolgreich erstellt und zum Download bereit.");
-      // In a real app, this would trigger a download of the converted PDF
-      alert("PDF exportiert (simuliert)");
-    }, 2500);
+    } catch (error) {
+      console.error("Fehler beim PDF-Export:", error);
+      addAuditLog(`Fehler beim PDF-Export: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`);
+      alert("Es ist ein Fehler beim Erstellen der PDF-Datei aufgetreten. Bitte versuchen Sie es erneut.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
   
   const handlePrint = () => {
