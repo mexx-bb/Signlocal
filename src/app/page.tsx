@@ -1,10 +1,13 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
+import { usePathname } from 'next/navigation';
 import { Header } from "@/components/sign-local/header";
 import { FileUploader } from "@/components/sign-local/file-uploader";
 import { DocumentWorkspace } from "@/components/sign-local/document-workspace";
 import { AppProvider } from "@/context/SignAppContext";
+import AuditPage from "./audit/page";
+
 
 export type SignatureField = {
   id: string;
@@ -25,6 +28,7 @@ export default function Home() {
   const [auditLog, setAuditLog] = useState<AuditLogEntry[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPlacing, setIsPlacing] = useState(false);
+  const pathname = usePathname();
 
 
   const addAuditLog = (message: string) => {
@@ -100,9 +104,13 @@ export default function Home() {
     alert("Printing... (Simulated)");
     window.print();
   };
-
-  return (
-    <AppProvider value={{ file, signatureFields, auditLog, addAuditLog, setSignatureFields, handleAddSignature, handleReset, isProcessing, handleExportPdf, handlePrint, isPlacing, setIsPlacing }}>
+  
+  const renderContent = () => {
+    if (pathname === '/audit') {
+      return <AuditPage />;
+    }
+    
+    return (
         <div className="flex flex-col h-full bg-background text-foreground">
         <Header />
         <main className="flex-grow container mx-auto px-4 py-8">
@@ -113,6 +121,12 @@ export default function Home() {
             )}
         </main>
         </div>
+    );
+  }
+
+  return (
+    <AppProvider value={{ file, signatureFields, auditLog, addAuditLog, setSignatureFields, handleAddSignature, handleReset, isProcessing, handleExportPdf, handlePrint, isPlacing, setIsPlacing }}>
+        {renderContent()}
     </AppProvider>
   );
 }
