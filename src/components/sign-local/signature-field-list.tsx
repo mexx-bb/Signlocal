@@ -63,7 +63,7 @@ export function SignatureFieldList() {
                   key={field.id}
                   className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg bg-card gap-4"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-4 flex-1">
                     {field.signature ? (
                       <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
                     ) : (
@@ -76,15 +76,15 @@ export function SignatureFieldList() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
                     {field.signature ? (
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-4 flex-wrap">
                         <Image
                             src={field.signature}
                             alt={`Signature for ${field.name}`}
                             width={120}
                             height={60}
-                            className="rounded-md bg-muted p-1"
+                            className="rounded-md bg-muted p-1 w-24 sm:w-32"
                             data-ai-hint="signature"
                           />
                         <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Signed</Badge>
@@ -121,5 +121,3 @@ export function SignatureFieldList() {
     </>
   );
 }
-
-    
