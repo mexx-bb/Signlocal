@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogFooter,
   DialogClose,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,15 +42,6 @@ export function EditSignatureFieldsDialog({
   const handleRemoveField = (id: string) => {
     setEditableFields(editableFields.filter((field) => field.id !== id));
   };
-
-  const handleAddField = () => {
-    const newId = `field-${Date.now()}`;
-    // Add new fields at a default position which the user can then move
-    setEditableFields([
-      ...editableFields,
-      { id: newId, name: `New Field ${editableFields.length + 1}`, signature: null, x: 10, y: 10 },
-    ]);
-  };
   
   const handleSaveChanges = () => {
     onSave(editableFields);
@@ -59,6 +51,9 @@ export function EditSignatureFieldsDialog({
     <DialogContent className="max-w-lg">
       <DialogHeader>
         <DialogTitle className="font-headline">Edit Signature Fields</DialogTitle>
+        <DialogDescription>
+            Rename or delete signature fields. You can add new fields by clicking on the document preview.
+        </DialogDescription>
       </DialogHeader>
       <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
         {editableFields.map((field, index) => (
@@ -78,9 +73,9 @@ export function EditSignatureFieldsDialog({
               size="icon"
               onClick={() => handleRemoveField(field.id)}
               disabled={!!field.signature}
+              aria-label="Remove field"
             >
               <X className="h-4 w-4" />
-              <span className="sr-only">Remove field</span>
             </Button>
           </div>
         ))}
@@ -88,11 +83,6 @@ export function EditSignatureFieldsDialog({
             <p className="text-sm text-muted-foreground text-center py-4">No signature fields defined.</p>
         )}
       </div>
-
-      <Button variant="outline" onClick={handleAddField} className="w-full">
-        <Plus className="h-4 w-4 mr-2" />
-        Add New Field
-      </Button>
 
       <DialogFooter>
         <DialogClose asChild>
@@ -105,3 +95,5 @@ export function EditSignatureFieldsDialog({
     </DialogContent>
   );
 }
+
+    

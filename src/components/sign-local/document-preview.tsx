@@ -6,14 +6,24 @@ import mammoth from 'mammoth';
 import { AppContext } from '@/context/SignAppContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, PenSquare, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, PenSquare, CheckCircle2, X } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '../ui/button';
+import { cn } from '@/lib/utils';
+import type { SignatureField } from '@/app/page';
+
+type DragState = {
+    fieldId: string;
+    offsetX: number;
+    offsetY: number;
+};
 
 export function DocumentPreview() {
     const context = useContext(AppContext);
     const [html, setHtml] = useState('');
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [dragging, setDragging] = useState<DragState | null>(null);
     const previewRef = useRef<HTMLDivElement>(null);
 
     if (!context) {
@@ -54,11 +64,51 @@ export function DocumentPreview() {
         reader.readAsArrayBuffer(file);
 
     }, [file]);
+    
+    const handleMouseUp = () => {
+        if(dragging) {
+            const field = signatureFields.find(f => f.id === dragging.fieldId);
+            if(field) {
+                addAuditLog(`Moved signature field "${field.name}" to (${field.x.toFixed(1)}%, ${field.y.toFixed(1)}%).`);
+            }
+        }
+        setDragging(null);
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!dragging || !previewRef.current) return;
+
+        const rect = previewRef.current.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        
+        setSignatureFields(
+            signatureFields.map(f =>
+                f.id === dragging.fieldId
+                    ? { ...f, x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) }
+                    : f
+            )
+        );
+    };
+
+
+    const handleFieldMouseDown = (e: React.MouseEvent<HTMLDivElement>, field: SignatureField) => {
+        if (field.signature) return; // Don't allow moving signed fields
+        e.stopPropagation();
+        
+        const fieldElement = e.currentTarget;
+        const rect = fieldElement.getBoundingClientRect();
+        const parentRect = previewRef.current!.getBoundingClientRect();
+
+        const offsetX = (e.clientX - rect.left) / parentRect.width * 100;
+        const offsetY = (e.clientY - rect.top) / parentRect.height * 100;
+
+        setDragging({ fieldId: field.id, offsetX, offsetY });
+    };
 
     const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!previewRef.current) return;
         
-        // Prevent adding a field if a signature is clicked
         const target = e.target as HTMLElement;
         if (target.closest('[data-signature-field="true"]')) {
             return;
@@ -80,6 +130,16 @@ export function DocumentPreview() {
 
         setSignatureFields([...signatureFields, newField]);
     };
+    
+    const handleDeleteField = (e: React.MouseEvent<HTMLButtonElement>, fieldId: string) => {
+        e.stopPropagation();
+        const field = signatureFields.find(f => f.id === fieldId);
+        if(field) {
+            setSignatureFields(signatureFields.filter(f => f.id !== fieldId));
+            addAuditLog(`Signature field "${field.name}" removed.`);
+        }
+    }
+
 
     if (isLoading) {
         return (
@@ -114,6 +174,9 @@ export function DocumentPreview() {
                 ref={previewRef}
                 className="relative prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card cursor-crosshair"
                 onClick={handlePreviewClick}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
             >
                 <style jsx global>{`
                     .prose table { width: 100%; }
@@ -127,7 +190,12 @@ export function DocumentPreview() {
                         <TooltipTrigger asChild>
                             <div
                                 data-signature-field="true"
-                                className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer p-1"
+                                onMouseDown={(e) => handleFieldMouseDown(e, field)}
+                                className={cn(
+                                    "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group",
+                                    !field.signature && "cursor-move",
+                                    dragging && dragging.fieldId === field.id && "z-10"
+                                )}
                                 style={{ left: `${field.x}%`, top: `${field.y}%` }}
                             >
                                 {field.signature ? (
@@ -143,9 +211,17 @@ export function DocumentPreview() {
                                         />
                                     </div>
                                 ) : (
-                                    <div className='flex items-center gap-2 bg-background/80 p-2 rounded-lg border-2 border-dashed border-primary'>
+                                    <div className='relative flex items-center gap-2 bg-background/80 p-2 rounded-lg border-2 border-dashed border-primary'>
                                         <PenSquare className="w-5 h-5 text-primary shrink-0" />
                                         <span className='font-semibold text-sm text-primary'>{field.name}</span>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="absolute -top-4 -right-4 h-6 w-6 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                                            onClick={(e) => handleDeleteField(e, field.id)}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
                                     </div>
                                 )}
                             </div>
@@ -153,6 +229,7 @@ export function DocumentPreview() {
                         <TooltipContent>
                             <p className='font-semibold'>{field.name}</p>
                             <p className='text-sm text-muted-foreground'>{field.signature ? "Signed" : "Awaiting Signature"}</p>
+                             {!field.signature && <p className='text-xs text-muted-foreground mt-1'>Click and drag to move</p>}
                         </TooltipContent>
                     </Tooltip>
                 ))}
@@ -160,3 +237,5 @@ export function DocumentPreview() {
         </TooltipProvider>
     );
 }
+
+    

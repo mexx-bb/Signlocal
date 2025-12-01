@@ -8,7 +8,7 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { SignaturePad } from "./signature-pad";
 import { Badge } from "@/components/ui/badge";
 import { EditSignatureFieldsDialog } from "./edit-signature-fields-dialog";
-import { PenSquare, CheckCircle2, Edit } from "lucide-react";
+import { PenSquare, CheckCircle2, Edit, Trash2 } from "lucide-react";
 import { ScrollArea } from "../ui/scroll-area";
 
 export function SignatureFieldList() {
@@ -19,7 +19,15 @@ export function SignatureFieldList() {
     throw new Error("SignatureFieldList must be used within an AppProvider");
   }
 
-  const { signatureFields, handleAddSignature, setSignatureFields } = context;
+  const { signatureFields, handleAddSignature, setSignatureFields, addAuditLog } = context;
+
+  const handleDeleteField = (fieldId: string) => {
+    const field = signatureFields.find(f => f.id === fieldId);
+    if (field) {
+        setSignatureFields(signatureFields.filter(f => f.id !== fieldId));
+        addAuditLog(`Signature field "${field.name}" removed.`);
+    }
+  }
 
   return (
     <>
@@ -28,7 +36,7 @@ export function SignatureFieldList() {
           <DialogTrigger asChild>
             <Button variant="outline" size="sm">
               <Edit className="mr-2 h-4 w-4" />
-              Edit Names
+              Edit Fields
             </Button>
           </DialogTrigger>
           <EditSignatureFieldsDialog 
@@ -53,9 +61,9 @@ export function SignatureFieldList() {
               {signatureFields.map((field) => (
                 <li
                   key={field.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg bg-card"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg bg-card gap-4"
                 >
-                  <div className="flex items-center gap-4 mb-4 sm:mb-0">
+                  <div className="flex items-center gap-4">
                     {field.signature ? (
                       <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
                     ) : (
@@ -68,7 +76,7 @@ export function SignatureFieldList() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                     {field.signature ? (
                       <div className="flex items-center gap-4">
                         <Image
@@ -97,6 +105,12 @@ export function SignatureFieldList() {
                         }
                       />
                     </Dialog>
+                    {!field.signature && (
+                        <Button variant="ghost" size="icon" onClick={() => handleDeleteField(field.id)}>
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                            <span className="sr-only">Delete Field</span>
+                        </Button>
+                    )}
                   </div>
                 </li>
               ))}
@@ -107,3 +121,5 @@ export function SignatureFieldList() {
     </>
   );
 }
+
+    
