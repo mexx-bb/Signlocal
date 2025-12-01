@@ -32,14 +32,38 @@ export default function Home() {
       setFile(selectedFile);
       addAuditLog(`Document "${selectedFile.name}" loaded.`);
       // Mock parsing the document for signature fields
-      setSignatureFields([
+      const initialFields = [
         { id: "Berater", name: "Berater", signature: null },
         { id: "Kunde", name: "Kunde", signature: null },
-      ]);
-      addAuditLog(`Found 2 signature fields: Berater, Kunde.`);
+      ];
+      setSignatureFields(initialFields);
+      addAuditLog(`Found ${initialFields.length} signature fields: ${initialFields.map(f => f.name).join(', ')}.`);
     } else {
       // Handle incorrect file type
       alert("Please upload a valid .docx file.");
+    }
+  };
+
+  const handleSetSignatureFields = (fields: SignatureField[]) => {
+    const oldFields = signatureFields;
+    setSignatureFields(fields);
+
+    // Log changes
+    if (fields.length > oldFields.length) {
+      const newField = fields.find(f => !oldFields.some(of => of.id === f.id));
+      if(newField) addAuditLog(`Signature field "${newField.name}" added.`);
+    } else if (fields.length < oldFields.length) {
+      const removedField = oldFields.find(of => !fields.some(f => f.id === of.id));
+      if(removedField) addAuditLog(`Signature field "${removedField.name}" removed.`);
+    } else {
+       const changedField = fields.find(f => {
+         const oldField = oldFields.find(of => of.id === f.id);
+         return oldField && oldField.name !== f.name;
+       });
+       if(changedField) {
+         const oldField = oldFields.find(of => of.id === changedField.id);
+         addAuditLog(`Signature field "${oldField?.name}" renamed to "${changedField.name}".`);
+       }
     }
   };
 
@@ -91,6 +115,7 @@ export default function Home() {
             onExportPdf={handleExportPdf}
             onPrint={handlePrint}
             isProcessing={isProcessing}
+            onSetSignatureFields={handleSetSignatureFields}
           />
         )}
       </main>

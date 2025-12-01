@@ -14,6 +14,7 @@ type DocumentWorkspaceProps = {
   onExportPdf: () => void;
   onPrint: () => void;
   isProcessing: boolean;
+  onSetSignatureFields: (fields: SignatureField[]) => void;
 };
 
 export function DocumentWorkspace({
@@ -25,8 +26,9 @@ export function DocumentWorkspace({
   onExportPdf,
   onPrint,
   isProcessing,
+  onSetSignatureFields,
 }: DocumentWorkspaceProps) {
-  const allSigned = signatureFields.every((field) => field.signature !== null);
+  const allSigned = signatureFields.length > 0 && signatureFields.every((field) => field.signature !== null);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
@@ -52,6 +54,7 @@ export function DocumentWorkspace({
         <SignatureFieldList
           fields={signatureFields}
           onAddSignature={onAddSignature}
+          onSetFields={onSetSignatureFields}
         />
 
         <Card>
