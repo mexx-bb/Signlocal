@@ -41,13 +41,14 @@ export async function exportToPdf(file: File, signatureFields: SignatureField[])
         const x = (field.x / 100) * pageWidth;
         const y = pageHeight - ((field.y / 100) * pageHeight);
         
-        // Adjust coordinates to be the center of the image
-        const centerX = x - field.width / 2;
-        const centerY = y - field.height / 2;
+        // The x/y from the UI is the center of the field.
+        // The drawImage x/y is the bottom-left corner. We need to adjust.
+        const adjustedX = x - (field.width / 2);
+        const adjustedY = y - (field.height / 2);
 
         page.drawImage(signatureImage, {
-            x: centerX,
-            y: centerY,
+            x: adjustedX,
+            y: adjustedY,
             width: field.width,
             height: field.height,
         });
