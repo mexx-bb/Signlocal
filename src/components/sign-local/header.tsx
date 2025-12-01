@@ -1,10 +1,15 @@
 import Link from "next/link";
 import { Rocket, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function Header() {
+type HeaderProps = {
+  className?: string;
+};
+
+export function Header({ className }: HeaderProps) {
   return (
-    <header className="border-b bg-card">
+    <header className={cn("border-b bg-card", className)}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">

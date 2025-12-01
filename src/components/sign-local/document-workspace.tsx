@@ -38,7 +38,7 @@ export function DocumentWorkspace() {
 
   return (
     <div className="flex flex-col h-full gap-4">
-      <Card>
+      <Card className="no-print">
         <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4">
           <div className="flex items-center gap-3">
             <FileText className="w-6 h-6 text-primary" />

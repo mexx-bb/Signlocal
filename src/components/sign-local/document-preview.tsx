@@ -285,7 +285,7 @@ export function DocumentPreview() {
             <div 
                 ref={previewRef}
                 className={cn(
-                    "p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card flex justify-center",
+                    "p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card flex justify-center print-content",
                      file?.type.includes('word') && "prose prose-sm dark:prose-invert max-w-none"
                 )}
             >

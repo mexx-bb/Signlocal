@@ -71,7 +71,7 @@ export default function Home() {
       if(removedField) addAuditLog(`Signature field "${removedField.name}" removed.`);
     } else {
        const changedField = fields.find(f => {
-         const oldField = oldFields.find(of => of.id === f.id);
+         const oldField = oldFields.find(of => of.id === changedField.id);
          return oldField && oldField.name !== f.name;
        });
        if(changedField) {
@@ -125,7 +125,7 @@ export default function Home() {
     
     return (
         <div className="flex flex-col h-full bg-background text-foreground">
-        <Header />
+        <Header className="no-print" />
         <main className="flex-grow container mx-auto px-4 py-8">
             {!file ? (
             <FileUploader onFileChange={handleFileChange} />

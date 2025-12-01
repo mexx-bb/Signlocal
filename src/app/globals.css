@@ -86,3 +86,23 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  body {
+    background: white;
+  }
+  .no-print {
+    display: none !important;
+  }
+  main.container {
+    max-width: none;
+    padding: 0;
+    margin: 0;
+  }
+  .print-content {
+    padding: 0;
+    border: none;
+    height: auto;
+    overflow: visible;
+  }
+}
