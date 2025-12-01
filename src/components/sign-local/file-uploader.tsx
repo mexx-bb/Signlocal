@@ -71,7 +71,7 @@ export function FileUploader({ onFileChange }: FileUploaderProps) {
               )}
             />
             <p className="mt-4 text-lg font-semibold">
-              Drag & drop your .docx file here
+              Drag & drop your .docx or .pdf file here
             </p>
             <p className="text-muted-foreground">or click to select a file</p>
             <Input
@@ -79,7 +79,7 @@ export function FileUploader({ onFileChange }: FileUploaderProps) {
               type="file"
               className="hidden"
               onChange={onFileChange}
-              accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,application/pdf"
             />
           </div>
         </CardContent>

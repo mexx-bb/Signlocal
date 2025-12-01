@@ -15,6 +15,7 @@ export type SignatureField = {
   signature: string | null;
   x: number; // Position from left in %
   y: number; // Position from top in %
+  page?: number; // Page number for PDFs
 };
 
 export type AuditLogEntry = {
@@ -37,13 +38,14 @@ export default function Home() {
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
-    if (selectedFile && selectedFile.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") {
+    const allowedTypes = ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/pdf"];
+    if (selectedFile && allowedTypes.includes(selectedFile.type)) {
       setFile(selectedFile);
       setSignatureFields([]);
       setAuditLog([]); // Reset log for new document
       addAuditLog(`Document "${selectedFile.name}" loaded.`);
     } else {
-      alert("Please upload a valid .docx file.");
+      alert("Please upload a valid .docx or .pdf file.");
     }
   };
 
@@ -54,7 +56,14 @@ export default function Home() {
     // Log changes
     if (fields.length > oldFields.length) {
       const newField = fields.find(f => !oldFields.some(of => of.id === f.id));
-      if(newField) addAuditLog(`Signature field "${newField.name}" added at position (${newField.x.toFixed(1)}%, ${newField.y.toFixed(1)}%).`);
+      if(newField) {
+        let logMessage = `Signature field "${newField.name}" added at position (${newField.x.toFixed(1)}%, ${newField.y.toFixed(1)}%)`;
+        if (newField.page) {
+          logMessage += ` on page ${newField.page}`;
+        }
+        logMessage += '.';
+        addAuditLog(logMessage);
+      }
     } else if (fields.length < oldFields.length) {
       const removedField = oldFields.find(of => !fields.some(f => f.id === of.id));
       if(removedField) addAuditLog(`Signature field "${removedField.name}" removed.`);
