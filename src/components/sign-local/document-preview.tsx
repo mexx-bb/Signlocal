@@ -200,14 +200,15 @@ export function DocumentPreview() {
                     <div
                         data-signature-field="true"
                         className={cn(
-                            "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group z-10 print:border-transparent",
-                            interaction && interaction.fieldId === field.id && "z-20"
+                            "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group z-10 print:border-transparent print:p-0",
+                            interaction && interaction.fieldId === field.id && "z-20",
+                            field.signature ? 'print:block' : 'print:hidden'
                         )}
                         style={{ left: `${field.x}%`, top: `${field.y}%`, width: field.width, height: field.height }}
                     >
                         {field.signature ? (
                             <div 
-                                className='relative w-full h-full flex items-center justify-center p-1 rounded border border-green-500 hover:border-accent cursor-move print:border-none'
+                                className='relative w-full h-full flex items-center justify-center p-1 rounded border border-green-500 hover:border-accent cursor-move print:border-none print:p-0'
                                 onMouseDown={(e) => handleFieldMouseDown(e, field.id, 'move')}
                             >
                                 <CheckCircle2 className="absolute -top-2 -left-2 w-5 h-5 text-green-500 bg-white rounded-full print:hidden" />
@@ -285,7 +286,7 @@ export function DocumentPreview() {
             <div 
                 ref={previewRef}
                 className={cn(
-                    "p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card flex justify-center print-content",
+                    "p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card flex justify-center print-content print:border-none print:p-0 print:bg-transparent print:overflow-visible print:h-auto",
                      file?.type.includes('word') && "prose prose-sm dark:prose-invert max-w-none"
                 )}
             >
@@ -319,12 +320,12 @@ export function DocumentPreview() {
                         file={file}
                         onLoadSuccess={onDocumentLoadSuccess}
                         onLoadError={(e) => setError(e.message)}
-                        className="space-y-4"
+                        className="space-y-4 print:space-y-0"
                      >
                         {Array.from(new Array(numPages), (el, index) => (
                            <div
                             key={`page_${index + 1}`}
-                            className={cn("relative shadow-lg", isPlacing && "cursor-crosshair")}
+                            className={cn("relative shadow-lg print:shadow-none", isPlacing && "cursor-crosshair")}
                             onClick={(e) => handlePreviewClick(e, index + 1)}
                             onMouseMove={handleMouseMove}
                             onMouseUp={handleMouseUp}
@@ -332,8 +333,9 @@ export function DocumentPreview() {
                            >
                             <Page 
                                 pageNumber={index + 1}
-                                renderTextLayer={false}
+                                renderTextLayer={true}
                                 renderAnnotationLayer={false}
+                                className="[&_.react-pdf__Page__textContent]:hidden print:[&_.react-pdf__Page__textContent]:block"
                             />
                             {renderSignatureFields(index + 1)}
                            </div>
