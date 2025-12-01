@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "signature-placeholder",
+      "description": "A placeholder for a user signature",
+      "imageUrl": "https://images.unsplash.com/photo-1724404853530-a19ff2ed3c4b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzaWduYXR1cmV8ZW58MHx8fHwxNzY0NDY3MzgzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "signature"
+    }
+  ]
 }
