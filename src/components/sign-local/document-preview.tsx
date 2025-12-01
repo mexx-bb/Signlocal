@@ -25,6 +25,8 @@ export function DocumentPreview() {
     const [error, setError] = useState<string | null>(null);
     const [dragging, setDragging] = useState<DragState | null>(null);
     const previewRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null);
+
 
     if (!context) {
         throw new Error("DocumentPreview must be used within an AppProvider");
@@ -76,9 +78,9 @@ export function DocumentPreview() {
     };
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!dragging || !previewRef.current) return;
+        if (!dragging || !contentRef.current) return;
 
-        const rect = previewRef.current.getBoundingClientRect();
+        const rect = contentRef.current.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         
@@ -98,7 +100,7 @@ export function DocumentPreview() {
         
         const fieldElement = e.currentTarget;
         const rect = fieldElement.getBoundingClientRect();
-        const parentRect = previewRef.current!.getBoundingClientRect();
+        const parentRect = contentRef.current!.getBoundingClientRect();
 
         const offsetX = (e.clientX - rect.left) / parentRect.width * 100;
         const offsetY = (e.clientY - rect.top) / parentRect.height * 100;
@@ -107,14 +109,14 @@ export function DocumentPreview() {
     };
 
     const handlePreviewClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (!isPlacing || !previewRef.current) return;
+        if (!isPlacing || !contentRef.current) return;
         
         const target = e.target as HTMLElement;
         if (target.closest('[data-signature-field="true"]')) {
             return;
         }
 
-        const rect = previewRef.current.getBoundingClientRect();
+        const rect = contentRef.current.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         
@@ -174,72 +176,74 @@ export function DocumentPreview() {
             <div 
                 ref={previewRef}
                 className={cn(
-                    "relative prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card",
-                    isPlacing && "cursor-crosshair"
+                    "prose prose-sm dark:prose-invert max-w-none p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card"
                 )}
-                onClick={handlePreviewClick}
-                onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
             >
-                <style jsx global>{`
-                    .prose table { width: 100%; }
-                    .prose th, .prose td { border: 1px solid hsl(var(--border)); padding: 0.5rem; }
-                    .prose th { font-weight: bold; }
-                `}</style>
-                <div dangerouslySetInnerHTML={{ __html: html }} />
+                <div
+                    ref={contentRef}
+                    className={cn("relative", isPlacing && "cursor-crosshair")}
+                    onClick={handlePreviewClick}
+                    onMouseMove={handleMouseMove}
+                >
+                    <style jsx global>{`
+                        .prose table { width: 100%; }
+                        .prose th, .prose td { border: 1px solid hsl(var(--border)); padding: 0.5rem; }
+                        .prose th { font-weight: bold; }
+                    `}</style>
+                    <div dangerouslySetInnerHTML={{ __html: html }} />
 
-                {signatureFields.map(field => (
-                    <Tooltip key={field.id} delayDuration={100}>
-                        <TooltipTrigger asChild>
-                            <div
-                                data-signature-field="true"
-                                onMouseDown={(e) => handleFieldMouseDown(e, field)}
-                                className={cn(
-                                    "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group",
-                                    !field.signature && "cursor-move",
-                                    dragging && dragging.fieldId === field.id && "z-10"
-                                )}
-                                style={{ left: `${field.x}%`, top: `${field.y}%` }}
-                            >
-                                {field.signature ? (
-                                    <div className='flex items-center gap-2 bg-background/80 p-1 rounded border border-green-500'>
-                                        <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                                        <Image
-                                            src={field.signature}
-                                            alt={`Signature for ${field.name}`}
-                                            width={100}
-                                            height={50}
-                                            className="rounded-sm bg-muted"
-                                            data-ai-hint="signature"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className='relative flex items-center gap-2 bg-background/80 p-2 rounded-lg border-2 border-dashed border-primary'>
-                                        <PenSquare className="w-5 h-5 text-primary shrink-0" />
-                                        <span className='font-semibold text-sm text-primary'>{field.name}</span>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className="absolute -top-4 -right-4 h-6 w-6 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
-                                            onClick={(e) => handleDeleteField(e, field.id)}
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <p className='font-semibold'>{field.name}</p>
-                            <p className='text-sm text-muted-foreground'>{field.signature ? "Signed" : "Awaiting Signature"}</p>
-                             {!field.signature && <p className='text-xs text-muted-foreground mt-1'>Click and drag to move</p>}
-                        </TooltipContent>
-                    </Tooltip>
-                ))}
+                    {signatureFields.map(field => (
+                        <Tooltip key={field.id} delayDuration={100}>
+                            <TooltipTrigger asChild>
+                                <div
+                                    data-signature-field="true"
+                                    onMouseDown={(e) => handleFieldMouseDown(e, field)}
+                                    className={cn(
+                                        "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group",
+                                        !field.signature && "cursor-move",
+                                        dragging && dragging.fieldId === field.id && "z-10"
+                                    )}
+                                    style={{ left: `${field.x}%`, top: `${field.y}%` }}
+                                >
+                                    {field.signature ? (
+                                        <div className='flex items-center gap-2 bg-background/80 p-1 rounded border border-green-500'>
+                                            <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
+                                            <Image
+                                                src={field.signature}
+                                                alt={`Signature for ${field.name}`}
+                                                width={100}
+                                                height={50}
+                                                className="rounded-sm bg-muted"
+                                                data-ai-hint="signature"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <div className='relative flex items-center gap-2 bg-background/80 p-2 rounded-lg border-2 border-dashed border-primary'>
+                                            <PenSquare className="w-5 h-5 text-primary shrink-0" />
+                                            <span className='font-semibold text-sm text-primary'>{field.name}</span>
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                className="absolute -top-4 -right-4 h-6 w-6 rounded-full bg-destructive text-destructive-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+                                                onClick={(e) => handleDeleteField(e, field.id)}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p className='font-semibold'>{field.name}</p>
+                                <p className='text-sm text-muted-foreground'>{field.signature ? "Signed" : "Awaiting Signature"}</p>
+                                 {!field.signature && <p className='text-xs text-muted-foreground mt-1'>Click and drag to move</p>}
+                            </TooltipContent>
+                        </Tooltip>
+                    ))}
+                </div>
             </div>
         </TooltipProvider>
     );
 }
-
-    
