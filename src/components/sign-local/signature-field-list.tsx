@@ -70,7 +70,7 @@ export function SignatureFieldList() {
                       <PenSquare className="w-6 h-6 text-primary shrink-0" />
                     )}
                     <div>
-                      <h3 className="font-semibold text-lg">{field.name}</h3>
+                      <h3 className="font-semibold text-base sm:text-lg">{field.name}</h3>
                       <p className="text-sm text-muted-foreground">
                         Benötigt Signatur
                       </p>
@@ -79,14 +79,15 @@ export function SignatureFieldList() {
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
                     {field.signature ? (
                       <div className="flex items-center gap-4 flex-wrap">
-                        <Image
-                            src={field.signature}
-                            alt={`Signatur für ${field.name}`}
-                            width={120}
-                            height={60}
-                            className="rounded-md bg-muted p-1 w-24 sm:w-32"
-                            data-ai-hint="signature"
-                          />
+                        <div className="relative w-24 sm:w-32 h-12 bg-muted rounded-md p-1">
+                            <Image
+                                src={field.signature}
+                                alt={`Signatur für ${field.name}`}
+                                fill
+                                className="object-contain"
+                                data-ai-hint="signature"
+                            />
+                        </div>
                         <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Signiert</Badge>
                       </div>
                     ) : (

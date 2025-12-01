@@ -42,18 +42,18 @@ export function DocumentWorkspace() {
         <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 p-4">
           <div className="flex items-center gap-3">
             <FileText className="w-6 h-6 text-primary" />
-            <CardTitle className="font-headline text-xl">{file.name}</CardTitle>
+            <CardTitle className="font-headline text-lg md:text-xl line-clamp-1">{file.name}</CardTitle>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex w-full md:w-auto items-center gap-2 flex-wrap justify-end">
              <Button variant={isPlacing ? "secondary" : "outline"} onClick={handleAddSignatureClick} className={cn(isPlacing && "ring-2 ring-accent")}>
                 <PlusCircle className="mr-2 h-4 w-4" />
-                Signaturfeld hinzufügen
+                Signaturfeld
             </Button>
             <Sheet>
                 <SheetTrigger asChild>
                     <Button variant="outline">
                         <Users className="mr-2 h-4 w-4" />
-                        Unterzeichner verwalten ({signatureFields.length})
+                        Verwalten ({signatureFields.length})
                     </Button>
                 </SheetTrigger>
                 <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
@@ -73,7 +73,7 @@ export function DocumentWorkspace() {
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
-              {isProcessing ? "Verarbeite..." : "Als PDF speichern"}
+              PDF
             </Button>
             <Button
               variant="outline"
