@@ -49,12 +49,12 @@ export function SignatureFieldList() {
         </Dialog>
       </div>
 
-      <ScrollArea className="h-[calc(100vh-8rem)]">
+      <ScrollArea className="flex-1">
         <CardContent className="p-4">
           {signatureFields.length === 0 ? (
             <div className="text-center text-muted-foreground py-10">
               <p className="mb-2">No signature fields have been placed.</p>
-              <p className="text-sm">Click on the document to add a signature field.</p>
+              <p className="text-sm">Click the "Add Signature Field" button, then click on the document to place a field.</p>
             </div>
           ) : (
             <ul className="space-y-4">

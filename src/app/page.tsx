@@ -15,8 +15,8 @@ export type SignatureField = {
   signature: string | null;
   x: number; // Position from left in %
   y: number; // Position from top in %
-  width?: number; // Width in px
-  height?: number; // Height in px
+  width: number; // Width in px
+  height: number; // Height in px
   page?: number; // Page number for PDFs
 };
 
@@ -92,7 +92,7 @@ export default function Home() {
     if(field) {
         setSignatureFields((prev) =>
           prev.map((f) =>
-            f.id === fieldId ? { ...f, signature: signatureDataUrl, width: 150, height: 75 } : f
+            f.id === fieldId ? { ...f, signature: signatureDataUrl } : f
           )
         );
         addAuditLog(`Signature added for field "${field.name}".`);

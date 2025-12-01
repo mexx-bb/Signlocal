@@ -52,7 +52,7 @@ export function EditSignatureFieldsDialog({
       <DialogHeader>
         <DialogTitle className="font-headline">Edit Signature Fields</DialogTitle>
         <DialogDescription>
-            Rename or delete signature fields. You can add new fields by clicking on the document preview.
+            Rename or delete signature fields. You can add new fields by clicking the "Add Signature Field" button, then clicking on the document.
         </DialogDescription>
       </DialogHeader>
       <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2">

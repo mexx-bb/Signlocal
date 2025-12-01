@@ -111,9 +111,16 @@ export function DocumentPreview() {
             if (field.id !== interaction.fieldId) return field;
 
             if (interaction.type === 'move') {
-                const x = ((e.clientX - parentRect.left) / parentRect.width) * 100;
-                const y = ((e.clientY - parentRect.top) / parentRect.height) * 100;
-                return { ...field, x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) };
+                const newXPercent = ((e.clientX - parentRect.left) / parentRect.width) * 100;
+                const newYPercent = ((e.clientY - parentRect.top) / parentRect.height) * 100;
+
+                const fieldWidthPercent = ((field.width ?? 150) / parentRect.width) * 100;
+                const fieldHeightPercent = ((field.height ?? 75) / parentRect.height) * 100;
+
+                const constrainedX = Math.max(fieldWidthPercent / 2, Math.min(100 - (fieldWidthPercent / 2), newXPercent));
+                const constrainedY = Math.max(fieldHeightPercent / 2, Math.min(100 - (fieldHeightPercent / 2), newYPercent));
+
+                return { ...field, x: constrainedX, y: constrainedY };
             }
 
             if (interaction.type === 'resize' && interaction.startWidth && interaction.startHeight) {
@@ -163,6 +170,8 @@ export function DocumentPreview() {
             signature: null,
             x: x,
             y: y,
+            width: 150,
+            height: 75,
         };
 
         if (pageNumber) {
@@ -217,7 +226,7 @@ export function DocumentPreview() {
                         ) : (
                              <div 
                                 onMouseDown={(e) => handleFieldMouseDown(e, field.id, 'move')}
-                                className='relative flex items-center justify-center gap-2 bg-background/80 p-2 rounded-lg border-2 border-dashed border-primary cursor-move print:hidden'
+                                className='relative w-full h-full flex items-center justify-center gap-2 bg-background/80 p-2 rounded-lg border-2 border-dashed border-primary cursor-move print:hidden'
                             >
                                 <PenSquare className="w-5 h-5 text-primary shrink-0" />
                                 <span className='font-semibold text-sm text-primary'>{field.name}</span>

@@ -3,11 +3,12 @@
 import { useContext } from "react";
 import { AppContext } from "@/context/SignAppContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { FileText, Loader2, Printer, Save, Undo2, Users, PlusCircle } from "lucide-react";
 import { SignatureFieldList } from "./signature-field-list";
 import { DocumentPreview } from "./document-preview";
+import { cn } from "@/lib/utils";
 
 export function DocumentWorkspace() {
   const context = useContext(AppContext);
@@ -44,7 +45,7 @@ export function DocumentWorkspace() {
             <CardTitle className="font-headline text-xl">{file.name}</CardTitle>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-             <Button variant={isPlacing ? "secondary" : "outline"} onClick={handleAddSignatureClick}>
+             <Button variant={isPlacing ? "secondary" : "outline"} onClick={handleAddSignatureClick} className={cn(isPlacing && "ring-2 ring-accent")}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Signature Field
             </Button>
@@ -55,7 +56,7 @@ export function DocumentWorkspace() {
                         Manage Signers ({signatureFields.length})
                     </Button>
                 </SheetTrigger>
-                <SheetContent className="w-[400px] sm:w-[540px]">
+                <SheetContent className="w-[400px] sm:w-[540px] flex flex-col">
                     <SheetHeader>
                         <SheetTitle className="font-headline">Manage Signature Fields</SheetTitle>
                     </SheetHeader>
