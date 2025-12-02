@@ -14,6 +14,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import type { SignatureField } from '@/app/page';
+import { getAbsolutePosition } from '@/lib/utils';
+
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -193,18 +195,28 @@ export function DocumentPreview() {
 
     const renderSignatureFields = (pageNumber?: number) => {
         const fields = signatureFields.filter(f => file?.type === 'application/pdf' ? f.page === pageNumber : true);
+        const parentRef = file?.type === 'application/pdf' ? `page-wrapper-${pageNumber}` : 'doc-wrapper';
 
-        return fields.map(field => (
+        return fields.map(field => {
+            const absolutePos = getAbsolutePosition(parentRef, field.x, field.y);
+            const printStyle = {
+                '--print-left': `${absolutePos.x - (field.width / 2)}px`,
+                '--print-top': `${absolutePos.y - (field.height / 2)}px`,
+            } as React.CSSProperties;
+
+            return (
              <Tooltip key={field.id} delayDuration={100}>
                 <TooltipTrigger asChild>
                     <div
                         data-signature-field="true"
                         className={cn(
-                            "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group z-10 print:border-transparent print:p-0",
+                            "absolute transform -translate-x-1/2 -translate-y-1/2 p-1 group z-10",
+                            "print:fixed print:border-transparent print:p-0",
+                            "print:left-[var(--print-left)] print:top-[var(--print-top)]",
                             interaction && interaction.fieldId === field.id && "z-20",
                             field.signature ? 'print:block' : 'print:hidden'
                         )}
-                        style={{ left: `${field.x}%`, top: `${field.y}%`, width: field.width, height: field.height }}
+                        style={{ ...printStyle, left: `${field.x}%`, top: `${field.y}%`, width: field.width, height: field.height }}
                     >
                         {field.signature ? (
                             <div 
@@ -250,7 +262,7 @@ export function DocumentPreview() {
                     <p className='text-xs text-muted-foreground mt-1'>{field.signature ? "Ziehen zum Verschieben, Ecke ziehen zur Größenänderung" : "Klicken und ziehen zum Verschieben"}</p>
                 </TooltipContent>
             </Tooltip>
-        ));
+        )});
     }
 
 
@@ -292,6 +304,7 @@ export function DocumentPreview() {
             >
                 {file?.type.includes('word') && (
                      <div
+                        id="doc-wrapper"
                         className={cn("relative w-full", isPlacing && "cursor-crosshair")}
                         onClick={(e) => handlePreviewClick(e)}
                         onMouseMove={handleMouseMove}
@@ -325,6 +338,7 @@ export function DocumentPreview() {
                         {Array.from(new Array(numPages), (el, index) => (
                            <div
                             key={`page_${index + 1}`}
+                            id={`page-wrapper-${index + 1}`}
                             className={cn("relative shadow-lg print:shadow-none print:w-full print:h-full", isPlacing && "cursor-crosshair")}
                             onClick={(e) => handlePreviewClick(e, index + 1)}
                             onMouseMove={handleMouseMove}
