@@ -63,7 +63,7 @@ export function FileUploader({ onFileChange }: FileUploaderProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg h-64 cursor-pointer hover:border-primary/80 transition-colors">
+          <div className="bg-background flex flex-col items-center justify-center p-8 border-2 border-dashed rounded-lg h-64 cursor-pointer hover:border-primary/80 transition-colors">
             <UploadCloud
               className={cn(
                 "w-16 h-16 text-muted-foreground transition-colors",

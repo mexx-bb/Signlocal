@@ -91,9 +91,9 @@ export function DocumentPreview() {
             if(field) {
                 let logMessage: string;
                 if (interaction.type === 'move') {
-                    logMessage = `Signaturfeld "${field.name}" auf (${field.x.toFixed(1)}%, ${field.y.toFixed(1)}%) verschoben`;
+                    logMessage = `Signaturfeld \"${field.name}\" auf (${field.x.toFixed(1)}%, ${field.y.toFixed(1)}%) verschoben`;
                 } else {
-                     logMessage = `Größe des Signaturfelds "${field.name}" auf ${field.width}x${field.height}px geändert`;
+                     logMessage = `Größe des Signaturfelds \"${field.name}\" auf ${field.width}x${field.height}px geändert`;
                 }
                 
                 if(field.page) logMessage += ` auf Seite ${field.page}`;
@@ -189,7 +189,7 @@ export function DocumentPreview() {
         const field = signatureFields.find(f => f.id === fieldId);
         if(field) {
             setSignatureFields(signatureFields.filter(f => f.id !== fieldId));
-            addAuditLog(`Signaturfeld "${field.name}" entfernt.`);
+            addAuditLog(`Signaturfeld \"${field.name}\" entfernt.`);
         }
     }
 
@@ -298,7 +298,7 @@ export function DocumentPreview() {
             <div 
                 ref={previewRef}
                 className={cn(
-                    "p-4 border rounded-md h-[80vh] overflow-y-auto bg-white dark:bg-card flex justify-center print-content print:border-none print:p-0 print:bg-transparent print:overflow-visible print:h-auto print:justify-start",
+                    "p-4 border rounded-md h-[80vh] overflow-y-auto bg-card flex justify-center print-content print:border-none print:p-0 print:bg-transparent print:overflow-visible print:h-auto print:justify-start",
                      file?.type.includes('word') && "prose prose-sm dark:prose-invert max-w-none"
                 )}
             >
@@ -345,13 +345,14 @@ export function DocumentPreview() {
                             onMouseUp={handleMouseUp}
                             onMouseLeave={handleMouseUp}
                            >
-                            <Page 
-                                pageNumber={index + 1}
-                                renderTextLayer={true}
-                                renderAnnotationLayer={false}
-                                className="[&_.react-pdf__Page__textContent]:hidden print:[&_.react-pdf__Page__textContent]:block print:w-full print:h-auto"
-                                canvasBackground="transparent"
-                            />
+                            <div className="bg-white">
+                                <Page 
+                                    pageNumber={index + 1}
+                                    renderTextLayer={true}
+                                    renderAnnotationLayer={false}
+                                    className="[&_.react-pdf__Page__textContent]:hidden print:[&_.react-pdf__Page__textContent]:block print:w-full print:h-auto"
+                                />
+                            </div>
                             {renderSignatureFields(index + 1)}
                            </div>
                         ))}
