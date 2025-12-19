@@ -19,7 +19,42 @@ Um SignLocal auf Ihrem Computer auszuführen, befolgen Sie bitte diese Schritte.
 
 Stellen Sie sicher, dass auf Ihrem System [Node.js](https://nodejs.org/) (Version 18.x oder neuer) installiert ist.
 
-### Schritte
+### Ein-Klick-Installation (Windows)
+
+Die einfachste Methode, SignLocal zu installieren und automatisch bei jedem Systemstart zu aktivieren:
+
+1.  **Repository herunterladen und entpacken**
+    Laden Sie das Repository als ZIP-Datei herunter und entpacken Sie es in einen Ordner Ihrer Wahl.
+
+2.  **Installation ausführen**
+    Rechtsklicken Sie auf die Datei `install.ps1` und wählen Sie **"Mit PowerShell ausführen"**.
+    
+    Alternativ öffnen Sie PowerShell als Administrator und führen aus:
+    ```powershell
+    cd Pfad\zu\Signlocal
+    .\install.ps1
+    ```
+
+Das Installationsskript führt automatisch folgende Schritte aus:
+- Prüft, ob Node.js installiert ist
+- Installiert alle notwendigen Abhängigkeiten
+- Erstellt die Produktionsversion der Anwendung
+- Richtet einen automatischen Start bei jedem Systemstart ein
+- Erstellt eine Desktop-Verknüpfung
+- Startet die Anwendung sofort
+
+Die Anwendung wird nun bei jedem Systemstart automatisch im Hintergrund gestartet und ist unter [http://localhost:3000](http://localhost:3000) verfügbar.
+
+#### Deinstallation
+
+Um den automatischen Start zu entfernen, führen Sie `uninstall.ps1` aus:
+```powershell
+.\uninstall.ps1
+```
+
+### Manuelle Installation
+
+Falls Sie die manuelle Installation bevorzugen oder die automatische Installation nicht verwenden möchten:
 
 1.  **Repository klonen**
     Öffnen Sie ein Terminal oder eine Kommandozeile und klonen Sie das Repository von GitHub:
