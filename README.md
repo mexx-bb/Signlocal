@@ -64,9 +64,9 @@ Falls Sie die manuelle Installation bevorzugen oder die automatische Installatio
     ```
 
 2.  **Abhängigkeiten installieren**
-    Installieren Sie die für den Betrieb notwendigen Pakete. Der `--production`-Flag sorgt dafür, dass nur die für die Ausführung notwendigen Pakete installiert werden.
+    Installieren Sie alle notwendigen Pakete:
     ```bash
-    npm install --production
+    npm install
     ```
 
 3.  **Anwendung bauen**

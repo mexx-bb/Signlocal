@@ -22,8 +22,29 @@ Write-Log "=== Starting $AppName Uninstallation ==="
 
 # Stop running instances
 Write-Log "Stopping any running instances of $AppName..."
+
+# Try to find node processes in the current directory
+$currentPath = $ScriptPath.ToLower()
 $processes = Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
-    $_.CommandLine -like "*next start*" -or $_.CommandLine -like "*SignLocal*"
+    try {
+        # Check if process path contains our script directory
+        $processPath = $_.Path
+        if ($processPath) {
+            $processDir = Split-Path -Parent $processPath
+            if ($processDir -and $processDir.ToLower().StartsWith($currentPath)) {
+                return $true
+            }
+        }
+        # Fallback: check via WMI for command line (more compatible)
+        $wmiProc = Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)" -ErrorAction SilentlyContinue
+        if ($wmiProc -and $wmiProc.CommandLine) {
+            return ($wmiProc.CommandLine -like "*next start*" -or $wmiProc.CommandLine -like "*SignLocal*")
+        }
+    }
+    catch {
+        # If we can't determine, skip this process
+    }
+    return $false
 }
 
 if ($processes) {

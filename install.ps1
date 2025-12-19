@@ -31,7 +31,12 @@ function Test-NodeJS {
             Write-Log "Node.js is installed: $nodeVersion"
             
             # Extract version number and check if it's >= 18
-            $versionNumber = [version]($nodeVersion -replace 'v','').Split('.')[0..2] -join '.'
+            # Handle pre-release versions by removing everything after '-' or '+'
+            $cleanVersion = ($nodeVersion -replace 'v','') -replace '[-+].*$',''
+            $versionParts = $cleanVersion.Split('.')[0..2]
+            # Ensure we have at least 3 parts (major.minor.patch)
+            while ($versionParts.Count -lt 3) { $versionParts += '0' }
+            $versionNumber = [version]($versionParts -join '.')
             $minVersion = [version]"18.0.0"
             
             if ([version]$versionNumber -ge $minVersion) {
@@ -66,12 +71,33 @@ function Test-NPM {
 # Function to stop any running instances
 function Stop-SignLocal {
     Write-Log "Checking for running instances of SignLocal..."
+    
+    # Try to find node processes in the current directory
+    $currentPath = $ScriptPath.ToLower()
     $processes = Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
-        $_.CommandLine -like "*next start*" -or $_.CommandLine -like "*SignLocal*"
+        try {
+            # Check if process path contains our script directory
+            $processPath = $_.Path
+            if ($processPath) {
+                $processDir = Split-Path -Parent $processPath
+                if ($processDir -and $processDir.ToLower().StartsWith($currentPath)) {
+                    return $true
+                }
+            }
+            # Fallback: check via WMI for command line (more compatible)
+            $wmiProc = Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)" -ErrorAction SilentlyContinue
+            if ($wmiProc -and $wmiProc.CommandLine) {
+                return ($wmiProc.CommandLine -like "*next start*" -or $wmiProc.CommandLine -like "*SignLocal*")
+            }
+        }
+        catch {
+            # If we can't determine, skip this process
+        }
+        return $false
     }
     
     if ($processes) {
-        Write-Log "Stopping running instances..."
+        Write-Log "Stopping $($processes.Count) running instance(s)..."
         $processes | Stop-Process -Force
         Start-Sleep -Seconds 2
     }
@@ -105,7 +131,7 @@ Stop-SignLocal
 Write-Log "Installing dependencies (this may take a few minutes)..."
 try {
     $env:NODE_ENV = "production"
-    & npm install --production 2>&1 | Tee-Object -FilePath $LogFile -Append | Out-Null
+    & npm install 2>&1 | Tee-Object -FilePath $LogFile -Append | Out-Null
     if ($LASTEXITCODE -ne 0) {
         throw "npm install failed with exit code $LASTEXITCODE"
     }
@@ -181,7 +207,7 @@ if (-not $SkipAutostart) {
         -RunOnlyIfNetworkAvailable:$false `
         -DontStopOnIdleEnd
     
-    $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
+    $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Limited
     
     try {
         Register-ScheduledTask -TaskName $TaskName `
