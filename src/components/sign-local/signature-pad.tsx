@@ -238,8 +238,7 @@ export function SignaturePad({ fieldName, onSave }: SignaturePadProps) {
              {signotecStatus === 'success' && signotecImage && (
               <div className="flex flex-col items-center gap-4">
                   <Image src={signotecImage} alt="Erfasste Signatur vom Pad" width={300} height={150} className="max-h-[120px] object-contain" />
-                  <p className="text-sm text-green-600 font-semibold">Signatur erfolgreich erfasst!</p>
-                  <Button onClick={handleSignotecCapture} variant="outline">Erneut erfassen</Button>
+                  <p className="text-sm text-green-600 font-semibold">Signatur erfolgreich erfasst!</p>                  <Button onClick={handleSignotecCapture} variant="outline">Erneut erfassen</Button>
               </div>
             )}
             {signotecStatus === 'error' && (
