@@ -6,7 +6,7 @@ SignLocal ist eine Offline-Anwendung zum digitalen Signieren von Dokumenten dire
 
 *   **Lokale Verarbeitung**: Alle Dokumente werden lokal in Ihrem Browser verarbeitet. Es findet kein Upload auf Server statt.
 *   **DOCX & PDF Unterstützung**: Laden Sie Word-Dokumente (`.docx`) oder PDF-Dateien (`.pdf`).
-*   **Digitale Signaturen**: Platzieren Sie ein oder mehrere Signaturfelder. Sie können Ihre Signatur zeichnen, hochladen oder einen Platzhalter verwenden.
+*   **Digitale Signaturen**: Platzieren Sie ein oder mehrere Signaturfelder. Sie können Ihre Signatur zeichnen, hochladen, einen Platzhalter verwenden oder ein Signotec-Pad nutzen.
 *   **PDF-Export**: Speichern Sie das signierte Dokument als neue PDF-Datei.
 *   **Druckfunktion**: Drucken Sie das signierte Dokument direkt aus der Anwendung.
 *   **PWA-fähig**: Installieren Sie SignLocal als Desktop-Anwendung für einen schnellen Zugriff.
