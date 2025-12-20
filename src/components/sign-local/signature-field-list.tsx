@@ -1,0 +1,122 @@
+"use client";
+import Image from "next/image";
+import { useState, useContext } from "react";
+import { AppContext } from "@/context/SignAppContext";
+import { CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { SignaturePad } from "./signature-pad";
+import { Badge } from "@/components/ui/badge";
+import { EditSignatureFieldsDialog } from "./edit-signature-fields-dialog";
+import { PenSquare, CheckCircle2, Edit, Trash2 } from "lucide-react";
+import { ScrollArea } from "../ui/scroll-area";
+
+export function SignatureFieldList() {
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const context = useContext(AppContext);
+
+  if (!context) {
+    throw new Error("SignatureFieldList muss innerhalb eines AppProviders verwendet werden");
+  }
+
+  const { signatureFields, handleAddSignature, setSignatureFields, addAuditLog } = context;
+
+  const handleDeleteField = (fieldId: string) => {
+    const field = signatureFields.find(f => f.id === fieldId);
+    if (field) {
+        setSignatureFields(signatureFields.filter(f => f.id !== fieldId));
+        addAuditLog(`Signaturfeld "${field.name}" entfernt.`);
+    }
+  }
+
+  return (
+    <>
+      <div className="flex justify-end p-4 border-b">
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Edit className="mr-2 h-4 w-4" />
+              Felder bearbeiten
+            </Button>
+          </DialogTrigger>
+          <EditSignatureFieldsDialog 
+            fields={signatureFields} 
+            onSave={(newFields) => {
+              setSignatureFields(newFields);
+              setIsEditDialogOpen(false);
+            }} 
+          />
+        </Dialog>
+      </div>
+
+      <ScrollArea className="flex-1">
+        <CardContent className="p-4">
+          {signatureFields.length === 0 ? (
+            <div className="text-center text-muted-foreground py-10">
+              <p className="mb-2">Es wurden keine Signaturfelder platziert.</p>
+              <p className="text-sm">Klicken Sie auf "Signaturfeld hinzufügen" und dann auf das Dokument, um ein Feld zu platzieren.</p>
+            </div>
+          ) : (
+            <ul className="space-y-4">
+              {signatureFields.map((field) => (
+                <li
+                  key={field.id}
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border rounded-lg bg-card gap-4"
+                >
+                  <div className="flex items-center gap-4 flex-1">
+                    {field.signature ? (
+                      <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
+                    ) : (
+                      <PenSquare className="w-6 h-6 text-primary shrink-0" />
+                    )}
+                    <div>
+                      <h3 className="font-semibold text-base sm:text-lg">{field.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Benötigt Signatur
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
+                    {field.signature ? (
+                      <div className="flex items-center gap-4 flex-wrap">
+                        <div className="relative w-24 sm:w-32 h-12 bg-muted rounded-md p-1">
+                            <Image
+                                src={field.signature}
+                                alt={`Signatur für ${field.name}`}
+                                fill
+                                className="object-contain"
+                                data-ai-hint="signature"
+                            />
+                        </div>
+                        <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Signiert</Badge>
+                      </div>
+                    ) : (
+                      <Badge variant="outline">Nicht signiert</Badge>
+                    )}
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant={field.signature ? "secondary" : "default"}>
+                          {field.signature ? "Ändern" : "Signieren"}
+                        </Button>
+                      </DialogTrigger>
+                      <SignaturePad
+                        fieldName={field.name}
+                        onSave={(signatureDataUrl) =>
+                          handleAddSignature(field.id, signatureDataUrl)
+                        }
+                      />
+                    </Dialog>
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteField(field.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <span className="sr-only">Feld löschen</span>
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </ScrollArea>
+    </>
+  );
+}
