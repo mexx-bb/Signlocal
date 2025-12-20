@@ -29,25 +29,39 @@ Stellen Sie sicher, dass auf Ihrem System [Node.js](https://nodejs.org/) (Versio
     ```
 
 2.  **Abhängigkeiten installieren**
-    Installieren Sie die für den Betrieb notwendigen Pakete. Der `--production`-Flag sorgt dafür, dass nur die für die Ausführung notwendigen Pakete installiert werden.
+    Installieren Sie die für den Betrieb notwendigen Pakete. 
     ```bash
-    npm install --production
+    npm install
     ```
 
-3.  **Anwendung bauen**
-    Dieser Schritt kompiliert die Anwendung für die Produktion.
+3.  **Anwendung bauen (Optional für Entwicklung)**
+    Dieser Schritt kompiliert die Anwendung für die Produktion. Für die lokale Entwicklung ist er nicht zwingend notwendig.
     ```bash
     npm run build
     ```
 
-4.  **Anwendung starten**
-    Starten Sie den lokalen Server:
+4.  **Anwendung starten (Entwicklungsmodus)**
+    Starten Sie den lokalen Entwicklungsserver:
     ```bash
-    npm run start
+    npm run dev
     ```
 
 5.  **Anwendung im Browser öffnen**
     Öffnen Sie Ihren Webbrowser und navigieren Sie zu der folgenden Adresse:
-    [http://localhost:3000](http://localhost:3000)
+    [http://localhost:9002](http://localhost:9002)
 
 Die Anwendung läuft nun vollständig offline auf Ihrem Computer. Sie können sie jederzeit verwenden, ohne eine Internetverbindung zu benötigen.
+
+### Für den Produktivbetrieb
+
+Wenn Sie die Anwendung nicht entwickeln, sondern nur nutzen möchten, verwenden Sie folgende Befehle nach Schritt 2:
+
+1.  **Anwendung bauen:**
+    ```bash
+    npm run build
+    ```
+2.  **Produktionsserver starten:**
+    ```bash
+    npm run start
+    ```
+    Die Anwendung ist dann unter [http://localhost:3000](http://localhost:3000) erreichbar.
