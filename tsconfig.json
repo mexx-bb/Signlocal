@@ -10,7 +10,6 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-iso-8859-1
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
