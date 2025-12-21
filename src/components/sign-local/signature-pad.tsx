@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { UploadCloud, Eraser, PenLine, Loader2 } from "lucide-react";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
+import { checkSignotecPadAvailable, captureSignotecSignature } from "@/lib/signotec-integration";
 
 type SignaturePadProps = {
   fieldName: string;
@@ -94,6 +95,16 @@ export function SignaturePad({ fieldName, onSave }: SignaturePadProps) {
   const [signotecStatus, setSignotecStatus] = useState<'idle' | 'capturing' | 'success' | 'error'>('idle');
   const [signotecImage, setSignotecImage] = useState<string | null>(null);
   const [signotecError, setSignotecError] = useState<string | null>(null);
+  const [signotecAvailable, setSignotecAvailable] = useState(false);
+
+  // Prüfe Signotec Pad Verfügbarkeit beim Mount
+  useEffect(() => {
+    const checkPad = async () => {
+      const available = await checkSignotecPadAvailable();
+      setSignotecAvailable(available);
+    };
+    checkPad();
+  }, []);
 
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,39 +122,34 @@ export function SignaturePad({ fieldName, onSave }: SignaturePadProps) {
     setSignotecError(null);
     setSignotecImage(null);
 
-    // This is a placeholder for the Signotec Web API integration.
-    // The actual URL and endpoints may vary based on the Signotec driver and configuration.
-    const signotecApiUrl = 'http://localhost:8000'; // Default port for some Signotec Web APIs
-
     try {
-      // Step 1: Check if the service is running
-      await fetch(signotecApiUrl, { method: 'GET' });
+      // Prüfe zuerst, ob ein Pad verfügbar ist
+      const isAvailable = await checkSignotecPadAvailable();
+      console.log('Signotec Pad verfügbar:', isAvailable);
       
-      // Step 2: Request signature capture (this endpoint might be different)
-      const captureResponse = await fetch(`${signotecApiUrl}/sign?type=png&base64=true`, { method: 'POST' });
-      if (!captureResponse.ok) {
-        throw new Error(`Fehler bei der Erfassungsanfrage: ${captureResponse.statusText}`);
+      if (!isAvailable) {
+        throw new Error('Signotec Pad nicht erkannt. Bitte stellen Sie sicher, dass:\n- Die Signotec Software installiert und gestartet ist\n- Das Signotec Pad per USB angeschlossen ist\n- Die STPadServerLib.js Datei geladen wurde (falls erforderlich)');
       }
 
-      const result = await captureResponse.json();
+      console.log('Starte Signatur-Erfassung...');
+      const signature = await captureSignotecSignature();
+      console.log('Signatur-Ergebnis:', signature ? 'Erfolgreich' : 'Fehlgeschlagen');
       
-      if (result.success && result.imagedata) {
-        const signatureDataUrl = `data:image/png;base64,${result.imagedata}`;
-        setSignotecImage(signatureDataUrl);
+      if (signature && signature.imageData) {
+        setSignotecImage(signature.imageData);
         setSignotecStatus('success');
       } else {
-        throw new Error(result.message || 'Die Signatur konnte nicht erfasst werden.');
+        throw new Error('Die Signatur konnte nicht erfasst werden. Mögliche Ursachen:\n- Das Pad ist nicht angeschlossen oder nicht erkannt\n- Die Signotec Software läuft nicht\n- Die Verbindung zum Pad konnte nicht hergestellt werden\n- Bitte prüfen Sie die Browser-Konsole (F12) für weitere Details');
       }
-
     } catch (error) {
       console.error("Fehler bei der Signotec-Integration:", error);
       setSignotecStatus('error');
       if (error instanceof TypeError) {
-        setSignotecError("Verbindung zum Signotec-Dienst fehlgeschlagen. Stellen Sie sicher, dass die Treiber-Software läuft.");
-      } else if(error instanceof Error) {
+        setSignotecError("Verbindung zum Signotec-Dienst fehlgeschlagen. Stellen Sie sicher, dass die Signotec Software läuft und das Pad angeschlossen ist.");
+      } else if (error instanceof Error) {
         setSignotecError(error.message);
       } else {
-        setSignotecError("Ein unbekannter Fehler ist aufgetreten.");
+        setSignotecError("Ein unbekannter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.");
       }
     }
   };

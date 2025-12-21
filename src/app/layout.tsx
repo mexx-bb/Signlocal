@@ -26,6 +26,7 @@ export default function RootLayout({
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#3F51B5" />
+        <script src="/STPadServerLib.js" defer></script>
       </head>
       <body className="font-body antialiased h-full bg-background">{children}</body>
     </html>
