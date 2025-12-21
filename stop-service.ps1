@@ -1,50 +1,49 @@
-# SignLocal Service Stop Script
-# Dieses Script stoppt den SignLocal Service
+# Definiert den Pfad zum Projektverzeichnis
+$scriptDir = $PSScriptRoot
+$pidFile = Join-Path -Path $scriptDir -ChildPath "logs\signlocal.pid"
 
-$ErrorActionPreference = "Stop"
+Write-Host "Versuche, den SignLocal-Dienst zu stoppen..."
 
-Write-Host "Stoppe SignLocal Service..." -ForegroundColor Yellow
+if (-not (Test-Path -Path $pidFile)) {
+    Write-Host "PID-Datei nicht gefunden. Ist der Dienst überhaupt gestartet?"
+    
+    # Als Fallback versuchen, den Prozess über die Kommandozeile zu finden
+    Write-Host "Suche nach laufendem Node-Prozess für 'next start'..."
+    $processes = Get-WmiObject Win32_Process -Filter "name = 'node.exe'" | Where-Object { $_.CommandLine -like '*next start*' }
 
-# Prüfe PID-Datei
-$pidFile = "C:\SignLocal\signlocal.pid"
-if (Test-Path $pidFile) {
-    $pid = Get-Content $pidFile
-    try {
-        $process = Get-Process -Id $pid -ErrorAction SilentlyContinue
-        if ($process) {
-            Stop-Process -Id $pid -Force
-            Write-Host "SignLocal Service gestoppt (PID: $pid)" -ForegroundColor Green
+    if ($processes) {
+        foreach ($process in $processes) {
+            Write-Host "Stoppe Prozess mit PID $($process.ProcessId)..."
+            Stop-Process -Id $process.ProcessId -Force -ErrorAction SilentlyContinue
         }
+        Write-Host "Alle gefundenen SignLocal-Prozesse wurden beendet."
+    } else {
+        Write-Host "Kein laufender SignLocal-Prozess gefunden."
     }
-    catch {
-        Write-Host "Prozess mit PID $pid nicht gefunden" -ForegroundColor Yellow
-    }
-    Remove-Item $pidFile -Force -ErrorAction SilentlyContinue
+
+    Exit 0
 }
 
-# Stoppe alle Node-Prozesse, die SignLocal/next start ausführen
-$processes = Get-Process -Name "node" -ErrorAction SilentlyContinue | Where-Object {
-    try {
-        $wmiProc = Get-WmiObject Win32_Process -Filter "ProcessId = $($_.Id)" -ErrorAction SilentlyContinue
-        if ($wmiProc -and $wmiProc.CommandLine) {
-            return ($wmiProc.CommandLine -like "*next start*" -or $wmiProc.CommandLine -like "*SignLocal*")
-        }
+# PID aus der Datei lesen
+$pid = Get-Content $pidFile -ErrorAction SilentlyContinue
+
+if ($pid) {
+    # Prozess abrufen
+    $process = Get-Process -Id $pid -ErrorAction SilentlyContinue
+
+    if ($process) {
+        # Prozess stoppen
+        Write-Host "Stoppe SignLocal-Dienst mit PID $pid..."
+        Stop-Process -Id $pid -Force
+        Write-Host "Dienst gestoppt."
+    } else {
+        Write-Host "Prozess mit PID $pid nicht gefunden. Möglicherweise wurde er bereits beendet."
     }
-    catch {
-        return $false
-    }
-    return $false
+
+    # PID-Datei entfernen
+    Remove-Item $pidFile -ErrorAction SilentlyContinue
+} else {
+    Write-Host "PID-Datei ist leer."
 }
 
-if ($processes) {
-    $processes | ForEach-Object {
-        Write-Host "Stoppe Prozess (PID: $($_.Id))..." -ForegroundColor Yellow
-        Stop-Process -Id $_.Id -Force
-    }
-    Write-Host "Alle SignLocal Prozesse gestoppt" -ForegroundColor Green
-}
-else {
-    Write-Host "Keine laufenden SignLocal Prozesse gefunden" -ForegroundColor Yellow
-}
-
-
+Write-Host "Vorgang abgeschlossen."

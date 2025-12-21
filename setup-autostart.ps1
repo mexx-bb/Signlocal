@@ -1,81 +1,56 @@
-# SignLocal Autostart Setup
-# Dieses Script richtet den automatischen Start für alle Nutzer ein
-
 #Requires -RunAsAdministrator
 
-$ErrorActionPreference = "Stop"
+# --- KONFIGURATION ---
+$taskName = "SignLocal-Autostart"
+$taskDescription = "Startet den SignLocal-Dienst beim Systemstart und bei Benutzeranmeldung."
+$scriptDir = $PSScriptRoot
+$startScriptPath = Join-Path -Path $scriptDir -ChildPath "start-service.ps1"
+$author = "SYSTEM"
+# --- ENDE KONFIGURATION ---
 
-$TaskName = "SignLocal-Autostart"
-$ScriptPath = "C:\SignLocal\start-service.ps1"
+Write-Host "Richte automatischen Start für SignLocal ein..."
 
-Write-Host "=== SignLocal Autostart Setup ===" -ForegroundColor Cyan
-Write-Host ""
-
-# Entferne vorhandene Aufgabe
-$existingTask = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+# 1. Prüfen, ob die Aufgabe bereits existiert und ggf. entfernen
+$existingTask = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
 if ($existingTask) {
-    Write-Host "Entferne vorhandene geplante Aufgabe..." -ForegroundColor Yellow
-    Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
+    Write-Host "Bestehende Aufgabe '$taskName' gefunden. Sie wird entfernt und neu erstellt."
+    Unregister-ScheduledTask -TaskName $taskName -Confirm:$false
 }
 
-# Erstelle neue geplante Aufgabe
-Write-Host "Erstelle geplante Aufgabe für Autostart..." -ForegroundColor Yellow
+# 2. Aktion definieren: Startet das start-service.ps1 Skript
+$action = New-ScheduledTaskAction -Execute 'powershell.exe' -Argument "-ExecutionPolicy Bypass -File `"$startScriptPath`""
 
-$action = New-ScheduledTaskAction -Execute "powershell.exe" `
-    -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$ScriptPath`""
+# 3. Trigger definieren
+# Trigger 1: Beim Systemstart
+$triggerAtStartup = New-ScheduledTaskTrigger -AtStartup
+# Trigger 2: Bei jeder Benutzeranmeldung
+$triggerAtLogon = New-ScheduledTaskTrigger -AtLogOn
 
-# Starte beim Systemstart (vor Anmeldung) UND bei jeder Anmeldung
-$trigger1 = New-ScheduledTaskTrigger -AtStartup
-$trigger2 = New-ScheduledTaskTrigger -AtLogOn
-$triggers = @($trigger1, $trigger2)
+# 4. Prinzipal definieren (als welcher Benutzer wird es ausgeführt)
+# Führt die Aufgabe als 'SYSTEM' Account aus, unabhängig davon, ob ein Benutzer angemeldet ist.
+$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount
 
-$settings = New-ScheduledTaskSettingsSet `
-    -AllowStartIfOnBatteries `
-    -DontStopIfGoingOnBatteries `
-    -StartWhenAvailable `
-    -RunOnlyIfNetworkAvailable:$false `
-    -DontStopOnIdleEnd `
-    -RestartCount 3 `
-    -RestartInterval (New-TimeSpan -Minutes 1)
+# 5. Einstellungen für die Aufgabe definieren
+$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -DontStopOnIdleEnd -ExecutionTimeLimit 0
+$settings.MultipleInstances = 'IgnoreNew' # Verhindert, dass die Aufgabe mehrfach gestartet wird
 
-# Führe als SYSTEM aus (für alle Nutzer)
-$principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+# 6. Geplante Aufgabe registrieren (erstellen)
+Write-Host "Erstelle geplante Aufgabe '$taskName'..."
+Register-ScheduledTask -TaskName $taskName `
+    -Action $action `
+    -Trigger $triggerAtStartup, $triggerAtLogon `
+    -Principal $principal `
+    -Settings $settings `
+    -Description $taskDescription
 
-try {
-    Register-ScheduledTask -TaskName $TaskName `
-        -Action $action `
-        -Trigger $triggers `
-        -Settings $settings `
-        -Principal $principal `
-        -Description "Startet SignLocal automatisch beim Systemstart und bei jeder Anmeldung für alle Nutzer" `
-        -Force | Out-Null
-    
-    Write-Host ""
-    Write-Host "Autostart erfolgreich eingerichtet!" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Die Anwendung wird jetzt:" -ForegroundColor Yellow
-    Write-Host "  - Automatisch beim Systemstart gestartet (vor Anmeldung)" -ForegroundColor Cyan
-    Write-Host "  - Automatisch bei jeder Anmeldung gestartet (falls nicht bereits läuft)" -ForegroundColor Cyan
-    Write-Host "  - Für alle Nutzer verfügbar sein (auch ohne Anmeldung)" -ForegroundColor Cyan
-    Write-Host "  - Über das Netzwerk erreichbar sein (0.0.0.0:3000)" -ForegroundColor Cyan
-    Write-Host ""
-    Write-Host "Geplante Aufgabe: $TaskName" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Möchten Sie die Anwendung jetzt starten? (J/N)" -ForegroundColor Yellow
-    $response = Read-Host
-    if ($response -eq "J" -or $response -eq "j" -or $response -eq "Y" -or $response -eq "y") {
-        Write-Host ""
-        Write-Host "Starte SignLocal..." -ForegroundColor Green
-        & $ScriptPath
-    }
-}
-catch {
-    Write-Host ""
-    Write-Host "FEHLER beim Erstellen der geplanten Aufgabe: $_" -ForegroundColor Red
-    Write-Host "Bitte führen Sie dieses Script als Administrator aus!" -ForegroundColor Yellow
-    exit 1
-}
+Write-Host "Geplante Aufgabe '$taskName' wurde erfolgreich erstellt."
+Write-Host "SignLocal wird nun automatisch beim Systemstart und bei jeder Benutzeranmeldung gestartet."
+Write-Host "Sie können den Status mit 'Get-ScheduledTask -TaskName $taskName' überprüfen."
 
-Write-Host ""
-Read-Host "Drücken Sie Enter zum Beenden"
+# Starte den Dienst sofort, falls er noch nicht läuft
+Write-Host "Starte den Dienst jetzt..."
+Start-Process -FilePath "powershell.exe" -ArgumentList "-ExecutionPolicy Bypass -File `"$startScriptPath`""
 
+Write-Host "Einrichtung abgeschlossen."
+# Optional: 5 Sekunden warten, damit der Benutzer die Ausgabe lesen kann
+Start-Sleep -Seconds 5
