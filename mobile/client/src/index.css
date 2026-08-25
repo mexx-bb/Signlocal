@@ -1,0 +1,82 @@
+/**
+ * Design: „Ruhiger Wegweiser“ — Wegpetrol, Papierweiß und Salbei führen durch
+ * eine mobile Wegstrecke. Die Signaturfläche ist bewusst weich, papierhaft und
+ * nutzt im Querformat die ganze verfügbare iPhone-Arbeitsfläche.
+ */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --ink: #183234;
+  --petrol: #155e63;
+  --petrol-deep: #0d4549;
+  --sage: #a7b9a6;
+  --paper: #f7f3e9;
+  --paper-deep: #eee7d9;
+  --apricot: #e9b79a;
+  --line: #d8d3c9;
+}
+
+* { box-sizing: border-box; }
+
+html { background: var(--paper); }
+
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% 5%, rgba(167, 185, 166, .23), transparent 21rem),
+    linear-gradient(120deg, rgba(255,255,255,.55), transparent 42%),
+    var(--paper);
+  font-family: "DM Sans", ui-sans-serif, sans-serif;
+}
+
+button, input { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+.display { font-family: "Fraunces", ui-serif, serif; letter-spacing: -0.045em; }
+.paper-card { border: 1px solid rgba(31, 66, 65, .12); box-shadow: 0 16px 40px rgba(32, 56, 53, .08); }
+.page-canvas .react-pdf__Page__canvas { max-width: 100%; height: auto !important; }
+.page-canvas .react-pdf__Page__textContent, .page-canvas .react-pdf__Page__annotations { display: none; }
+.signature-canvas { box-shadow: inset 0 0 0 1px rgba(21, 94, 99, .04), 0 10px 24px rgba(24, 50, 52, .05); }
+.signature-stamp { transform: translateZ(0); transition: border-color 160ms ease-out, box-shadow 160ms ease-out; }
+.signature-stamp-label { opacity: 0; transform: translateY(3px); transition: opacity 160ms ease-out, transform 160ms ease-out; }
+.signature-stamp-selected .signature-stamp-label,
+.signature-stamp:focus-within .signature-stamp-label, .signature-stamp:active .signature-stamp-label { opacity: 1; transform: translateY(0); }
+
+@media (orientation: landscape) and (max-height: 550px) {
+  .signature-dialog {
+    align-items: stretch;
+    justify-content: stretch;
+    padding: max(.65rem, env(safe-area-inset-top)) max(.8rem, env(safe-area-inset-right)) max(.65rem, env(safe-area-inset-bottom)) max(.8rem, env(safe-area-inset-left));
+  }
+
+  .signature-panel {
+    display: grid;
+    grid-template-columns: minmax(190px, .62fr) minmax(0, 1.38fr);
+    grid-template-rows: 1fr auto;
+    column-gap: 1.25rem;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    border-radius: 1.5rem;
+    padding: 1rem 1.2rem;
+  }
+
+  .signature-heading { grid-column: 1; grid-row: 1; margin-bottom: .8rem; }
+  .signature-heading h2 { font-size: 2.05rem; }
+  .signature-help { grid-column: 1; grid-row: 1; align-self: end; margin: 0 0 .1rem; padding-right: .4rem; }
+  .signature-canvas-wrap { grid-column: 2; grid-row: 1 / span 2; min-height: 0; padding: .55rem; }
+  .signature-canvas { height: 100%; min-height: 0; }
+  .signature-actions { grid-column: 1; grid-row: 2; margin-top: .25rem; align-self: end; }
+  .signature-actions button { min-height: 2.8rem; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise-in { animation: rise-in .46s cubic-bezier(.23,1,.32,1) both; }
+  .rise-in-late { animation: rise-in .56s .10s cubic-bezier(.23,1,.32,1) both; }
+  .rise-in-latest { animation: rise-in .62s .18s cubic-bezier(.23,1,.32,1) both; }
+}
+
+@keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
