@@ -7,7 +7,7 @@ import { PDFDocument } from "pdf-lib";
 import pdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import { Document, Page, pdfjs } from "react-pdf";
 import { toast } from "sonner";
-import { deleteLocalSignedDocument, listLocalSignedDocuments, requestLocalPersistence, saveLocalSignedDocument, type LocalSignedDocument } from "@/lib/localArchive";
+import { changeLocalVaultPassword, createLocalVault, deleteEncryptedDocument, enableFaceIdGate, exportEncryptedVaultBackup, getVaultSettings, hasVaultSettings, importEncryptedVaultBackup, isPlatformAuthenticatorAvailable, listEncryptedDocuments, requestLocalPersistence, saveEncryptedDocument, type LocalSignedDocument, type VaultRotationProgress, unlockLocalVault, verifyFaceIdGate } from "@/lib/localArchive";
 import {
   Archive, ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, Download, FilePlus2,
   FileText, Info, Loader2, LockKeyhole, PenLine, Plus, RotateCcw, RotateCw, ShieldCheck,
@@ -16,6 +16,7 @@ import {
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { LocalArchive } from "@/components/LocalArchive";
+import { LocalSignaturePairing } from "@/components/LocalSignaturePairing";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -24,7 +25,7 @@ const ILLUSTRATION_IMAGE = "/manus-storage/signlocal-mobile-illustration_0ec34c9
 const DETAIL_IMAGE = "/manus-storage/signlocal-path-detail_5b48504e.png";
 const MARK_IMAGE = "/manus-storage/signlocal-mark_d05edad7.png";
 
-type Signature = { id: string; image: string; x: number; y: number; page: number; width: number };
+type Signature = { id: string; image: string; x: number; y: number; page: number; width: number; source?: "local" | "mobile"; signerName?: string; signedAt?: string };
 type LogEntry = { time: string; message: string };
 const INK_COLORS = [
   { id: "blue", label: "Blau", hex: "#1f5aa6" },
@@ -152,8 +153,16 @@ export default function Home() {
   const [archivedDocuments, setArchivedDocuments] = useState<LocalSignedDocument[]>([]);
   const [archiveReady, setArchiveReady] = useState(false);
   const [localPersistence, setLocalPersistence] = useState<boolean | null>(null);
+  const [vaultConfigured, setVaultConfigured] = useState(false);
+  const [vaultLocked, setVaultLocked] = useState(true);
+  const [vaultKey, setVaultKey] = useState<CryptoKey | null>(null);
+  const [faceIdAvailable, setFaceIdAvailable] = useState(false);
+  const [faceIdEnabled, setFaceIdEnabled] = useState(false);
   const [signatureTemplate, setSignatureTemplate] = useState<string | null>(null);
   const [pendingSignature, setPendingSignature] = useState<string | null>(null);
+  const [pendingMobileSignature, setPendingMobileSignature] = useState(false);
+  const [pendingMobileDetails, setPendingMobileDetails] = useState<{ signerName?: string; signedAt?: string }>({});
+  const [mobileSignatureReviewId, setMobileSignatureReviewId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeSignatureId, setActiveSignatureId] = useState<string | null>(null);
   const [logs, setLogs] = useState<LogEntry[]>([]);
@@ -162,17 +171,20 @@ export default function Home() {
   const pageSignatures = useMemo(() => signatures.filter((signature) => signature.page === page), [signatures, page]);
   const pageStatus = useMemo(() => Array.from({ length: pageCount }, (_, index) => ({ number: index + 1, count: signatures.filter((signature) => signature.page === index + 1).length })), [pageCount, signatures]);
   const addLog = (message: string) => setLogs((previous) => [{ time: now(), message }, ...previous].slice(0, 5));
-  const refreshArchive = async () => {
-    try { setArchivedDocuments(await listLocalSignedDocuments()); }
-    catch { toast.error("Lokales Dokumentarchiv konnte nicht gelesen werden."); }
+  const refreshArchive = async (key = vaultKey) => {
+    if (!key) return;
+    try { setArchivedDocuments(await listEncryptedDocuments(key)); }
+    catch { toast.error("Der verschlüsselte Dokumenttresor konnte nicht gelesen werden."); }
     finally { setArchiveReady(true); }
   };
   const archiveSignedDocument = async (pdf: Blob, name: string) => {
+    if (!vaultKey || vaultLocked) { toast.error("Entsperre zuerst den lokalen Tresor, bevor du ein signiertes PDF speicherst."); return false; }
     try {
-      await saveLocalSignedDocument({ id: crypto.randomUUID(), name, createdAt: new Date().toISOString(), size: pdf.size, pdf });
-      await refreshArchive();
-      addLog("Signiertes PDF lokal im Archiv abgelegt.");
-    } catch { toast.error("PDF wurde heruntergeladen, konnte aber nicht im lokalen Archiv abgelegt werden."); }
+      await saveEncryptedDocument(vaultKey, { id: crypto.randomUUID(), name, createdAt: new Date().toISOString(), size: pdf.size, pdf });
+      await refreshArchive(vaultKey);
+      addLog("Signiertes PDF verschlüsselt im lokalen Tresor abgelegt.");
+      return true;
+    } catch { toast.error("PDF konnte nicht verschlüsselt im lokalen Tresor abgelegt werden."); return false; }
   };
   const openArchivedDocument = (document: LocalSignedDocument) => {
     acceptFile(new File([document.pdf], document.name, { type: "application/pdf" }));
@@ -182,32 +194,88 @@ export default function Home() {
     const blobUrl = URL.createObjectURL(archivedDocument.pdf); const link = document.createElement("a"); link.href = blobUrl; link.download = archivedDocument.name; link.click(); URL.revokeObjectURL(blobUrl);
   };
   const deleteArchivedDocument = async (document: LocalSignedDocument) => {
-    await deleteLocalSignedDocument(document.id); await refreshArchive(); toast.success("Lokales Dokument gelöscht.");
+    await deleteEncryptedDocument(document.id); await refreshArchive(); toast.success("Verschlüsseltes Dokument gelöscht.");
   };
+  const setupVault = async (passphrase: string) => {
+    const key = await createLocalVault(passphrase);
+    setVaultKey(key); setVaultConfigured(true); setVaultLocked(false); await refreshArchive(key);
+    toast.success("Lokaler Dokumenttresor wurde eingerichtet.");
+  };
+  const unlockVaultWithPassword = async (passphrase: string) => {
+    const key = await unlockLocalVault(passphrase);
+    setVaultKey(key); setVaultLocked(false); await refreshArchive(key);
+    toast.success("Dokumenttresor entsperrt.");
+  };
+  const unlockVaultWithFaceId = async () => {
+    if (!vaultKey) throw new Error("Nach einem Browser-Neustart ist das Tresor-Passwort erforderlich.");
+    const verified = await verifyFaceIdGate();
+    if (!verified) throw new Error("Face ID konnte den Tresor nicht entsperren.");
+    setVaultLocked(false); await refreshArchive(vaultKey); toast.success("Tresor mit Face ID entsperrt.");
+  };
+  const activateFaceId = async () => {
+    await enableFaceIdGate(); setFaceIdEnabled(true); toast.success("Face ID für die aktive Tresorsitzung eingerichtet.");
+  };
+  const changeVaultPassword = async (currentPassphrase: string, nextPassphrase: string, onProgress: (progress: VaultRotationProgress) => void) => {
+    const nextKey = await changeLocalVaultPassword(currentPassphrase, nextPassphrase, onProgress);
+    setVaultKey(nextKey); await refreshArchive(nextKey); toast.success("Tresor-Passwort geändert und Dokumente neu verschlüsselt.");
+  };
+  const exportVaultBackup = async () => {
+    const backup = await exportEncryptedVaultBackup();
+    const backupUrl = URL.createObjectURL(backup.file);
+    const link = document.createElement("a");
+    link.href = backupUrl;
+    link.download = `signlocal-tresor-backup-${backup.exportedAt.slice(0, 10)}.signlocal-backup`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(backupUrl), 1_000);
+    addLog(`Verschlüsseltes Tresor-Backup mit ${backup.documentCount} Dokument${backup.documentCount === 1 ? "" : "en"} exportiert.`);
+    toast.success(`Verschlüsseltes Backup mit ${backup.documentCount} Dokument${backup.documentCount === 1 ? "" : "en"} gespeichert.`);
+  };
+  const importVaultBackup = async (backupFile: File) => {
+    const report = await importEncryptedVaultBackup(backupFile);
+    setVaultKey(null);
+    setVaultConfigured(true);
+    setVaultLocked(true);
+    setFaceIdEnabled(false);
+    setArchivedDocuments([]);
+    setArchiveReady(true);
+    toast.success(`Backup mit ${report.documentCount} Dokument${report.documentCount === 1 ? "" : "en"} wiederhergestellt. Entsperre den Tresor mit dem bisherigen Passwort.`);
+    return report;
+  };
+  const lockVault = () => { setVaultLocked(true); setArchivedDocuments([]); toast.message("Dokumenttresor gesperrt."); };
 
   useEffect(() => {
     const resize = () => setPageWidth(Math.max(280, Math.min(720, window.innerWidth - 48)));
     resize(); window.addEventListener("resize", resize);
     if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => undefined);
-    void refreshArchive();
+    void (async () => {
+      const settings = await getVaultSettings();
+      setVaultConfigured(Boolean(settings)); setFaceIdEnabled(Boolean(settings?.faceIdCredentialId));
+      setFaceIdAvailable(await isPlatformAuthenticatorAvailable()); setArchiveReady(true);
+    })();
     void requestLocalPersistence().then(setLocalPersistence).catch(() => setLocalPersistence(false));
     return () => window.removeEventListener("resize", resize);
   }, []);
+  useEffect(() => {
+    const lockWhenHidden = () => { if (document.visibilityState === "hidden" && vaultKey) { setVaultLocked(true); setArchivedDocuments([]); } };
+    document.addEventListener("visibilitychange", lockWhenHidden);
+    return () => document.removeEventListener("visibilitychange", lockWhenHidden);
+  }, [vaultKey]);
   useEffect(() => () => { if (url) URL.revokeObjectURL(url); }, [url]);
 
   const acceptFile = (selected: File) => {
     if (selected.type !== "application/pdf") { toast.error("Auf dem iPhone ist zurzeit nur PDF vorgesehen."); return; }
     if (url) URL.revokeObjectURL(url);
     const nextUrl = URL.createObjectURL(selected);
-    setFile(selected); setUrl(nextUrl); setPage(1); setPageCount(0); setSignatures([]); setRemovedSignatures([]); setSignatureTemplate(null); setPendingSignature(null);
+    setFile(selected); setUrl(nextUrl); setPage(1); setPageCount(0); setSignatures([]); setRemovedSignatures([]); setSignatureTemplate(null); setPendingSignature(null); setPendingMobileSignature(false); setPendingMobileDetails({}); setMobileSignatureReviewId(null);
     setLogs([{ time: now(), message: `„${selected.name}“ lokal geöffnet.` }]);
   };
   const onFileChange = (event: ChangeEvent<HTMLInputElement>) => { const selected = event.target.files?.[0]; if (selected) acceptFile(selected); event.target.value = ""; };
-  const reset = () => { if (url) URL.revokeObjectURL(url); setFile(null); setUrl(null); setSignatures([]); setRemovedSignatures([]); setSignatureTemplate(null); setPendingSignature(null); setLogs([]); };
-  const prepareSignature = (image: string) => { setDialogOpen(false); setSignatureTemplate(image); setPendingSignature(image); toast.success("Jetzt die Stelle im Dokument antippen."); addLog("Unterschrift vorbereitet – Position wählen."); };
+  const reset = () => { if (url) URL.revokeObjectURL(url); setFile(null); setUrl(null); setSignatures([]); setRemovedSignatures([]); setSignatureTemplate(null); setPendingSignature(null); setPendingMobileSignature(false); setPendingMobileDetails({}); setMobileSignatureReviewId(null); setLogs([]); };
+  const prepareSignature = (image: string) => { setDialogOpen(false); setSignatureTemplate(image); setPendingSignature(image); setPendingMobileSignature(false); setPendingMobileDetails({}); toast.success("Jetzt die Stelle im Dokument antippen."); addLog("Unterschrift vorbereitet – Position wählen."); };
+  const prepareRemoteSignature = (image: string, details: { signerName?: string; signedAt?: string }) => { setSignatureTemplate(image); setPendingSignature(image); setPendingMobileSignature(true); setPendingMobileDetails(details); toast.success("Mobil-Signatur empfangen. Tippe jetzt im PDF auf die gewünschte Position."); addLog(`Mobil-Signatur${details.signerName ? ` von ${details.signerName}` : ""} lokal empfangen – Position im PDF wählen.`); };
   const reuseSignature = () => {
     if (!signatureTemplate) { setDialogOpen(true); return; }
-    setPendingSignature(signatureTemplate);
+    setPendingSignature(signatureTemplate); setPendingMobileSignature(false); setPendingMobileDetails({});
     toast.success(`Letzte Unterschrift ist für Seite ${page} bereit.`);
     addLog(`Letzte Unterschrift für Seite ${page} erneut vorbereitet.`);
   };
@@ -216,7 +284,10 @@ export default function Home() {
     const rect = event.currentTarget.getBoundingClientRect();
     const x = Math.min(.75, Math.max(.02, (event.clientX - rect.left) / rect.width));
     const y = Math.min(.9, Math.max(.04, (event.clientY - rect.top) / rect.height));
-    setSignatures((previous) => [...previous, { id: crypto.randomUUID(), image: pendingSignature, x, y, page, width: .26 }]);
+    const id = crypto.randomUUID();
+    setSignatures((previous) => [...previous, { id, image: pendingSignature, x, y, page, width: .26, source: pendingMobileSignature ? "mobile" : "local", signerName: pendingMobileSignature ? pendingMobileDetails.signerName : undefined, signedAt: pendingMobileSignature ? pendingMobileDetails.signedAt : undefined }]);
+    setActiveSignatureId(id);
+    if (pendingMobileSignature) { setMobileSignatureReviewId(id); setPendingSignature(null); setPendingMobileSignature(false); setPendingMobileDetails({}); }
     setRemovedSignatures([]);
     addLog(`Unterschrift auf Seite ${page} positioniert – weitere Position möglich.`); toast.success("Unterschrift platziert. Du kannst sie erneut setzen.");
   };
@@ -225,6 +296,7 @@ export default function Home() {
     if (!lastSignature) return toast.error("Es gibt keine platzierte Unterschrift zum Rückgängig-Machen.");
     setSignatures((previous) => previous.slice(0, -1));
     setRemovedSignatures((previous) => [...previous, lastSignature]);
+    if (mobileSignatureReviewId === lastSignature.id) setMobileSignatureReviewId(null);
     if (activeSignatureId === lastSignature.id) setActiveSignatureId(null);
     addLog(`Letzte Unterschrift auf Seite ${lastSignature.page} rückgängig gemacht.`);
     toast.success("Letzte Unterschrift entfernt.");
@@ -271,6 +343,7 @@ export default function Home() {
   };
   const exportPdf = async () => {
     if (!file || !signatures.length) return toast.error("Setze vor dem Export mindestens eine Unterschrift.");
+    if (mobileSignatureReviewId) return toast.error("Prüfe zuerst Position und Größe der übertragenen Mobil-Signatur.");
     setExporting(true); addLog("PDF-Export wird vorbereitet.");
     try {
       const pdf = await PDFDocument.load(await file.arrayBuffer());
@@ -285,10 +358,8 @@ export default function Home() {
       const bytes = await pdf.save();
       const signedName = file.name.replace(/\.pdf$/i, "") + "-signiert.pdf";
       const signedPdf = new Blob([bytes], { type: "application/pdf" });
-      await archiveSignedDocument(signedPdf, signedName);
-      const blobUrl = URL.createObjectURL(signedPdf);
-      const link = document.createElement("a"); link.href = blobUrl; link.download = signedName; link.click(); URL.revokeObjectURL(blobUrl);
-      addLog("Signiertes PDF wurde lokal heruntergeladen."); toast.success("Das signierte PDF ist bereit.");
+      const archived = await archiveSignedDocument(signedPdf, signedName);
+      if (archived) { addLog("Signiertes PDF wurde verschlüsselt lokal gespeichert."); toast.success("Das signierte PDF liegt jetzt verschlüsselt im Tresor."); }
     } catch { toast.error("Das PDF konnte nicht exportiert werden."); addLog("PDF-Export fehlgeschlagen."); }
     finally { setExporting(false); }
   };
@@ -296,7 +367,7 @@ export default function Home() {
   if (!file || !url) return (
     <main className="min-h-screen overflow-hidden">
       <header className="mx-auto flex max-w-6xl items-center justify-between px-5 pb-7 pt-5 sm:px-8 sm:pt-7">
-        <a href="/" className="flex items-center gap-3" aria-label="Signlocal Startseite"><img src={MARK_IMAGE} alt="" className="h-11 w-11 rounded-xl"/><span className="display text-2xl font-bold text-[#183234]">Signlocal</span></a>
+        <a href="/" className="brand-lockup flex items-center gap-3" aria-label="Signlocal Startseite"><span className="brand-lockup-mark"><img src={MARK_IMAGE} alt="" className="h-11 w-11 rounded-xl"/></span><span><span className="display block text-2xl font-bold text-[#183234]">Signlocal</span><span className="brand-lockup-note">Dein Weg zum unterschriebenen PDF</span></span></a>
         <span className="hidden items-center gap-2 rounded-full border border-[#d8d3c9] bg-white/70 px-3 py-2 text-xs font-bold text-[#506967] sm:inline-flex"><LockKeyhole size={14} className="text-[#155e63]"/> lokal im Browser</span>
       </header>
       <section className="mx-auto grid max-w-6xl gap-7 px-5 pb-12 sm:px-8 lg:grid-cols-[1.08fr_.92fr] lg:items-center lg:gap-12 lg:pb-20">
@@ -309,12 +380,14 @@ export default function Home() {
             <button onClick={() => inputRef.current?.click()} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-[#155e63] px-6 text-base font-bold text-white shadow-xl shadow-[#155e63]/20 transition hover:bg-[#0d4549] active:scale-[.97]"><Upload size={19}/> PDF auswählen</button>
             <p className="text-sm leading-5 text-[#6b7d7b]">Die Datei bleibt auf deinem Gerät.</p>
           </div>
-          <div className="mt-10 grid max-w-lg grid-cols-3 gap-2 border-t border-[#d8d3c9] pt-5 text-sm text-[#506967]"><span className="flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-[#155e63] text-xs font-bold text-white">1</span>PDF wählen</span><span className="flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-[#a7b9a6] text-xs font-bold text-[#183234]">2</span>Signieren</span><span className="flex items-center gap-2"><span className="grid h-6 w-6 place-items-center rounded-full bg-[#e9b79a] text-xs font-bold text-[#183234]">3</span>Speichern</span></div>
+          <div className="route-steps mt-10 max-w-lg pt-5 text-sm text-[#506967]" aria-label="Dein Weg durch Signlocal"><span className="route-step"><span className="route-marker route-marker-active">1</span>PDF wählen</span><span className="route-step"><span className="route-marker route-marker-safe">2</span>Signieren</span><span className="route-step"><span className="route-marker">3</span>Im Tresor sichern</span></div>
         </div>
-        <div className="rise-in-late relative order-1 lg:order-2"><div className="absolute -inset-5 rounded-[2.2rem] bg-[#a7b9a6]/30 blur-2xl"/><div className="paper-card relative overflow-hidden rounded-[2rem] bg-white p-4 sm:p-5"><img src={HERO_IMAGE} alt="Abstrakter Weg aus Wegpetrol und Salbeigrün" className="h-52 w-full rounded-[1.35rem] object-cover sm:h-72"/><div className="absolute inset-x-9 bottom-9 rounded-2xl bg-[#fffdf8]/95 p-4 backdrop-blur"><div className="flex items-center gap-3"><img src={MARK_IMAGE} alt="" className="h-11 w-11 rounded-xl"/><div><p className="text-xs font-bold uppercase tracking-[.12em] text-[#155e63]">Nur drei Schritte</p><p className="mt-1 font-semibold text-[#183234]">Von der Datei bis zum Download</p></div></div></div></div></div>
+        <div className="rise-in-late relative order-1 lg:order-2"><div className="absolute -inset-5 rounded-[2.2rem] bg-[#a7b9a6]/30 blur-2xl"/><div className="paper-card relative overflow-hidden rounded-[2rem] bg-white p-4 sm:p-5"><div className="brand-bows" aria-hidden="true"><span/><span/></div><img src={HERO_IMAGE} alt="Abstrakter Weg aus Wegpetrol und Salbeigrün" className="h-52 w-full rounded-[1.35rem] object-cover sm:h-72"/><div className="absolute inset-x-9 bottom-9 rounded-2xl bg-[#fffdf8]/95 p-4 backdrop-blur"><div className="flex items-center gap-3"><img src={MARK_IMAGE} alt="" className="h-11 w-11 rounded-xl"/><div><p className="text-xs font-bold uppercase tracking-[.12em] text-[#155e63]">Nur drei Schritte</p><p className="mt-1 font-semibold text-[#183234]">Von der Datei bis zum Download</p></div></div></div></div></div>
       </section>
-      <section className="mx-auto grid max-w-6xl gap-4 px-5 pb-10 sm:grid-cols-3 sm:px-8"><article className="rise-in paper-card rounded-3xl bg-[#fffdf8] p-5"><ShieldCheck className="mb-4 text-[#155e63]"/><h2 className="font-bold text-[#183234]">Private Verarbeitung</h2><p className="mt-2 text-sm leading-6 text-[#506967]">PDF und Unterschrift werden im Browser verarbeitet. Es gibt keinen Dokument-Upload.</p></article><article className="rise-in-late paper-card rounded-3xl bg-[#fffdf8] p-5"><PenLine className="mb-4 text-[#155e63]"/><h2 className="font-bold text-[#183234]">Für den Finger gemacht</h2><p className="mt-2 text-sm leading-6 text-[#506967]">Große Bedienelemente und Pointer-Eingaben sind auf Safari und Touch ausgelegt.</p></article><article className="rise-in-latest paper-card overflow-hidden rounded-3xl bg-[#fffdf8] p-0"><img src={DETAIL_IMAGE} alt="Abstrakte Wegmarken" className="h-20 w-full object-cover"/><div className="p-5"><h2 className="font-bold text-[#183234]">Wie eine App erreichbar</h2><p className="mt-2 text-sm leading-6 text-[#506967]">In Safari zum Homescreen hinzufügen – dann startet Signlocal im eigenen Fenster.</p></div></article></section>
-      <LocalArchive documents={archivedDocuments} ready={archiveReady} persistent={localPersistence} onOpen={openArchivedDocument} onDownload={downloadArchivedDocument} onDelete={deleteArchivedDocument}/>
+      <div className="journey-route mx-auto max-w-6xl px-5 sm:px-8" aria-hidden="true"><span/><img src={MARK_IMAGE} alt="" className="h-9 w-9 rounded-xl"/><span/></div>
+      <section className="journey-stations mx-auto grid max-w-6xl gap-4 px-5 pb-10 sm:grid-cols-[.9fr_1.08fr_.86fr] sm:px-8"><article className="journey-station-first rise-in paper-card safety-surface rounded-3xl p-5"><div className="section-waymark"><img src={MARK_IMAGE} alt="" className="h-6 w-6 rounded-md"/><span>Bleibt bei dir</span></div><ShieldCheck className="mb-4 mt-5 text-[#155e63]"/><h2 className="font-bold text-[#183234]">Dein Dokument bleibt bei dir.</h2><p className="mt-2 text-sm leading-6 text-[#506967]">PDF und Unterschrift werden auf deinem Gerät verarbeitet. Es gibt keinen Dokument-Upload.</p></article><article className="journey-station-middle rise-in-late paper-card action-surface rounded-3xl p-5"><div className="section-waymark"><img src={MARK_IMAGE} alt="" className="h-6 w-6 rounded-md"/><span>Direkt weitermachen</span></div><div className="mt-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-[#155e63] text-white shadow-md shadow-[#155e63]/20"><PenLine size={22}/></div><h2 className="mt-4 font-bold text-[#183234]">Mit dem Finger zur Unterschrift.</h2><p className="mt-2 text-sm leading-6 text-[#506967]">Große Bedienelemente führen dich ohne Umwege zur richtigen Stelle im PDF.</p></article><article className="journey-station-last rise-in-latest paper-card overflow-hidden rounded-3xl bg-[#fffdf8] p-0"><img src={DETAIL_IMAGE} alt="Abstrakte Wegmarken aus zwei verbundenen Bögen" className="h-20 w-full object-cover"/><div className="p-5"><div className="section-waymark"><img src={MARK_IMAGE} alt="" className="h-6 w-6 rounded-md"/><span>Jederzeit bereit</span></div><h2 className="mt-4 font-bold text-[#183234]">Vom Homescreen direkt zum PDF.</h2><p className="mt-2 text-sm leading-6 text-[#506967]">In Safari zum Homescreen hinzufügen – dann ist Signlocal mit einem Tipp geöffnet.</p></div></article></section>
+      <div className="vault-route mx-auto max-w-6xl px-5 pt-1 sm:px-8" aria-label="Letzter Schritt: Sicher verwahren"><span/><div><img src={MARK_IMAGE} alt="" className="h-9 w-9 rounded-xl"/><p>Jetzt sicher bei dir verwahren</p></div><span/></div>
+      <LocalArchive documents={archivedDocuments} ready={archiveReady} persistent={localPersistence} configured={vaultConfigured} locked={vaultLocked} faceIdAvailable={faceIdAvailable} faceIdEnabled={faceIdEnabled} canUnlockWithFaceId={Boolean(vaultKey)} onSetup={setupVault} onUnlockWithPassword={unlockVaultWithPassword} onUnlockWithFaceId={unlockVaultWithFaceId} onEnableFaceId={activateFaceId} onChangePassword={changeVaultPassword} onExportBackup={exportVaultBackup} onImportBackup={importVaultBackup} onLock={lockVault} onOpen={openArchivedDocument} onDownload={downloadArchivedDocument} onDelete={deleteArchivedDocument}/>
       {dialogOpen && <SignatureDialog onClose={() => setDialogOpen(false)} onSave={prepareSignature}/>} 
     </main>
   );
@@ -334,17 +407,18 @@ export default function Home() {
                 <div key={signature.id} onPointerDown={(event) => beginSignatureGesture(event, signature, "move")} onPointerMove={moveSignatureGesture} onPointerUp={finishSignatureGesture} onPointerCancel={finishSignatureGesture} className={`signature-stamp absolute z-10 touch-none rounded-xl border bg-white/90 p-1.5 shadow-lg ${activeSignatureId === signature.id ? "signature-stamp-selected border-[#155e63] ring-4 ring-[#a7b9a6]/50" : "border-[#155e63]/25"}`} style={{ left: `${signature.x * 100}%`, top: `${signature.y * 100}%`, width: `${signature.width * 100}%` }} aria-label="Unterschrift verschieben">
                   <img src={signature.image} alt="Gesetzte Unterschrift" className="pointer-events-none block w-full"/>
                   <span className="signature-stamp-label pointer-events-none absolute -top-7 left-0 inline-flex items-center gap-1 rounded-full bg-[#155e63] px-2 py-1 text-[10px] font-bold text-white shadow"><Move size={11}/> Ziehen</span>
-                  <button onPointerDown={(event) => { event.stopPropagation(); setSignatures((previous) => previous.filter((entry) => entry.id !== signature.id)); setActiveSignatureId(null); addLog("Unterschrift entfernt."); }} className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-[#183234] text-white shadow-md active:scale-95" aria-label="Unterschrift entfernen"><X size={14}/></button>
+                  <button onPointerDown={(event) => { event.stopPropagation(); setSignatures((previous) => previous.filter((entry) => entry.id !== signature.id)); if (mobileSignatureReviewId === signature.id) setMobileSignatureReviewId(null); setActiveSignatureId(null); addLog("Unterschrift entfernt."); }} className="absolute -right-2 -top-2 grid h-7 w-7 place-items-center rounded-full bg-[#183234] text-white shadow-md active:scale-95" aria-label="Unterschrift entfernen"><X size={14}/></button>
                   <button onPointerDown={(event) => beginSignatureGesture(event, signature, "resize")} className="absolute -bottom-3 -right-3 grid h-9 w-9 place-items-center rounded-full border-2 border-white bg-[#e9b79a] text-[#183234] shadow-md active:scale-95" aria-label="Unterschrift größer oder kleiner ziehen"><Maximize2 size={17}/></button>
                 </div>
               ))}
               {pendingSignature && <div className="absolute inset-x-0 top-4 z-20 mx-auto flex w-fit items-center gap-2 rounded-full bg-[#155e63] px-3 py-2 text-sm font-bold text-white shadow-lg"><span className="pointer-events-none">Beliebig oft antippen</span><button onPointerDown={(event) => event.stopPropagation()} onClick={() => { setPendingSignature(null); toast.success("Mehrfachplatzierung beendet."); }} className="rounded-full bg-white/15 px-3 py-1 text-xs font-bold transition hover:bg-white/25 active:scale-95">Fertig</button></div>}
             </div>
           </div>
+          {mobileSignatureReviewId && <section className="mt-4 rounded-2xl border border-[#155e63]/25 bg-[#eaf4ef] p-4"><div className="flex items-start gap-3"><ShieldCheck className="mt-0.5 shrink-0 text-[#155e63]" size={19}/><div className="min-w-0 flex-1"><p className="font-bold text-[#183234]">Übertragene Signatur prüfen</p><p className="mt-1 text-sm leading-5 text-[#506967]">Ziehe die Signatur im PDF an die gewünschte Position und nutze den runden Griff zum Skalieren. Erst nach deiner Bestätigung kann das PDF gespeichert werden.</p><button onClick={() => { setMobileSignatureReviewId(null); toast.success("Position und Größe der Mobil-Signatur bestätigt."); }} className="mt-3 inline-flex min-h-10 items-center gap-2 rounded-xl bg-[#155e63] px-3 text-xs font-bold text-white active:scale-[.97]"><Check size={15}/>Position und Größe bestätigen</button></div></div></section>}
           <PageOverview pages={pageStatus} currentPage={page} pending={Boolean(pendingSignature)} hasTemplate={Boolean(signatureTemplate)} signaturePreview={signatureTemplate} onSelect={(pageNumber) => { setPage(pageNumber); setActiveSignatureId(null); }} onReuse={reuseSignature} onStop={() => { setPendingSignature(null); toast.success("Mehrfachplatzierung beendet."); }}/>
           <div className="mt-4 flex items-start gap-3 rounded-2xl border border-[#a7b9a6]/55 bg-[#a7b9a6]/20 p-4 text-sm leading-6 text-[#375552]"><Info className="mt-0.5 shrink-0 text-[#155e63]" size={18}/><p>Auf dem iPhone lassen sich Unterschriften direkt mit dem Finger setzen. Die Hardware-Anbindung eines Signotec-Pads bleibt bewusst der Windows-Version vorbehalten.</p></div>
         </div>
-        <aside className="space-y-4 lg:sticky lg:top-20"><section className="paper-card overflow-hidden rounded-[1.5rem] bg-[#fffdf8]"><img src={ILLUSTRATION_IMAGE} alt="Abstrakter Papierweg mit Wegmarken" className="h-32 w-full object-cover"/><div className="p-5"><p className="text-xs font-bold uppercase tracking-[.14em] text-[#155e63]">Nächster Schritt</p><h1 className="display mt-2 text-3xl leading-none text-[#183234]">Unterschrift an die richtige Stelle.</h1><p className="mt-3 text-sm leading-6 text-[#506967]">Zeichne zuerst. Tippe danach im Dokument genau auf die gewünschte Position.</p><button onClick={() => setDialogOpen(true)} className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#155e63] px-4 text-sm font-bold text-white shadow-lg shadow-[#155e63]/20 transition hover:bg-[#0d4549] active:scale-[.97]"><PenLine size={18}/>{pendingSignature ? "Neue Signatur zeichnen" : "Unterschrift zeichnen"}</button></div></section><section className="paper-card rounded-[1.5rem] bg-white p-5"><div className="flex items-center justify-between"><h2 className="font-bold text-[#183234]">Wegmarken</h2><span className="rounded-full bg-[#f7f3e9] px-2 py-1 text-xs font-bold text-[#506967]">{signatures.length} gesetzt</span></div><div className="mt-4 space-y-3">{logs.length ? logs.map((entry, index) => <div key={`${entry.time}-${index}`} className="flex gap-3 text-sm"><span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-[#a7b9a6]"/><p className="leading-5 text-[#506967]"><span className="mr-2 font-bold text-[#155e63]">{entry.time}</span>{entry.message}</p></div>) : <p className="text-sm leading-6 text-[#506967]">Hier erscheinen die Schritte für dieses Dokument.</p>}</div></section></aside>
+        <aside className="space-y-4 lg:sticky lg:top-20"><section className="paper-card overflow-hidden rounded-[1.5rem] bg-[#fffdf8]"><img src={ILLUSTRATION_IMAGE} alt="Abstrakter Papierweg mit Wegmarken" className="h-32 w-full object-cover"/><div className="p-5"><p className="text-xs font-bold uppercase tracking-[.14em] text-[#155e63]">Nächster Schritt</p><h1 className="display mt-2 text-3xl leading-none text-[#183234]">Unterschrift an die richtige Stelle.</h1><p className="mt-3 text-sm leading-6 text-[#506967]">Zeichne zuerst. Tippe danach im Dokument genau auf die gewünschte Position.</p><button onClick={() => setDialogOpen(true)} className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#155e63] px-4 text-sm font-bold text-white shadow-lg shadow-[#155e63]/20 transition hover:bg-[#0d4549] active:scale-[.97]"><PenLine size={18}/>{pendingSignature ? "Neue Signatur zeichnen" : "Unterschrift zeichnen"}</button></div></section><LocalSignaturePairing onSignature={prepareRemoteSignature}/><section className="paper-card rounded-[1.5rem] bg-white p-5"><div className="flex items-center justify-between"><h2 className="font-bold text-[#183234]">Wegmarken</h2><span className="rounded-full bg-[#f7f3e9] px-2 py-1 text-xs font-bold text-[#506967]">{signatures.length} gesetzt</span></div><div className="mt-4 space-y-3">{logs.length ? logs.map((entry, index) => <div key={`${entry.time}-${index}`} className="flex gap-3 text-sm"><span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-[#a7b9a6]"/><p className="leading-5 text-[#506967]"><span className="mr-2 font-bold text-[#155e63]">{entry.time}</span>{entry.message}</p></div>) : <p className="text-sm leading-6 text-[#506967]">Hier erscheinen die Schritte für dieses Dokument.</p>}</div></section></aside>
       </section>
       {dialogOpen && <SignatureDialog onClose={() => setDialogOpen(false)} onSave={prepareSignature}/>} 
     </main>

@@ -1,0 +1,50 @@
+:root { color-scheme: light; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f7f3e9; color: #183234; }
+* { box-sizing: border-box; }
+body { margin: 0; background: radial-gradient(circle at top right, #e6ece3, transparent 35rem), #f7f3e9; }
+main { max-width: 980px; margin: auto; padding: 32px 20px 64px; }
+header { display: flex; gap: 14px; align-items: center; margin-bottom: 24px; }
+.mark { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 16px; background: #155e63; color: #fff; font-weight: 900; font-size: 22px; }
+.eyebrow { margin: 0; color: #155e63; font-size: .72rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+h1, h2 { margin: .35rem 0 0; font-family: Georgia, serif; }
+h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); }
+h2 { font-size: 1.5rem; }
+.card { margin-top: 16px; padding: 22px; border: 1px solid #d8d3c9; border-radius: 24px; background: #fffdf8; box-shadow: 0 14px 34px #1832340c; }
+.grid { display: grid; grid-template-columns: 1fr minmax(240px, .72fr); gap: 26px; }
+.muted, .notice { color: #506967; line-height: 1.55; }
+.code { display: flex; align-items: center; gap: 12px; margin: 20px 0; padding: 12px; border-radius: 14px; background: #eef2e9; }
+.code strong, #verification { font-size: 1.45rem; letter-spacing: .16em; color: #155e63; }
+button { min-height: 48px; border: 0; border-radius: 14px; padding: 0 18px; background: #155e63; color: #fff; font-weight: 800; cursor: pointer; }
+button.secondary { border: 1px solid #155e63; background: #fff; color: #155e63; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+.qr-wrap { text-align: center; }
+.qr-wrap img { width: min(100%, 280px); border-radius: 18px; background: #fff; padding: 10px; }
+canvas { display: block; width: 100%; margin-top: 16px; border: 2px dashed #a7b9a6; border-radius: 18px; background: #fff; touch-action: none; }
+.actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 14px; }
+.notice { margin: 20px 4px; font-size: .85rem; }
+.mobile main { max-width: 620px; padding: 24px 16px; }
+.mobile #signature-pad { height: 46vh; min-height: 290px; }
+.mobile #verification { display: block; margin-top: 8px; }
+.certificate-guide { margin: 0 0 16px; border: 1px solid #155e6330; border-radius: 18px; background: #eef2e9; color: #183234; }
+.certificate-guide summary { cursor: pointer; padding: 15px 16px; color: #155e63; font-size: .9rem; font-weight: 800; }
+.certificate-guide div { padding: 0 16px 16px; color: #375552; font-size: .85rem; line-height: 1.55; }
+.certificate-guide ol { padding-left: 1.25rem; }
+.certificate-guide li + li { margin-top: .55rem; }
+.certificate-note { margin: 12px 0 0; border-radius: 12px; background: #fffdf8; padding: 10px; font-size: .78rem; }
+.signer-field { display: grid; gap: 6px; margin-top: 12px; color: #375552; font-size: .84rem; font-weight: 800; }
+.signer-field span { color: #6b7d7b; font-weight: 600; }
+.signer-field input { min-height: 42px; border: 1px solid #d8d3c9; border-radius: 12px; padding: 0 12px; background: #fff; color: #183234; font: inherit; font-weight: 600; outline: none; }
+.signer-field input:focus { border-color: #155e63; }
+.signer-help { margin: 8px 0 0; font-size: .8rem; }
+.timestamp-toggle { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: #375552; font-size: .82rem; font-weight: 700; }
+.timestamp-toggle input { width: 18px; height: 18px; accent-color: #155e63; }
+.pairing-confirmation { display: flex; align-items: center; gap: 16px; margin: 16px 0; padding: 18px 20px; border: 1px solid #155e6340; border-radius: 20px; background: linear-gradient(120deg, #eaf4ef, #fffdf8); box-shadow: 0 12px 28px #155e6310; }
+.pairing-confirmation h2 { margin-top: 4px; }
+.pairing-confirmation p { margin-bottom: 0; }
+.pairing-loader { display: grid; width: 46px; height: 46px; place-items: center; flex: 0 0 auto; border: 3px solid #a7b9a6; border-radius: 50%; background: #fff; }
+.pairing-loader span { display: block; width: 20px; height: 20px; border: 3px solid #155e63; border-right-color: transparent; border-radius: 50%; }
+.pairing-confirmation[data-state="ready"] .pairing-loader, .pairing-confirmation[data-state="received"] .pairing-loader { border-color: #155e63; background: #155e63; }
+.pairing-confirmation[data-state="ready"] .pairing-loader span, .pairing-confirmation[data-state="received"] .pairing-loader span { width: 17px; height: 9px; border-width: 0 0 3px 3px; border-color: #fff; border-radius: 0; transform: rotate(-45deg) translate(1px, -2px); }
+@media (max-width: 680px) { .grid { grid-template-columns: 1fr; } .desktop #signature-preview { height: 170px; } .actions { justify-content: stretch; } .actions button { flex: 1; } }
+@media (prefers-reduced-motion: no-preference) { .pairing-confirmation[data-state="checking"] .pairing-loader span { animation: pairing-spin 900ms linear infinite; } .pairing-confirmation { animation: pairing-enter 280ms cubic-bezier(.23, 1, .32, 1) both; } }
+@keyframes pairing-spin { to { transform: rotate(360deg); } }
+@keyframes pairing-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

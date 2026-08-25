@@ -1,0 +1,45 @@
+# Offene Punkte
+
+- [x] Prüfen, ob die GitHub-Anmeldung Zugriff auf `mexx-bb/Signlocal` hat.
+- [x] Den tatsächlichen Signlocal-Quellcode lokal übernehmen und seine Architektur erfassen.
+- [x] Einen iPhone-kompatiblen Zugriffsweg implementieren und testen.
+- [x] Die Bereitstellung sichern und eine kurze Homescreen-Anleitung liefern.
+- [x] PDF-Worker und PDF-Ladepfad für iPhone-Safari korrigieren und im Produktions-Build prüfen.
+- [x] Unterschriftsdialog weicher gestalten und im iPhone-Querformat bildschirmfüllend auslegen.
+- [x] Gesetzte Unterschriften per Touch verschieben und über einen sichtbaren Griff skalieren.
+- [ ] Ursache der Veröffentlichungsblockade ermitteln und einen veröffentlichungsfähigen Stand sichern.
+- [x] Mehrere Unterschriften auf unterschiedlichen PDF-Seiten übersichtlich setzen und verwalten.
+- [x] Letzte Unterschrift mehrfach auf derselben Seite setzen und als Kugelschreiber-Blau zeichnen.
+- [x] Stiftbewegungen bei der Unterschrift behutsam glätten, ohne die individuelle Form zu verfälschen.
+- [x] Kugelschreiber-Farbauswahl für Blau, Schwarz und Rot in der Unterschriftsansicht ergänzen.
+- [x] Letzte Unterschrift sichtbar vorschauen und direkt erneut platzieren können.
+- [x] Letzte versehentlich platzierte Unterschrift mit einem Rückgängig-Button entfernen.
+- [x] Letzte per Rückgängig entfernte Unterschrift über einen Wiederherstellen-Button zurückholen.
+- [x] Speicherung von PDF und Signaturen sowie Gleichstand mit GitHub verifizieren.
+- [x] Signierte PDFs in einem lokalen, serverfreien Dokumentarchiv auf dem Gerät speichern, öffnen und löschen.
+- [x] Aktuellen mobilen Signlocal-Stand in `mexx-bb/Signlocal` übertragen und den Push prüfen.
+- [x] Lokales Dokumentarchiv mit passwortbasierter Verschlüsselung und Geräteauthentifizierung absichern.
+- [x] Tresor-Passwort ändern und alle gespeicherten Dokumente sicher mit neuem Schlüssel verschlüsseln.
+- [x] Fortschritt der Dokument-Neuverschlüsselung beim Passwortwechsel sichtbar anzeigen.
+- [x] Vor dem Löschen lokaler Browserdaten deutlich auf den möglichen Tresorverlust hinweisen.
+- [x] Den gesamten verschlüsselten Tresor lokal als wiederherstellbare Backup-Datei exportieren.
+- [x] Einen Schritt-für-Schritt-Assistenten für den Gerätewechsel mit Tresor-Backup integrieren.
+- [x] Unit-Tests für Export-, Import- und Sicherheitshinweise des Gerätewechsel-Assistenten ergänzen.
+- [x] Beschädigte Backup-Dateien testen und eine verständliche Fehlermeldung für die Wiederherstellung anzeigen.
+- [x] Backup-Datei im Gerätewechsel-Assistenten per Drag-and-Drop importieren können.
+- [x] Erfolgreiche Tresor-Wiederherstellung mit visueller Integritätsanzeige und ruhiger Bestätigung markieren.
+- [x] Nach erfolgreichem Import einen detaillierten lokalen Prüfbericht zur Backup-Formatvalidierung anzeigen.
+- [ ] Computer und iPad ausschließlich im selben WLAN als PDF-Ansicht und separates Signaturmodul koppeln.
+- [x] Ungetesteten lokalen Signlocal-Begleit-App-Prototypen für Windows und macOS mit QR-Pairing bereitstellen.
+- [ ] Sicherheitsniveau der lokalen WLAN-Verbindung für die Begleit-App festlegen.
+- [ ] Streng lokale Verschlüsselung mit einmaliger iPad-Vertrauensfreigabe für die Begleit-App umsetzen.
+- [ ] QR-Pairing und Signaturübertragung später in einem privaten WLAN mit MacBook und iPad testen.
+- [x] Lokales QR-Signaturmodul für iPad, iPhone und Android vorbereiten.
+- [x] Erfolgreiche QR-Kopplung auf dem Computer mit Bestätigung und Ladeanimation anzeigen.
+- [x] Verbindungsabbruch zwischen Computer und Mobilgerät mit verständlicher Meldung und Neuversuch behandeln.
+- [x] Sechsstelligen Kopplungscode auf Computer und Mobilgerät ausdrücklich bestätigen, bevor die Unterschrift freigegeben wird.
+- [x] Empfangene Mobil-Signatur nach Freigabe direkt als platzierbare Unterschrift in das geöffnete PDF übernehmen.
+- [x] Auf dem Mobilgerät eine verständliche Anleitung zur lokalen Zertifikatsinstallation anzeigen.
+- [x] Übertragene Signatur optional mit Unterzeichnername und Zeitstempel versehen.
+- [x] Übertragene Signatur vor dem PDF-Speichern deutlich verschieben und skalieren lassen.
+- [x] Aktuellen mobilen Signlocal-Stand im GitHub-Branch `mobile-signlocal` aktualisieren und Push bestätigen.

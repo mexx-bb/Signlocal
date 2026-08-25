@@ -36,7 +36,39 @@ button, input { font: inherit; }
 button { -webkit-tap-highlight-color: transparent; }
 
 .display { font-family: "Fraunces", ui-serif, serif; letter-spacing: -0.045em; }
-.paper-card { border: 1px solid rgba(31, 66, 65, .12); box-shadow: 0 16px 40px rgba(32, 56, 53, .08); }
+.paper-card { border: 1px solid rgba(31, 66, 65, .12); box-shadow: 0 10px 28px rgba(32, 56, 53, .055), inset 0 1px rgba(255,255,255,.86); }
+.brand-lockup { position: relative; padding: .22rem .45rem .22rem 0; }
+.brand-lockup-mark { position: relative; display: grid; place-items: center; }
+.brand-lockup-mark::after { position: absolute; right: -.32rem; bottom: -.3rem; width: .75rem; height: .38rem; border: 2px solid var(--sage); border-radius: 999px; content: ""; transform: rotate(20deg); }
+.brand-lockup-note { display: block; margin-top: -.1rem; color: #6b7d7b; font-size: .61rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.route-steps { position: relative; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .35rem; }
+.route-steps::before { position: absolute; top: 1.55rem; left: 1rem; right: 1rem; height: 1px; content: ""; background: linear-gradient(90deg, var(--petrol), var(--sage) 54%, rgba(167, 185, 166, .5)); }
+.route-step { position: relative; z-index: 1; display: flex; flex-direction: column; gap: .42rem; align-items: flex-start; font-size: .78rem; font-weight: 700; line-height: 1.2; }
+.route-marker { display: grid; width: 1.55rem; height: 1.55rem; place-items: center; border: 1px solid rgba(21, 94, 99, .28); border-radius: 999px; color: var(--petrol); background: var(--paper); font-size: .7rem; }
+.route-marker-active { color: white; background: var(--petrol); border-color: var(--petrol); }
+.route-marker-safe { color: var(--ink); background: var(--sage); border-color: var(--sage); }
+.journey-route { position: relative; display: flex; align-items: center; gap: .85rem; padding-bottom: 2.1rem; }
+.journey-route span { height: 1px; flex: 1; background: linear-gradient(90deg, transparent, rgba(21, 94, 99, .45)); }
+.journey-route span:last-child { background: linear-gradient(90deg, rgba(21, 94, 99, .45), transparent); }
+.vault-route { display: flex; align-items: center; gap: .85rem; padding-bottom: 1.25rem; }
+.vault-route > span { height: 1px; flex: 1; background: linear-gradient(90deg, transparent, rgba(21, 94, 99, .42)); }
+.vault-route > span:last-child { background: linear-gradient(90deg, rgba(21, 94, 99, .42), transparent); }
+.vault-route > div { display: flex; align-items: center; gap: .5rem; color: var(--petrol); font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.brand-bows { position: absolute; z-index: 1; top: 1.35rem; right: 1.35rem; display: flex; gap: .05rem; opacity: .72; transform: rotate(-22deg); }
+.brand-bows span { display: block; width: 2.9rem; height: 1.55rem; border: 3px solid rgba(21, 94, 99, .8); border-radius: 999px; }
+.brand-bows span:last-child { margin-left: -1.15rem; border-color: rgba(167, 185, 166, .95); transform: translateY(.62rem); }
+.journey-stations { position: relative; }
+.journey-stations::before { position: absolute; z-index: 0; top: 3.3rem; bottom: 3.3rem; left: 2.1rem; width: 1px; content: ""; background: linear-gradient(var(--petrol), rgba(167, 185, 166, .12)); }
+.journey-stations::after { position: absolute; z-index: 0; top: 3.3rem; bottom: 3.3rem; left: 1.83rem; width: .55rem; content: ""; background: radial-gradient(circle, rgba(21,94,99,.45) 1px, transparent 1.4px) center top / .55rem .85rem repeat-y; opacity: .58; }
+.journey-stations > article { position: relative; z-index: 1; }
+.journey-station-first::before, .journey-station-middle::before, .journey-station-last::before { position: absolute; top: 1.2rem; left: -.14rem; width: .62rem; height: .62rem; border: 2px solid var(--paper); border-radius: 999px; content: ""; background: var(--petrol); box-shadow: 0 0 0 1px rgba(21, 94, 99, .35); }
+.journey-station-first { border-radius: 1.75rem 1.75rem 1.25rem 1.75rem; margin-right: 1.1rem; }
+.journey-station-middle { border-radius: 1.3rem 1.8rem 1.8rem 1.25rem; margin-left: .7rem; }
+.journey-station-last { border-radius: 1.75rem 1.35rem 1.8rem 1.75rem; margin-right: .35rem; }
+.vault-setup { background: linear-gradient(145deg, rgba(255, 253, 248, .98), rgba(238, 245, 243, .85)); box-shadow: inset 0 1px rgba(255, 255, 255, .85), 0 8px 22px rgba(32,56,53,.04); }
+.section-waymark { display: inline-flex; align-items: center; gap: .45rem; color: var(--petrol); font-size: .66rem; font-weight: 800; letter-spacing: .12em; line-height: 1; text-transform: uppercase; }
+.safety-surface { background: linear-gradient(145deg, #fffdf8 0%, #f4f8f1 100%); }
+.action-surface { background: linear-gradient(145deg, #fffdf8 0%, #eef5f3 100%); }
 .page-canvas .react-pdf__Page__canvas { max-width: 100%; height: auto !important; }
 .page-canvas .react-pdf__Page__textContent, .page-canvas .react-pdf__Page__annotations { display: none; }
 .signature-canvas { box-shadow: inset 0 0 0 1px rgba(21, 94, 99, .04), 0 10px 24px rgba(24, 50, 52, .05); }
@@ -44,6 +76,17 @@ button { -webkit-tap-highlight-color: transparent; }
 .signature-stamp-label { opacity: 0; transform: translateY(3px); transition: opacity 160ms ease-out, transform 160ms ease-out; }
 .signature-stamp-selected .signature-stamp-label,
 .signature-stamp:focus-within .signature-stamp-label, .signature-stamp:active .signature-stamp-label { opacity: 1; transform: translateY(0); }
+
+@media (min-width: 640px) {
+  .route-step { flex-direction: row; align-items: center; font-size: .85rem; }
+  .route-steps::before { top: .78rem; }
+  .journey-stations::before { top: 50%; right: 4rem; bottom: auto; left: 4rem; width: auto; height: 1px; background: linear-gradient(90deg, var(--petrol), rgba(167, 185, 166, .26)); }
+  .journey-station-first { transform: translateY(1rem); }
+  .journey-station-last { transform: translateY(2rem); }
+  .journey-station-first { margin-right: 0; }
+  .journey-station-middle { margin-left: 0; }
+  .journey-station-first::before, .journey-station-middle::before, .journey-station-last::before { top: 50%; left: auto; right: 1.25rem; transform: translateY(-50%); }
+}
 
 @media (orientation: landscape) and (max-height: 550px) {
   .signature-dialog {
@@ -77,6 +120,8 @@ button { -webkit-tap-highlight-color: transparent; }
   .rise-in { animation: rise-in .46s cubic-bezier(.23,1,.32,1) both; }
   .rise-in-late { animation: rise-in .56s .10s cubic-bezier(.23,1,.32,1) both; }
   .rise-in-latest { animation: rise-in .62s .18s cubic-bezier(.23,1,.32,1) both; }
+  .restore-success-mark { animation: restore-success-pop 460ms cubic-bezier(.23, 1, .32, 1) both; }
 }
 
 @keyframes rise-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes restore-success-pop { from { opacity: 0; transform: scale(.84) rotate(-10deg); } 70% { opacity: 1; transform: scale(1.08) rotate(2deg); } to { opacity: 1; transform: scale(1) rotate(0); } }

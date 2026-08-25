@@ -59,3 +59,18 @@ Das Zeichen besteht aus zwei versetzten, weich geschwungenen Bögen, die sich in
 
 ### Signature Brand Color
 **Wegpetrol — #155E63**
+
+## Style Decisions
+
+- Die **Wegmarkenlinie** verbindet die zentralen Momente „PDF wählen“, „Signieren“, „Im Tresor sichern“ und erscheint zusätzlich als leise Übergangsmarke vor den Sicherheits- und Bedienhinweisen.
+- **Wegpetrol `#155E63`** bleibt für primäre Aktionen, Wegmarken und das Signet reserviert; Salbei signalisiert sichere beziehungsweise erfolgreiche Schritte. Warme Akzentfarben bleiben seltene, sekundäre Orientierungspunkte.
+- Jede Abschnittsüberschrift beantwortet eine konkrete Unsicherheit: Dokument bleibt auf dem Gerät, Unterschrift ist direkt erreichbar, und die App ist vom Homescreen schnell geöffnet.
+- Die Wegstrecke endet sichtbar am Dokumentplatz: Eine letzte Wegmarke verbindet „Im Tresor sichern“ mit der persönlichen Ablage, damit die Sicherheitsfläche Teil derselben ruhigen Reise bleibt.
+- Vertrauenssprache steht vor technischen Nachweisen: „Sicher bei dir“ und die persönliche Ablage führen die Hierarchie; Verschlüsselungsdetails bleiben bestätigende zweite Ebene.
+- Die abstrakte Bildsprache erweitert das Signlocal-Signet um zwei verbundene Bögen und macht die Wegmarke auch ohne Wortmarke wiedererkennbar.
+- Sicherheitsbereiche beginnen mit persönlicher Zuversicht und Eigentum; technische Verschlüsselungshinweise bleiben eine ruhige, nachgelagerte Bestätigung.
+- Inhaltsstationen erhalten unterschiedliche Breiten und vertikale Pausen, während die Wegmarkenlinie sie als eine fortlaufende Reise vom PDF bis zur sicheren Ablage verbindet.
+- Die Wegstrecke wird als **durchgängiges System** behandelt: feine Punktmarken und Übergangslinien führen von der ersten PDF-Aktion über die Stationen bis zur persönlichen Ablage.
+- Papierflächen unterscheiden sich bewusst in Kantenform, Breite und Tiefe; sie wirken wie ruhige, warme Lagen statt wie wiederholte SaaS-Karten.
+- Das verbundene Zwei-Bogen-Signet verstärkt die Wortmarke am Einstieg und markiert Orientierung, nicht bloße Dekoration.
+- Sicherheitskommunikation beginnt stets bei persönlichem Besitz und Zuversicht; technische Nachweise bleiben leise, nachvollziehbare zweite Ebene.
