@@ -77,4 +77,4 @@
 - [x] Die lokal gespeicherten Namen, den Ort sowie Datumsanzeigen und -formate auf Wunsch löschen können, ohne das aktuelle Dokument zu verändern.
 - [x] Den lokalen iPad-/iPhone-Companion und den Gesamtstand erneut vollständig prüfen und die validierten Änderungen auf GitHub synchronisieren.
 - [x] Eine verständliche PowerShell-Ein-Klick-Installation für den strikt lokalen Windows-Companion mit sicherem lokalen Start vorbereiten und am Seitenende zum Download anbieten.
-- [ ] Den aktuellen Stand einschließlich des Windows-Ein-Klick-Installers auf GitHub synchronisieren und den Remote-Commit abgleichen.
+- [x] Den aktuellen Stand einschließlich des Windows-Ein-Klick-Installers auf GitHub synchronisieren und den Remote-Commit abgleichen.
