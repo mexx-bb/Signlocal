@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+installer="$root/windows/Install-SignLocal-Companion.ps1"
+starter="$root/windows/SignLocal-Companion-Installation-starten.cmd"
+guide="$root/windows/README-Windows.md"
+
+test -f "$installer"
+test -f "$starter"
+test -f "$guide"
+
+grep -Fq 'NetworkCategory -ne "Private"' "$installer"
+grep -Fq 'Test-PrivateIPv4' "$installer"
+grep -Fq 'SIGNLOCAL_TLS_KEY' "$installer"
+grep -Fq 'SIGNLOCAL_TLS_CERT' "$installer"
+grep -Fq 'SIGNLOCAL_ALLOWED_ORIGIN' "$installer"
+grep -Fq 'SIGNLOCAL_CA_DOWNLOAD=1' "$installer"
+grep -Fq 'New-NetFirewallRule' "$installer"
+grep -Fq -- '-Profile Private' "$installer"
+grep -Fq 'FiloSottile.mkcert' "$installer"
+grep -Fq 'OpenJS.NodeJS.LTS' "$installer"
+! grep -Fq 'SIGNLOCAL_ALLOW_ORIGINLESS_TESTS=1' "$installer"
+! grep -Fq 'SIGNLOCAL_HOST=0.0.0.0' "$installer"
+grep -Fq 'privaten WLAN' "$guide"
+grep -Fq 'signlocal-lan-key.pem' "$guide"
+
+printf 'test-windows-installer.sh: Test erfolgreich\n'
