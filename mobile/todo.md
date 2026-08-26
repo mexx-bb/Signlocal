@@ -54,3 +54,6 @@
 - [x] Download-, E-Mail- und Dateien-Aktionen auf schmalen Mobilbildschirmen kompakt, gleichwertig und touchfreundlich anordnen.
 - [x] Vollständige technische Sicherheits- und Compliance-Prüfung mit Datenflussanalyse, Bedrohungsmodell, Schutzmaßnahmen und dokumentierten Restgrenzen durchführen.
 - [x] Aktuellen sicherheitsgehärteten mobilen Stand in den GitHub-Branch `mobile-signlocal` übertragen und den Push verifizieren.
+- [x] DOCX-Dateien vollständig lokal im Browser in eine signierbare PDF-Kopie konvertieren und klare Qualitätsgrenzen anzeigen.
+- [x] Wiederverwendbaren Skill für die lokale, sicherheitsorientierte PDF-Signaturentwicklung erstellen und validieren.
+- [x] Aktuellen lokalen Signlocal-Stand erneut in den GitHub-Branch `mobile-signlocal` übertragen und Push verifizieren.

@@ -18,6 +18,7 @@ import "react-pdf/dist/Page/TextLayer.css";
 import { LocalArchive } from "@/components/LocalArchive";
 import { LocalSignaturePairing } from "@/components/LocalSignaturePairing";
 import { sharePdfWithDevice } from "@/lib/pdfShare";
+import { convertDocxToPdf, isDocxFile } from "@/lib/docxToPdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
@@ -177,6 +178,7 @@ export default function Home() {
   const [exporting, setExporting] = useState(false);
   const [preparedPdf, setPreparedPdf] = useState<{ pdf: Blob; name: string } | null>(null);
   const [shareFallback, setShareFallback] = useState<"files" | "email" | null>(null);
+  const [convertingDocx, setConvertingDocx] = useState(false);
 
   const pageSignatures = useMemo(() => signatures.filter((signature) => signature.page === page), [signatures, page]);
   const pageStatus = useMemo(() => Array.from({ length: pageCount }, (_, index) => ({ number: index + 1, count: signatures.filter((signature) => signature.page === index + 1).length })), [pageCount, signatures]);
@@ -286,14 +288,29 @@ export default function Home() {
   }, [vaultKey]);
   useEffect(() => () => { if (url) URL.revokeObjectURL(url); }, [url]);
 
-  const acceptFile = (selected: File) => {
+  const acceptPdfFile = (selected: File) => {
     if (selected.type !== "application/pdf") { toast.error("Auf dem iPhone ist zurzeit nur PDF vorgesehen."); return; }
     if (url) URL.revokeObjectURL(url);
     const nextUrl = URL.createObjectURL(selected);
     setFile(selected); setUrl(nextUrl); setPage(1); setPageCount(0); setSignatures([]); setRemovedSignatures([]); setSignatureTemplate(null); setPendingSignature(null); setPendingMobileSignature(false); setPendingMobileDetails({}); setMobileSignatureReviewId(null); setPreparedPdf(null); setShareFallback(null);
     setLogs([{ time: now(), message: `„${selected.name}“ lokal geöffnet.` }]);
   };
-  const onFileChange = (event: ChangeEvent<HTMLInputElement>) => { const selected = event.target.files?.[0]; if (selected) acceptFile(selected); event.target.value = ""; };
+  const acceptFile = async (selected: File) => {
+    if (isDocxFile(selected)) {
+      setConvertingDocx(true);
+      try {
+        const converted = await convertDocxToPdf(selected);
+        acceptPdfFile(converted);
+        addLog(`„${selected.name}“ vollständig lokal in eine PDF-Kopie konvertiert.`);
+        toast.success("Word-Datei lokal in eine PDF-Kopie umgewandelt. Prüfe nun die Vorschau.");
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : "Die Word-Datei konnte nicht lokal konvertiert werden.");
+      } finally { setConvertingDocx(false); }
+      return;
+    }
+    acceptPdfFile(selected);
+  };
+  const onFileChange = async (event: ChangeEvent<HTMLInputElement>) => { const selected = event.target.files?.[0]; event.target.value = ""; if (selected) await acceptFile(selected); };
   const reset = () => { if (url) URL.revokeObjectURL(url); setFile(null); setUrl(null); setSignatures([]); setRemovedSignatures([]); setSignatureTemplate(null); setPendingSignature(null); setPendingMobileSignature(false); setPendingMobileDetails({}); setMobileSignatureReviewId(null); setPreparedPdf(null); setShareFallback(null); setLogs([]); };
   const prepareSignature = (image: string) => { setDialogOpen(false); setSignatureTemplate(image); setPendingSignature(image); setPendingMobileSignature(false); setPendingMobileDetails({}); toast.success("Jetzt die Stelle im Dokument antippen."); addLog("Unterschrift vorbereitet – Position wählen."); };
   const prepareRemoteSignature = (image: string, details: { signerName?: string; signedAt?: string }) => { setSignatureTemplate(image); setPendingSignature(image); setPendingMobileSignature(true); setPendingMobileDetails(details); toast.success("Mobil-Signatur empfangen. Tippe jetzt im PDF auf die gewünschte Position."); addLog(`Mobil-Signatur${details.signerName ? ` von ${details.signerName}` : ""} lokal empfangen – Position im PDF wählen.`); };
@@ -422,12 +439,13 @@ export default function Home() {
         <div className="rise-in order-2 lg:order-1">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#a7b9a6]/35 px-3 py-2 text-xs font-bold uppercase tracking-[.14em] text-[#155e63]"><span className="h-2 w-2 rounded-full bg-[#155e63]"/> Dein ruhiger Weg zum PDF</div>
           <h1 className="display max-w-xl text-5xl leading-[.94] text-[#183234] sm:text-6xl">Unterschreiben, ohne das Dokument aus der Hand zu geben.</h1>
-          <p className="mt-6 max-w-lg text-lg leading-8 text-[#506967]">Öffne ein PDF, zeichne deine Unterschrift mit dem Finger und speichere die signierte Datei direkt auf dem iPhone.</p>
+          <p className="mt-6 max-w-lg text-lg leading-8 text-[#506967]">Öffne ein PDF oder eine Word-Datei, zeichne deine Unterschrift mit dem Finger und speichere die signierte PDF direkt auf dem iPhone.</p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <input ref={inputRef} onChange={onFileChange} type="file" accept="application/pdf" className="hidden" />
-            <button onClick={() => inputRef.current?.click()} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-[#155e63] px-6 text-base font-bold text-white shadow-xl shadow-[#155e63]/20 transition hover:bg-[#0d4549] active:scale-[.97]"><Upload size={19}/> PDF auswählen</button>
-            <p className="text-sm leading-5 text-[#6b7d7b]">Die Datei bleibt auf deinem Gerät.</p>
+            <input ref={inputRef} onChange={onFileChange} type="file" accept="application/pdf,.pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.docx" className="hidden" />
+            <button onClick={() => inputRef.current?.click()} disabled={convertingDocx} className="inline-flex min-h-14 items-center justify-center gap-3 rounded-2xl bg-[#155e63] px-6 text-base font-bold text-white shadow-xl shadow-[#155e63]/20 transition hover:bg-[#0d4549] disabled:opacity-60 active:scale-[.97]">{convertingDocx ? <Loader2 size={19} className="animate-spin"/> : <Upload size={19}/>} {convertingDocx ? "Word wird konvertiert …" : "PDF oder Word wählen"}</button>
+            <p className="text-sm leading-5 text-[#6b7d7b]">PDF und DOCX bleiben auf deinem Gerät.</p>
           </div>
+          <p className="mt-3 max-w-lg text-xs leading-5 text-[#6b7d7b]">Word-Dateien werden lokal gerendert und als PDF-Kopie vorbereitet. Bei komplexen Layouts, Formularfeldern oder Änderungen nachverfolgen kann die Darstellung abweichen.</p>
           <div className="route-steps mt-10 max-w-lg pt-5 text-sm text-[#506967]" aria-label="Dein Weg durch Signlocal"><span className="route-step"><span className="route-marker route-marker-active">1</span>PDF wählen</span><span className="route-step"><span className="route-marker route-marker-safe">2</span>Signieren</span><span className="route-step"><span className="route-marker">3</span>PDF sichern</span></div>
         </div>
         <div className="rise-in-late relative order-1 lg:order-2"><div className="absolute -inset-5 rounded-[2.2rem] bg-[#a7b9a6]/30 blur-2xl"/><div className="paper-card relative overflow-hidden rounded-[2rem] bg-white p-4 sm:p-5"><div className="brand-bows" aria-hidden="true"><span/><span/></div><img src={HERO_IMAGE} alt="Abstrakter Weg aus Wegpetrol und Salbeigrün" className="h-52 w-full rounded-[1.35rem] object-cover sm:h-72"/><div className="absolute inset-x-9 bottom-9 rounded-2xl bg-[#fffdf8]/95 p-4 backdrop-blur"><div className="flex items-center gap-3"><img src={MARK_IMAGE} alt="" className="h-11 w-11 rounded-xl"/><div><p className="text-xs font-bold uppercase tracking-[.12em] text-[#155e63]">Nur drei Schritte</p><p className="mt-1 font-semibold text-[#183234]">Von der Datei bis zum Download</p></div></div></div></div></div>
