@@ -10,10 +10,13 @@ h1 { font-size: clamp(1.7rem, 4vw, 2.6rem); }
 h2 { font-size: 1.5rem; }
 .card { margin-top: 16px; padding: 22px; border: 1px solid #d8d3c9; border-radius: 24px; background: #fffdf8; box-shadow: 0 14px 34px #1832340c; }
 .grid { display: grid; grid-template-columns: 1fr minmax(240px, .72fr); gap: 26px; }
+.setup-card { display: grid; grid-template-columns: 1fr minmax(220px, .55fr); gap: 26px; align-items: center; border-color: #155e6350; background: linear-gradient(125deg, #eaf4ef, #fffdf8); }
 .muted, .notice { color: #506967; line-height: 1.55; }
+.fingerprint { overflow-wrap: anywhere; margin: 16px 0; padding: 12px; border-radius: 12px; background: #eef2e9; color: #244947; font: 700 .77rem/1.55 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .code { display: flex; align-items: center; gap: 12px; margin: 20px 0; padding: 12px; border-radius: 14px; background: #eef2e9; }
 .code strong, #verification { font-size: 1.45rem; letter-spacing: .16em; color: #155e63; }
 button { min-height: 48px; border: 0; border-radius: 14px; padding: 0 18px; background: #155e63; color: #fff; font-weight: 800; cursor: pointer; }
+.link-button { display: inline-flex; align-items: center; min-height: 48px; border-radius: 14px; padding: 0 18px; background: #155e63; color: #fff; font-size: .9rem; font-weight: 800; text-decoration: none; }
 button.secondary { border: 1px solid #155e63; background: #fff; color: #155e63; }
 button:disabled { opacity: .5; cursor: not-allowed; }
 .qr-wrap { text-align: center; }
@@ -44,7 +47,7 @@ canvas { display: block; width: 100%; margin-top: 16px; border: 2px dashed #a7b9
 .pairing-loader span { display: block; width: 20px; height: 20px; border: 3px solid #155e63; border-right-color: transparent; border-radius: 50%; }
 .pairing-confirmation[data-state="ready"] .pairing-loader, .pairing-confirmation[data-state="received"] .pairing-loader { border-color: #155e63; background: #155e63; }
 .pairing-confirmation[data-state="ready"] .pairing-loader span, .pairing-confirmation[data-state="received"] .pairing-loader span { width: 17px; height: 9px; border-width: 0 0 3px 3px; border-color: #fff; border-radius: 0; transform: rotate(-45deg) translate(1px, -2px); }
-@media (max-width: 680px) { .grid { grid-template-columns: 1fr; } .desktop #signature-preview { height: 170px; } .actions { justify-content: stretch; } .actions button { flex: 1; } }
+@media (max-width: 680px) { .grid, .setup-card { grid-template-columns: 1fr; } .desktop #signature-preview { height: 170px; } .actions { justify-content: stretch; } .actions button { flex: 1; } }
 @media (prefers-reduced-motion: no-preference) { .pairing-confirmation[data-state="checking"] .pairing-loader span { animation: pairing-spin 900ms linear infinite; } .pairing-confirmation { animation: pairing-enter 280ms cubic-bezier(.23, 1, .32, 1) both; } }
 @keyframes pairing-spin { to { transform: rotate(360deg); } }
 @keyframes pairing-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

@@ -160,7 +160,7 @@ export function LocalArchive(props: LocalArchiveProps) {
   );
 
   return (
-    <section className="mx-auto max-w-6xl px-5 pb-16 sm:px-8" aria-label="Verschlüsseltes lokales Dokumentarchiv">
+    <section id="local-archive" className="mx-auto max-w-6xl scroll-mt-24 px-5 pb-16 sm:px-8" aria-label="Verschlüsseltes lokales Dokumentarchiv">
       <div className="paper-card overflow-hidden rounded-[1.8rem] bg-[#fffdf8]">
         <div className="flex flex-col gap-4 border-b border-[#d8d3c9]/75 px-5 py-5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
           <div className="flex items-center gap-3">
@@ -189,7 +189,7 @@ export function LocalArchive(props: LocalArchiveProps) {
                 <button onClick={() => setDeviceTransferOpen(true)} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl px-1 text-sm font-bold text-[#155e63]"><Smartphone size={17} /> Neues iPhone? Gerätewechsel starten</button>
               </div>
               <div className="vault-setup rounded-2xl border border-[#a7b9a6]/60 p-4">
-                <label className="block text-sm font-bold text-[#183234]">Neues Tresor-Passwort<input value={password} onChange={(event) => setPassword(event.target.value)} type="password" autoComplete="new-password" className={fieldClass} placeholder="Mindestens 12 Zeichen" /></label>
+                <label className="block text-sm font-bold text-[#183234]">Neues Tresor-Passwort<input id="vault-setup-password" value={password} onChange={(event) => setPassword(event.target.value)} type="password" autoComplete="new-password" className={fieldClass} placeholder="Mindestens 12 Zeichen" /></label>
                 <label className="mt-3 block text-sm font-bold text-[#183234]">Passwort wiederholen<input value={confirmation} onChange={(event) => setConfirmation(event.target.value)} type="password" autoComplete="new-password" className={fieldClass} placeholder="Passwort wiederholen" /></label>
                 {error}
                 <button onClick={setupOrUnlock} disabled={busy} className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#155e63] px-4 text-sm font-bold text-white shadow-lg shadow-[#155e63]/15 disabled:opacity-60"><KeyRound size={17} />{busy ? "Tresor wird eingerichtet …" : "Tresor einrichten"}</button>
@@ -205,7 +205,7 @@ export function LocalArchive(props: LocalArchiveProps) {
                 <p className="mt-4 max-w-xl text-sm leading-6 text-[#506967]">Gib dein Tresor-Passwort ein. Falls Face ID für diese Sitzung aktiviert wurde, kannst du auch die Geräteauthentifizierung verwenden.</p>
               </div>
               <div className="rounded-2xl border border-[#a7b9a6]/60 bg-[#eef2e9]/60 p-4">
-                <label className="block text-sm font-bold text-[#183234]">Tresor-Passwort<input value={password} onChange={(event) => setPassword(event.target.value)} type="password" autoComplete="current-password" className={fieldClass} placeholder="Passwort eingeben" onKeyDown={(event) => { if (event.key === "Enter") setupOrUnlock(); }} /></label>
+                <label className="block text-sm font-bold text-[#183234]">Tresor-Passwort<input id="vault-unlock-password" value={password} onChange={(event) => setPassword(event.target.value)} type="password" autoComplete="current-password" className={fieldClass} placeholder="Passwort eingeben" onKeyDown={(event) => { if (event.key === "Enter") setupOrUnlock(); }} /></label>
                 {error}
                 <button onClick={setupOrUnlock} disabled={busy} className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#155e63] px-4 text-sm font-bold text-white shadow-lg shadow-[#155e63]/15 disabled:opacity-60"><UnlockKeyhole size={17} />{busy ? "Wird entsperrt …" : "Mit Passwort entsperren"}</button>
                 {faceIdEnabled && canUnlockWithFaceId && <button onClick={() => void run(onUnlockWithFaceId)} disabled={busy} className="mt-2 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-[#155e63]/30 bg-white px-4 text-sm font-bold text-[#155e63] disabled:opacity-60"><Fingerprint size={18} />Mit Face ID entsperren</button>}

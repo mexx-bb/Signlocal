@@ -5,6 +5,7 @@ import { AlertTriangle, CheckCircle2, Link2, Loader2, RefreshCw, ShieldCheck, Sm
 type PairingSession = { id: string; token: string; verificationCode: string; qrCode: string; expiresAt: number };
 type Confirmation = { desktop: boolean; mobile: boolean };
 type RemotePoint = [number, number];
+type RemoteStroke = RemotePoint[];
 type RemoteSignatureDetails = { signerName?: string; signedAt?: string };
 
 function normalizeOrigin(value: string) {
@@ -13,34 +14,52 @@ function normalizeOrigin(value: string) {
   return trimmed.startsWith("https://") ? trimmed : `https://${trimmed}`;
 }
 
-function toSignatureImage(points: unknown, color: unknown, details: RemoteSignatureDetails) {
+function isRemotePoint(point: unknown): point is RemotePoint {
+  return Array.isArray(point) && point.length === 2 && point.every((value) => typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1);
+}
+
+function normalizeStrokes(points: unknown): RemoteStroke[] {
   if (!Array.isArray(points)) throw new Error("Die empfangene Unterschrift ist unvollständig.");
-  const normalized = points.filter((point): point is RemotePoint => Array.isArray(point) && point.length === 2 && point.every((value) => typeof value === "number" && Number.isFinite(value) && value >= 0 && value <= 1));
-  if (normalized.length < 2) throw new Error("Die empfangene Unterschrift enthält zu wenige Zeichenpunkte.");
+  const rawStrokes = points.every(isRemotePoint) ? [points] : points.filter(Array.isArray);
+  const normalized = rawStrokes.map((stroke) => stroke.filter(isRemotePoint)).filter((stroke) => stroke.length > 0);
+  if (!normalized.length) throw new Error("Die empfangene Unterschrift enthält keine Zeichenpunkte.");
+  return normalized;
+}
+
+export function toSignatureImage(points: unknown, color: unknown, details: RemoteSignatureDetails) {
+  const strokes = normalizeStrokes(points);
+  const displayWidth = 740;
+  const displayHeight = details.signerName || details.signedAt ? 320 : 260;
+  const rasterScale = 3;
   const canvas = document.createElement("canvas");
-  canvas.width = 740;
-  canvas.height = details.signerName || details.signedAt ? 320 : 260;
+  canvas.width = displayWidth * rasterScale;
+  canvas.height = displayHeight * rasterScale;
   const context = canvas.getContext("2d");
   if (!context) throw new Error("Die empfangene Unterschrift konnte nicht vorbereitet werden.");
-  context.clearRect(0, 0, canvas.width, canvas.height);
-  context.strokeStyle = color === "#a4483d" ? color : "#155e63";
+  const signatureColor = color === "#a4483d" ? color : "#155e63";
+  context.setTransform(rasterScale, 0, 0, rasterScale, 0, 0);
+  context.clearRect(0, 0, displayWidth, displayHeight);
+  context.strokeStyle = signatureColor;
+  context.fillStyle = signatureColor;
   context.lineWidth = 5.4;
   context.lineCap = "round";
   context.lineJoin = "round";
-  context.beginPath();
-  normalized.forEach(([x, y], index) => {
-    const pointX = 42 + x * (canvas.width - 84);
-    const pointY = 32 + y * (canvas.height - 64);
-    if (index) context.lineTo(pointX, pointY);
-    else context.moveTo(pointX, pointY);
+  strokes.forEach((stroke) => {
+    const mapped = stroke.map(([x, y]) => [42 + x * (displayWidth - 84), 32 + y * (displayHeight - 64)] as const);
+    if (mapped.length === 1) {
+      context.beginPath(); context.arc(mapped[0][0], mapped[0][1], Math.max(3.6, context.lineWidth / 2), 0, Math.PI * 2); context.fill();
+      return;
+    }
+    context.beginPath();
+    mapped.forEach(([pointX, pointY], index) => { if (index) context.lineTo(pointX, pointY); else context.moveTo(pointX, pointY); });
+    context.stroke();
   });
-  context.stroke();
   const timestamp = details.signedAt && !Number.isNaN(Date.parse(details.signedAt)) ? new Intl.DateTimeFormat("de-DE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(details.signedAt)) : "";
   const label = [details.signerName?.trim(), timestamp].filter(Boolean).join(" · ");
   if (label) {
     context.fillStyle = "#506967";
     context.font = "600 18px system-ui, sans-serif";
-    context.fillText(label.slice(0, 110), 42, canvas.height - 24);
+    context.fillText(label.slice(0, 110), 42, displayHeight - 24);
   }
   return canvas.toDataURL("image/png");
 }

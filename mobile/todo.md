@@ -43,3 +43,14 @@
 - [x] Übertragene Signatur optional mit Unterzeichnername und Zeitstempel versehen.
 - [x] Übertragene Signatur vor dem PDF-Speichern deutlich verschieben und skalieren lassen.
 - [x] Aktuellen mobilen Signlocal-Stand im GitHub-Branch `mobile-signlocal` aktualisieren und Push bestätigen.
+- [x] Schritt-für-Schritt-Anleitung zur lokalen CA- und Companion-Zertifikatserstellung für macOS und Windows dokumentieren und gegen den Companion-Start prüfen.
+- [x] Shell-Skript zur automatischen mkcert-CA- und Companion-Zertifikatserstellung erstellen und lokal prüfen.
+- [x] Lokale CA-Downloadseite für die iPad-Ersteinrichtung mit klarer Integritätsprüfung und ohne Übertragung privater Schlüssel ergänzen.
+- [x] Direkt auf der lokalen CA-Downloadseite einen QR-Code zum öffentlichen Zertifikatsdownload anzeigen und prüfen.
+- [x] Einzelpunkte in Signaturen erhalten und die Auflösung vergrößerter Signaturen für Vorschau und PDF-Ausgabe verbessern.
+- [x] Ohne bestehenden Tresor direktes Einrichten ermöglichen und den PDF-Download ohne Tresor klar erreichbar machen.
+- [x] iPhone-PDF-Ausgabe über die native Teilen-Auswahl mit „In Dateien sichern“ ermöglichen und einen verständlichen Fallback zeigen.
+- [x] Vorbereitetes signiertes PDF mit einer klaren E-Mail-Aktion an die native Mail-App übergeben, ohne selbst E-Mails zu versenden.
+- [x] Download-, E-Mail- und Dateien-Aktionen auf schmalen Mobilbildschirmen kompakt, gleichwertig und touchfreundlich anordnen.
+- [x] Vollständige technische Sicherheits- und Compliance-Prüfung mit Datenflussanalyse, Bedrohungsmodell, Schutzmaßnahmen und dokumentierten Restgrenzen durchführen.
+- [x] Aktuellen sicherheitsgehärteten mobilen Stand in den GitHub-Branch `mobile-signlocal` übertragen und den Push verifizieren.
