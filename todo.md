@@ -81,3 +81,4 @@
 - [x] Den Windows-Installer um eine leicht verständliche Anleitung für Laptop-Hotspot und Offline-Nutzung ergänzen.
 - [x] Ein macOS-Installationspaket mit sicherem lokalem Start, Offline-Hotspot-Anleitung und Downloadbereich bereitstellen.
 - [x] Einen eigenständigen macOS-Download-Button und eine kurze bebilderte Offline-Hotspot-Anleitung auf der Seite ergänzen sowie den aktuellen Stand auf GitHub synchronisieren.
+- [x] Einen FAQ-Bereich für den Außendienst, eine verständliche Zertifikatswarnungs-Hilfe und eine aufklappbare bebilderte Offline-Hotspot-Anleitung ergänzen.

@@ -74,3 +74,6 @@ Das Zeichen besteht aus zwei versetzten, weich geschwungenen Bögen, die sich in
 - Papierflächen unterscheiden sich bewusst in Kantenform, Breite und Tiefe; sie wirken wie ruhige, warme Lagen statt wie wiederholte SaaS-Karten.
 - Das verbundene Zwei-Bogen-Signet verstärkt die Wortmarke am Einstieg und markiert Orientierung, nicht bloße Dekoration.
 - Sicherheitskommunikation beginnt stets bei persönlichem Besitz und Zuversicht; technische Nachweise bleiben leise, nachvollziehbare zweite Ebene.
+- Wegpetrol `#155E63` führt auch alle Companion- und Offline-Aktionen; Plattformen unterscheiden sich nur durch ihre Beschriftung, nicht durch konkurrierende Primärfarben.
+- Die Wegmarkenlinie setzt sich bis zur lokalen Companion-Einrichtung und den Offline-Hilfen fort, damit die Seite als eine zusammenhängende Wegstrecke lesbar bleibt.
+- Das verbundene Zwei-Bogen-Signet markiert die Offline-Hilfe als wiederkehrenden Orientierungspunkt und bleibt bewusst funktional statt dekorativ.
