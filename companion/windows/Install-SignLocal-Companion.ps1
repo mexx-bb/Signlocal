@@ -22,6 +22,16 @@ function Write-Stage([string]$Message) {
   Write-Host "`n[$AppName] $Message" -ForegroundColor Cyan
 }
 
+function Show-OfflineHotspotGuide {
+  Write-Host "`nAUSSENDIENST OHNE INTERNET" -ForegroundColor Yellow
+  Write-Host "Nach der einmaligen Installation arbeitet die Signaturkopplung ohne Internet nur zwischen diesem Laptop und dem Mobilgerät."
+  Write-Host "1. Öffne Windows-Einstellungen → Netzwerk & Internet → Mobiler Hotspot."
+  Write-Host "2. Schalte den mobilen Hotspot ein und merke dir Netzwerkname und Passwort."
+  Write-Host "3. Verbinde iPad, iPhone oder Android mit diesem Hotspot."
+  Write-Host "4. Öffne danach den Desktop-Start ‚SignLocal Companion starten‘ und kopple per QR-Code."
+  Write-Host "Verwende niemals ein Gäste- oder öffentliches WLAN. Die Erstinstallation lädt Node.js, mkcert und Companion-Dateien einmalig aus dem Internet."
+}
+
 function Test-PrivateIPv4([string]$Address) {
   return $Address -match '^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)'
 }
@@ -74,6 +84,7 @@ function Get-PrivateWirelessAddress {
 
 try {
   Ensure-Administrator
+  Show-OfflineHotspotGuide
   if ($AllowedOrigin -notmatch '^https://[^/]+$') {
     throw "Die erlaubte SignLocal-Adresse muss eine exakte HTTPS-Herkunft ohne Pfad sein."
   }
@@ -166,6 +177,7 @@ pause
   Write-Host "Wichtig: Die CA-Datei enthält keinen privaten Schlüssel. Übertrage niemals die Datei signlocal-lan-key.pem."
   Write-Host "Nutze den Companion nur im selben privaten WLAN. Der Companion startet nicht in öffentlichen oder Gäste-Netzen."
   Write-Host "Nach einem WLAN-Wechsel dieses Installationspaket erneut starten, damit das Zertifikat zur neuen lokalen IP passt."
+  Write-Host "Für Außendienst ohne Internet: Laptop-Hotspot einschalten, Mobilgerät damit verbinden und danach den Desktop-Start verwenden."
   if (-not $NoStart) { Start-Process -FilePath "cmd.exe" -ArgumentList "/k `"$runScript`"" }
 } catch {
   Write-Host "`nInstallation abgebrochen: $($_.Exception.Message)" -ForegroundColor Red

@@ -20,9 +20,13 @@ grep -Fq 'New-NetFirewallRule' "$installer"
 grep -Fq -- '-Profile Private' "$installer"
 grep -Fq 'FiloSottile.mkcert' "$installer"
 grep -Fq 'OpenJS.NodeJS.LTS' "$installer"
+grep -Fq 'AUSSENDIENST OHNE INTERNET' "$installer"
+grep -Fq 'Mobiler Hotspot' "$installer"
 ! grep -Fq 'SIGNLOCAL_ALLOW_ORIGINLESS_TESTS=1' "$installer"
 ! grep -Fq 'SIGNLOCAL_HOST=0.0.0.0' "$installer"
 grep -Fq 'privaten WLAN' "$guide"
+grep -Fq 'Außendienst ohne Internet' "$guide"
+grep -Fq 'Mobiler Hotspot' "$guide"
 grep -Fq 'signlocal-lan-key.pem' "$guide"
 
 printf 'test-windows-installer.sh: Test erfolgreich\n'

@@ -78,3 +78,6 @@
 - [x] Den lokalen iPad-/iPhone-Companion und den Gesamtstand erneut vollständig prüfen und die validierten Änderungen auf GitHub synchronisieren.
 - [x] Eine verständliche PowerShell-Ein-Klick-Installation für den strikt lokalen Windows-Companion mit sicherem lokalen Start vorbereiten und am Seitenende zum Download anbieten.
 - [x] Den aktuellen Stand einschließlich des Windows-Ein-Klick-Installers auf GitHub synchronisieren und den Remote-Commit abgleichen.
+- [x] Den Windows-Installer um eine leicht verständliche Anleitung für Laptop-Hotspot und Offline-Nutzung ergänzen.
+- [x] Ein macOS-Installationspaket mit sicherem lokalem Start, Offline-Hotspot-Anleitung und Downloadbereich bereitstellen.
+- [x] Einen eigenständigen macOS-Download-Button und eine kurze bebilderte Offline-Hotspot-Anleitung auf der Seite ergänzen sowie den aktuellen Stand auf GitHub synchronisieren.

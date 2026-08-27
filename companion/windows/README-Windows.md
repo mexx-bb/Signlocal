@@ -2,6 +2,12 @@
 
 Dieses Paket richtet den **lokalen** SignLocal-Companion auf einem Windows-PC ein. Damit kann ein iPad, iPhone oder Android-Gerät im selben **privaten WLAN** nur als Unterschriftenpad genutzt werden. PDFs werden dabei nicht an das Mobilgerät und nicht an einen Cloud-Dienst übertragen.
 
+## Außendienst ohne Internet
+
+Nach der einmaligen Installation kann der Companion ohne Internetverbindung laufen. Er braucht lediglich ein lokales WLAN zwischen Laptop und Mobilgerät. Aktiviere am Laptop unter **Windows-Einstellungen → Netzwerk & Internet → Mobiler Hotspot** einen eigenen Hotspot, verbinde iPad, iPhone oder Android mit diesem Netzwerk und starte anschließend den Desktop-Eintrag **„SignLocal Companion starten“**.
+
+> Die Erstinstallation selbst benötigt einmalig Internet, weil sie Node.js, mkcert und die aktuellen Companion-Dateien lädt. Für Außendienst ohne Empfang die Installation daher vorher im Büro oder zuhause ausführen. Gäste- und öffentliche WLANs bleiben ausgeschlossen.
+
 ## Einmal einrichten
 
 1. Lade dieses ZIP-Paket herunter und entpacke es, zum Beispiel auf dem Desktop.
