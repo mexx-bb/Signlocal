@@ -1,17 +1,17 @@
 {
-  "name": "SignLocal",
-  "short_name": "SignLocal",
+  "name": "Signlocal",
+  "short_name": "Signlocal",
   "description": "PDFs auf dem iPhone lokal vorbereiten und signieren.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f7f3e9",
-  "theme_color": "#102b79",
+  "theme_color": "#155e63",
   "icons": [
     {
-      "src": "/manus-storage/signlocal-mobile-icon_205ef848.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "src": "/assets/signlocal-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     }
   ]
 }

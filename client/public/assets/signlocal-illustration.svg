@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 300" fill="none">
+  <defs>
+    <linearGradient id="illuBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EEF2E9"/>
+      <stop offset="100%" stop-color="#F7F3E9"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="300" rx="24" fill="url(#illuBg)"/>
+  <path d="M50 150Q200 80 350 180T600 120" stroke="#A7B9A6" stroke-width="24" stroke-linecap="round" fill="none" opacity="0.4"/>
+  <path d="M120 220C200 160 300 240 450 160" stroke="#155E63" stroke-width="8" stroke-linecap="round" fill="none"/>
+  
+  <circle cx="200" cy="185" r="14" fill="#155E63"/>
+  <circle cx="200" cy="185" r="6" fill="#FFFDF8"/>
+  
+  <circle cx="340" cy="195" r="14" fill="#A7B9A6"/>
+  <circle cx="340" cy="195" r="6" fill="#183234"/>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#183234"/>
+      <stop offset="50%" stop-color="#155E63"/>
+      <stop offset="100%" stop-color="#24484A"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFDF8"/>
+      <stop offset="100%" stop-color="#F7F3E9"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#0E2325" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+  
+  <rect width="800" height="500" rx="32" fill="url(#bg)"/>
+  
+  <!-- Subtle background waves -->
+  <path d="M-50 400C150 320 350 480 550 410C700 360 820 420 900 450" stroke="#A7B9A6" stroke-opacity="0.15" stroke-width="60" stroke-linecap="round" fill="none"/>
+  <path d="M0 250C200 180 400 320 600 240C750 180 820 220 900 240" stroke="#FFFDF8" stroke-opacity="0.08" stroke-width="40" stroke-linecap="round" fill="none"/>
+
+  <!-- Document Paper Card -->
+  <g filter="url(#shadow)">
+    <rect x="230" y="70" width="340" height="360" rx="24" fill="url(#paper)"/>
+    
+    <!-- Paper header line -->
+    <rect x="270" y="110" width="120" height="12" rx="6" fill="#155E63" fill-opacity="0.8"/>
+    
+    <!-- Paper content lines -->
+    <rect x="270" y="145" width="260" height="8" rx="4" fill="#6B7D7B" fill-opacity="0.3"/>
+    <rect x="270" y="170" width="220" height="8" rx="4" fill="#6B7D7B" fill-opacity="0.3"/>
+    <rect x="270" y="195" width="240" height="8" rx="4" fill="#6B7D7B" fill-opacity="0.3"/>
+    
+    <!-- Signature Area Box -->
+    <rect x="270" y="240" width="260" height="110" rx="16" fill="#EEF2E9" stroke="#A7B9A6" stroke-width="2" stroke-dasharray="6 6"/>
+    
+    <!-- Realistic Pen Signature stroke -->
+    <path d="M300 310C320 290 335 270 345 285C355 300 360 320 375 300C390 280 420 270 440 285C455 295 480 300 500 290" stroke="#1F5AA6" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="505" cy="290" r="3" fill="#1F5AA6"/>
+    
+    <text x="285" y="340" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="#6B7D7B">Unterschrift · Gesichert auf diesem Gerät</text>
+  </g>
+
+  <!-- Decorative Waypoint Badge -->
+  <g transform="translate(160, 280)">
+    <circle cx="36" cy="36" r="36" fill="#A7B9A6" fill-opacity="0.25"/>
+    <circle cx="36" cy="36" r="24" fill="#155E63"/>
+    <path d="M28 36L34 42L46 30" stroke="#FFFDF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

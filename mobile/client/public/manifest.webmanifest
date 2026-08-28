@@ -8,9 +8,9 @@
   "theme_color": "#155e63",
   "icons": [
     {
-      "src": "/manus-storage/signlocal-mark_d05edad7.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "/assets/signlocal-mark.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     }
   ]
