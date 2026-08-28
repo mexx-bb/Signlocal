@@ -77,3 +77,13 @@ Das Zeichen besteht aus zwei versetzten, weich geschwungenen Bögen, die sich in
 - Wegpetrol `#155E63` führt auch alle Companion- und Offline-Aktionen; Plattformen unterscheiden sich nur durch ihre Beschriftung, nicht durch konkurrierende Primärfarben.
 - Die Wegmarkenlinie setzt sich bis zur lokalen Companion-Einrichtung und den Offline-Hilfen fort, damit die Seite als eine zusammenhängende Wegstrecke lesbar bleibt.
 - Das verbundene Zwei-Bogen-Signet markiert die Offline-Hilfe als wiederkehrenden Orientierungspunkt und bleibt bewusst funktional statt dekorativ.
+- Hilfen zu macOS-, Zertifikats- und Verbindungswarnungen nutzen dieselbe Wegstrecke: eine konkrete, ruhige Überschrift, ein sicherer nächster Schritt und keine Aufforderung zur Umgehung von Schutzfunktionen.
+- Das Büro-Signaturpad bleibt als sichtbare, lokale Bereitschaftsansicht gestaltet: Eine neue Sitzung erscheint als klare Aufforderung, der erfolgreiche Vorgang endet mit einer eindeutigen Aktion „Fertig ✓“ und kehrt ruhig zur Bereitschaft zurück.
+- Eine erfolgreiche lokale Mobilverbindung wird auf dem Mac als deutliche Wegmarke mit Häkchen, vertrauensstarker Bestätigung und genau einem nächsten Schritt zum Codevergleich sichtbar.
+- Die tägliche Companion-Bereitschaft bleibt als bewusste, lokale Einstellung gestaltet: Autostart kann sichtbar aktiviert und ebenso klar wieder beendet werden; bei fehlendem privaten Netzwerk wartet der Dienst statt eine externe Verbindung zu eröffnen.
+- Die lokale Companion-Einrichtung ist als zusammenhängende Wegstrecke formuliert: Paket wählen, lokal einrichten, privat verbinden. Plattformkarten unterscheiden sich als warme Papierlagen, nicht durch zusätzliche konkurrierende Badges oder Farben.
+- Das Zwei-Bogen-Signet markiert den Beginn der lokalen Einrichtungsstrecke und bleibt als orientierende Übergangsmarke auf der Seite präsent.
+- Die Wortmarke verwendet durchgehend das verbundene Zwei-Bogen-Signet als primäre Identität; reine Schmuck- oder Clipart-Icons werden durch dieselbe Orientierungsgeste ersetzt.
+- Punkte, Nummern, Trennlinien und Abschnittsmarken sind Teile einer einzigen Wegmarkenlinie vom Dokument bis zur Offline-Hilfe, nicht voneinander unabhängige Badge-Stile.
+- Wegpetrol `#155E63` bleibt den primären Aktionen, dem Wegsystem und dem Signet vorbehalten; Salbei und warme Papierlagen tragen alle sekundären Sicherungs- und Hilfsinformationen.
+- Companion-Downloads und Offline-Hilfen werden als gestaffelte Stationen einer geführten Einrichtungsstrecke gestaltet statt als gleichwertige Standardkarten.

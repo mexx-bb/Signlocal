@@ -48,6 +48,23 @@ canvas { display: block; width: 100%; margin-top: 16px; border: 2px dashed #a7b9
 .pairing-confirmation[data-state="ready"] .pairing-loader, .pairing-confirmation[data-state="received"] .pairing-loader { border-color: #155e63; background: #155e63; }
 .pairing-confirmation[data-state="ready"] .pairing-loader span, .pairing-confirmation[data-state="received"] .pairing-loader span { width: 17px; height: 9px; border-width: 0 0 3px 3px; border-color: #fff; border-radius: 0; transform: rotate(-45deg) translate(1px, -2px); }
 @media (max-width: 680px) { .grid, .setup-card { grid-template-columns: 1fr; } .desktop #signature-preview { height: 170px; } .actions { justify-content: stretch; } .actions button { flex: 1; } }
+@media (orientation: landscape) and (max-height: 700px) {
+  .mobile.signing-active { overflow: hidden; background: #f7f3e9; }
+  .mobile.signing-active main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(184px, 23vw); grid-template-rows: auto minmax(0, 1fr); gap: 10px 14px; max-width: none; min-height: 100svh; padding: max(12px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left)); }
+  .mobile.signing-active header { grid-column: 1; grid-row: 1; margin: 0; }
+  .mobile.signing-active header .eyebrow { font-size: .62rem; }
+  .mobile.signing-active header h1 { font-size: clamp(1.2rem, 3vw, 1.7rem); }
+  .mobile.signing-active header .mark { width: 40px; height: 40px; border-radius: 13px; font-size: 18px; }
+  .mobile.signing-active #signing-content { display: contents; }
+  .mobile.signing-active .certificate-guide, .mobile.signing-active .notice { display: none; }
+  .mobile.signing-active .card:has(#verification) { grid-column: 2; grid-row: 1 / span 2; align-self: stretch; overflow: auto; margin: 0; padding: 14px; border-radius: 18px; }
+  .mobile.signing-active .card:has(#signature-pad) { display: grid; grid-column: 1; grid-row: 2; grid-template-rows: auto minmax(0, 1fr) auto auto; min-height: 0; margin: 0; padding: 12px; border-radius: 18px; }
+  .mobile.signing-active .card:has(#signature-pad) .eyebrow, .mobile.signing-active .signer-help { margin: 0 0 8px; }
+  .mobile.signing-active #signature-pad { width: 100%; height: 100%; min-height: 0; margin: 0; border-radius: 14px; }
+  .mobile.signing-active .actions { margin-top: 10px; }
+  .mobile.signing-active .actions button { min-height: 46px; padding: 0 12px; font-size: .85rem; }
+  .mobile.signing-active #delivery { margin: 8px 0 0; font-size: .8rem; }
+}
 @media (prefers-reduced-motion: no-preference) { .pairing-confirmation[data-state="checking"] .pairing-loader span { animation: pairing-spin 900ms linear infinite; } .pairing-confirmation { animation: pairing-enter 280ms cubic-bezier(.23, 1, .32, 1) both; } }
 @keyframes pairing-spin { to { transform: rotate(360deg); } }
 @keyframes pairing-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }

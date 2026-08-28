@@ -82,3 +82,32 @@
 - [x] Ein macOS-Installationspaket mit sicherem lokalem Start, Offline-Hotspot-Anleitung und Downloadbereich bereitstellen.
 - [x] Einen eigenständigen macOS-Download-Button und eine kurze bebilderte Offline-Hotspot-Anleitung auf der Seite ergänzen sowie den aktuellen Stand auf GitHub synchronisieren.
 - [x] Einen FAQ-Bereich für den Außendienst, eine verständliche Zertifikatswarnungs-Hilfe und eine aufklappbare bebilderte Offline-Hotspot-Anleitung ergänzen.
+- [x] Die macOS-Gatekeeper-Warnung beim Öffnen des Companion-Installers im FAQ sicher erklären und testen.
+- [x] Den 404-Abbruch beim Laden der Companion-Dateien im macOS-Installer untersuchen, den Downloadpfad korrigieren und den Installer erneut testen.
+- [x] Die Safari-Erreichbarkeit des lokalen Companions über einen privaten Mac-Hotspot analysieren, den Startablauf verbessern und den Fehlerpfad erklären.
+- [x] Die fehlenden mobilen Companion-Webdateien im macOS-Installationspaket ergänzen und den QR-Seitenstart absichern.
+- [x] Für bereits geöffnete lokale iPad-/iPhone-Signaturseiten eine sichtbare Aufforderung bei neuer Sitzung und einen bestätigten Abschluss nach der Unterschrift ergänzen.
+- [x] Ein strikt lokales Büro-Signaturpad mit Bereitschaftsansicht, sichtbarer Aufforderung bei neuer Sitzung und einem Abschluss „Fertig ✓“ umsetzen.
+- [x] Auf dem Mac eine deutliche visuelle Bestätigung anzeigen, sobald ein iPad/iPhone erfolgreich lokal verbunden ist.
+- [x] Eine sichere lokale macOS-launchd-Einrichtung für den Companion mit automatischem Start, Neustart und Bedienhinweisen ergänzen.
+- [x] Eine nachträglich aktivierbare lokale Hintergrundausführung des Companions für Windows und macOS mit sicheren Start- und Stop-Aktionen ergänzen.
+- [x] Den erprobten Ablauf für lokale PDF-Signaturen, iPad-/iPhone-Pad, Companion-Pakete und sichere Benutzer-Autostarts als wiederverwendbaren Skill erstellen und validieren.
+- [x] Den wiederverwendbaren lokalen Signatur-Skill für gleichwertige Windows- und macOS-Unterstützung präzisieren und erneut validieren.
+- [x] Die lokale Büro-Pad-Bindung für mehrere aufeinanderfolgende Unterschriften ohne erneuten QR-Scan prüfen und bei Bedarf korrigieren.
+- [x] Den Büro-Pad-Ablauf nach einer übertragenen Signatur korrigieren, damit die nächste PC-Anforderung wieder direkt auf dem gekoppelten iPad/iPhone erscheint.
+- [x] Für das gekoppelte Büro-Pad eine PC-Warteanimation, Signaturvorschau, direkte Neuanforderung sowie einen verständlichen Timeout- und Wiederholungsweg ergänzen.
+- [x] Optionale Namen-, Orts- und Datumsangaben vor der Mobil-Signatur ausschließlich am PC erfassen und das iPad/iPhone/Android-Pad auf Zeichnen, Verwerfen, Abbrechen und Bestätigen reduzieren.
+- [x] Das lokale Mobil-Signaturpad im Querformat auf eine fokussierte, nahezu vollflächige Zeichenfläche mit weiter erreichbaren Abschlussaktionen optimieren.
+- [ ] Den fehlenden lokalen CA-Zertifikatsdownload auf iPhone untersuchen, die Freigabe korrigieren und den sicheren Einrichtungsweg klar anzeigen.
+- [x] Für ein bewusst bestätigtes lokales Büro-Pad eine zeitlich begrenzte Vertrauensbindung ohne Codevergleich pro weiterer Signatur ergänzen; bei Ablauf, Neuverbindung oder Gerätewechsel bleibt der Codevergleich Pflicht.
+- [x] Die PC-seitige Pairing-Anzeige bei einer weiterhin bestätigten Büro-Pad-Vertrauensbindung ausblenden und den reduzierten Folgeablauf prüfen.
+- [x] Ein ausgewähltes iPad, Android-Tablet oder Smartphone als dauerhaft vorbereitetes lokales Büro-Signaturpad über Folgeanforderungen und Companion-Neustarts wiederherstellen.
+- [x] Eine bewusste Trennaktion auf dem dauerhaften Mobil-Pad anbieten und die lokale Bindungsdatei aus Git und Installationspaketen ausschließen.
+- [x] Den dauerhaften Pad-Ablauf inklusive Wiederverbindung, Companion-Neustart, Folgesignatur und Sicherheitsrückfällen prüfen.
+- [x] Die bewusste Pad-Trennung, lokale Zustandslöschung sowie die erneute Codepflicht nach Vertrauensverlust automatisiert prüfen.
+- [x] Den Ablauf einer abgelaufenen dauerhaften Pad-Bindung automatisiert prüfen; abgelaufene Pads dürfen nicht als bereit oder vertrauenswürdig erscheinen.
+- [ ] Den aktuellen vollständigen Signlocal-Quellstand ohne lokale Schlüssel, Zertifikate, Laufzeitdaten oder Builddateien auf GitHub bereitstellen und den Remote-Commit prüfen.
+- [ ] Eine klare Anleitung für unabhängiges externes Hosting der Website und den weiterhin getrennten lokalen Companion ergänzen.
+- [ ] Den gemeldeten Erreichbarkeitsfehler der Website beziehungsweise des lokalen Companions anhand von URL, Startweg und Logs eingrenzen.
+- [ ] Die aktuell verwendeten lokalen Signlocal-Logos als versionsfähige Quellassets für GitHub einbinden, ohne die Website-Bereitstellung mit großen lokalen Dateien zu belasten.
+- [ ] Den wiederverwendbaren lokalen Signatur-Skill auf dauerhafte Mitarbeiter-Pads, lokale Wiederverbindung, bewusste Trennung und externe HTTPS-Herkünfte aktualisieren und validieren.

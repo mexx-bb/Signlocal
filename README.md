@@ -1,67 +1,47 @@
-# SignLocal
+# Signlocal
 
-SignLocal ist eine Offline-Anwendung zum digitalen Signieren von Dokumenten direkt auf Ihrem Computer. Sie können `.docx`- und `.pdf`-Dateien laden, Signaturfelder platzieren und das Endergebnis als signiertes PDF-Dokument exportieren. Da die Anwendung lokal läuft, verbleiben Ihre Dokumente stets auf Ihrem Rechner und werden nicht auf externe Server hochgeladen.
+Signlocal ist eine mobile Webanwendung für sichtbare, handschriftliche PDF-Signaturen. PDFs, DOCX-zu-PDF-Kopien, Bildkonvertierung und der optionale Browser-Tresor werden lokal im Browser verarbeitet. Der optionale **Signlocal LAN Companion** überträgt ausschließlich Signaturpunkte zwischen einem Computer und einem iPad, Android-Tablet oder Smartphone im eigenen privaten Netzwerk. Er lädt weder PDFs noch Signaturen in eine Cloud hoch.
 
-## Merkmale
+> Die sichtbare Unterschrift ist keine qualifizierte elektronische Signatur und ersetzt keinen gesetzlich erforderlichen Vertrauensdiensteprozess.
 
-*   **Lokale Verarbeitung**: Alle Dokumente werden lokal in Ihrem Browser verarbeitet. Es findet kein Upload auf Server statt.
-*   **DOCX & PDF Unterstützung**: Laden Sie Word-Dokumente (`.docx`) oder PDF-Dateien (`.pdf`).
-*   **Digitale Signaturen**: Platzieren Sie ein oder mehrere Signaturfelder. Sie können Ihre Signatur zeichnen, hochladen, einen Platzhalter verwenden oder ein Signotec-Pad nutzen.
-*   **PDF-Export**: Speichern Sie das signierte Dokument als neue PDF-Datei.
-*   **Druckfunktion**: Drucken Sie das signierte Dokument direkt aus der Anwendung.
-*   **PWA-fähig**: Installieren Sie SignLocal als Desktop-Anwendung für einen schnellen Zugriff.
+## Website unabhängig hosten
 
-## Installation und lokaler Betrieb
+Die Website kann auf einer eigenen HTTPS-Domain oder bei einem beliebigen statischen beziehungsweise Node-kompatiblen Hoster betrieben werden. Der Browserteil benötigt weder eine Datenbank noch eine Cloud-API für PDF-, Dokument- oder Signaturdaten.
 
-Um SignLocal auf Ihrem Computer auszuführen, befolgen Sie bitte diese Schritte.
+| Schritt | Befehl beziehungsweise Einstellung |
+|---|---|
+| Quellen laden | `git clone https://github.com/mexx-bb/Signlocal.git` |
+| Abhängigkeiten installieren | `pnpm install --frozen-lockfile` |
+| Produktion bauen | `pnpm run build:external` |
+| Node-Hosting | `pnpm start` |
+| Statisches Hosting | Inhalt von `dist/public/` veröffentlichen; bei Single-Page-Routing eine Fallback-Regel auf `index.html` setzen |
 
-### Voraussetzungen
+`pnpm run build:external` übernimmt die im Repository enthaltenen Marken- und Illustrationsquellen aus `brand-assets/` nach `dist/public/signlocal-assets/` und ersetzt dort die bisherigen Manus-Pfade. Die externe Website muss zwingend über **HTTPS** ausgeliefert werden, weil sie eine lokale HTTPS-/WSS-Verbindung zum Companion aufbaut. Für PDF-Dokumente und Unterschriften ist keine serverseitige Speicherung erforderlich. Wenn ein Hosting-Anbieter Analyse-, Log- oder CDN-Funktionen aktiviert, sollten diese für Dokumentseiten nicht den Dokumentinhalt, Dateinamen oder Anfragedaten erfassen.
 
-Stellen Sie sicher, dass auf Ihrem System [Node.js](https://nodejs.org/) (Version 18.x oder neuer) installiert ist.
+## Lokalen Companion auf eine eigene Website-Adresse einstellen
 
-### Schritte
+Der Companion akzeptiert aus Sicherheitsgründen nur die exakt festgelegte Website-Adresse. Nach einem Umzug der Website muss daher einmalig die erlaubte Herkunft angepasst werden.
 
-1.  **Repository klonen**
-    Öffnen Sie ein Terminal oder eine Kommandozeile und klonen Sie das Repository von GitHub:
-    ```bash
-    git clone https://github.com/mexx-bb/Signlocal.git
-    cd Signlocal
-    ```
+| System | Sichere Einstellung |
+|---|---|
+| Windows | `Install-SignLocal-Companion.ps1 -AllowedOrigin "https://sign.example.de"` |
+| macOS | `SIGNLOCAL_ALLOWED_ORIGIN="https://sign.example.de" ./Install-SignLocal-Companion.command` |
+| Manuell | Vor dem Companion-Start `SIGNLOCAL_ALLOWED_ORIGIN=https://sign.example.de` setzen. Nur Schema und Host ohne Pfad verwenden. |
 
-2.  **Abhängigkeiten installieren**
-    Installieren Sie die für den Betrieb notwendigen Pakete. 
-    ```bash
-    npm install
-    ```
+Die Adresse muss genau der öffentlich aufgerufenen Website entsprechen, etwa `https://sign.example.de`. Zusätze wie `/app`, `?test=1`, `http://` oder eine andere Subdomain werden bewusst abgewiesen. So kann keine fremde Website Signaturanfragen an den lokalen Companion stellen.
 
-3.  **Anwendung bauen (Optional für Entwicklung)**
-    Dieser Schritt kompiliert die Anwendung für die Produktion. Für die lokale Entwicklung ist er nicht zwingend notwendig.
-    ```bash
-    npm run build
-    ```
+## Dauerhaftes Mitarbeiter-Signaturpad
 
-4.  **Anwendung starten (Entwicklungsmodus)**
-    Starten Sie den lokalen Entwicklungsserver:
-    ```bash
-    npm run dev
-    ```
+Ein iPad, Android-Tablet oder Smartphone kann nach der ersten bestätigten Kopplung als bevorzugtes lokales Signaturpad vorbereitet bleiben. Solange die Pad-Seite sichtbar bleibt, erscheinen neue Aufforderungen direkt auf dem Gerät. Nach einem Companion-Neustart verbindet das geöffnete Pad sich erneut. Die Pad-Kennung bleibt lokal auf dem Companion-Computer und diesem Mobilgerät gespeichert; sie enthält keine PDF-Dateien, Signaturpunkte oder privaten Schlüssel.
 
-5.  **Anwendung im Browser öffnen**
-    Öffnen Sie Ihren Webbrowser und navigieren Sie zu der folgenden Adresse:
-    [http://localhost:9002](http://localhost:9002)
+Die dauerhafte Bindung ist auf 30 Tage begrenzt und lässt sich am Mobilgerät über **„Dieses Signaturpad trennen“** jederzeit bewusst löschen. Nach Ablauf, Trennung, neuem Gerät oder einem Wechsel des privaten Netzwerks wird wieder sicher neu gekoppelt. iOS und Android können die Pad-Seite aus dem gesperrten Hintergrund nicht zuverlässig rein lokal öffnen; das Gerät muss für direkte Aufforderungen sichtbar und entsperrt bleiben.
 
-Die Anwendung läuft nun vollständig offline auf Ihrem Computer. Sie können sie jederzeit verwenden, ohne eine Internetverbindung zu benötigen.
+## Wenn sich die Seite nicht öffnet
 
-### Für den Produktivbetrieb
+Die veröffentlichte Signlocal-Seite ist unter `https://signlocal-etd6sbfb.manus.space/` erreichbar. Wenn die **lokale Pad-Seite** nicht öffnet, ist das nicht dieselbe Website: Zuerst muss der Companion auf dem Mac oder Windows-PC gestartet sein. Anschließend wird auf dem Mobilgerät ausschließlich die vom Companion angezeigte private Adresse wie `https://192.168.1.20:8787` aufgerufen.
 
-Wenn Sie die Anwendung nicht entwickeln, sondern nur nutzen möchten, verwenden Sie folgende Befehle nach Schritt 2:
+Nutze nur ein eigenes privates WLAN, einen eigenen Laptop-Hotspot oder einen privaten Reiserouter. Öffentliche und Gäste-Netze sind ausdrücklich ausgeschlossen. Bei einer Zertifikatswarnung nicht fortfahren: lokale IP, die installierte Signlocal-CA und ihren am Computer angezeigten SHA-256-Fingerabdruck prüfen.
 
-1.  **Anwendung bauen:**
-    ```bash
-    npm run build
-    ```
-2.  **Produktionsserver starten:**
-    ```bash
-    npm run start
-    ```
-    Die Anwendung ist dann unter [http://localhost:3000](http://localhost:3000) erreichbar.
+## Sicherheit und Ausschlüsse
+
+Private Schlüssel, lokale Zertifikate, lokale Pad-Bindungen, `node_modules`, Builds, Logs und Umgebungsdateien gehören nicht in GitHub oder die Installationspakete. Die veröffentlichten Companion-ZIPs enthalten deshalb nur Quellcode und Installationsdateien. Die reale Abnahme von iPad/iPhone/Android im privaten WLAN bleibt nach jeder größeren Änderung ein eigener Testschritt.

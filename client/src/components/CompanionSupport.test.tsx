@@ -21,5 +21,9 @@ describe("CompanionSupport", () => {
     await user.click(screen.getByRole("button", { name: /FAQ für Außendienstmitarbeitende/ }));
     await user.click(screen.getByRole("button", { name: "Brauche ich im Außendienst Internet?" }));
     expect(screen.getByText(/Nur die erste Installation benötigt Internet/)).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "macOS meldet, dass der Companion-Installer nicht geöffnet wurde – was nun?" }));
+    expect(screen.getByText(/Deaktiviere die macOS-Sicherheit nicht und nutze keine Terminal-Umgehung/)).toBeInTheDocument();
+    expect(screen.getByText(/mit gedrückter Control-Taste über „Öffnen“/)).toBeInTheDocument();
   });
 });

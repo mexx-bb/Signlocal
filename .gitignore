@@ -118,3 +118,5 @@ companion/*.pem
 companion/*.key
 companion/*.p12
 companion/*.pfx
+companion/.signlocal-office-pads.json
+companion/.signlocal-office-pads.json.tmp

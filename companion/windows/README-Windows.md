@@ -6,14 +6,14 @@ Dieses Paket richtet den **lokalen** SignLocal-Companion auf einem Windows-PC ei
 
 Nach der einmaligen Installation kann der Companion ohne Internetverbindung laufen. Er braucht lediglich ein lokales WLAN zwischen Laptop und Mobilgerät. Aktiviere am Laptop unter **Windows-Einstellungen → Netzwerk & Internet → Mobiler Hotspot** einen eigenen Hotspot, verbinde iPad, iPhone oder Android mit diesem Netzwerk und starte anschließend den Desktop-Eintrag **„SignLocal Companion starten“**.
 
-> Die Erstinstallation selbst benötigt einmalig Internet, weil sie Node.js, mkcert und die aktuellen Companion-Dateien lädt. Für Außendienst ohne Empfang die Installation daher vorher im Büro oder zuhause ausführen. Gäste- und öffentliche WLANs bleiben ausgeschlossen.
+> Die Erstinstallation selbst benötigt einmalig Internet, weil sie Node.js, mkcert und die lokalen Abhängigkeiten einrichtet. Die Companion-Dateien sind bereits im ZIP enthalten. Für Außendienst ohne Empfang die Installation daher vorher im Büro oder zuhause ausführen. Gäste- und öffentliche WLANs bleiben ausgeschlossen.
 
 ## Einmal einrichten
 
 1. Lade dieses ZIP-Paket herunter und entpacke es, zum Beispiel auf dem Desktop.
 2. Verbinde den Windows-PC und das iPad/iPhone mit demselben **privaten WLAN**. Gäste- und öffentliche WLANs werden nicht unterstützt.
 3. Doppelklicke `SignLocal-Companion-Installation-starten.cmd` und bestätige die Windows-Sicherheitsabfrage.
-4. Das Skript installiert bei Bedarf Node.js und mkcert, erstellt ein Zertifikat ausschließlich auf deinem PC und legt einen Desktop-Start **„SignLocal Companion starten“** an.
+4. Das Skript installiert bei Bedarf Node.js und mkcert, verwendet die bereits im ZIP enthaltenen Companion-Dateien, erstellt ein Zertifikat ausschließlich auf deinem PC und legt einen Desktop-Start **„SignLocal Companion starten“** an.
 5. Notiere die angezeigte lokale Adresse und richte auf dem iPad/iPhone die angebotene öffentliche CA-Datei ein. Vergleiche den Fingerabdruck auf beiden Geräten, bevor du vertraust.
 
 > **Wichtig:** Übertrage nur `Signlocal-Local-CA.pem` auf dein eigenes Mobilgerät. Der private Schlüssel `signlocal-lan-key.pem` und alle Dateien mit `key` im Namen dürfen nie kopiert, geteilt oder versendet werden.
@@ -24,6 +24,12 @@ Nach der einmaligen Installation kann der Companion ohne Internetverbindung lauf
 2. Öffne die angezeigte lokale `https://…:8787`-Adresse zuerst auf dem iPad/iPhone. Sie muss ohne Zertifikatswarnung laden.
 3. Öffne SignLocal auf dem Computer, wähle **„Mobilgerät sicher koppeln“**, trage die lokale Adresse ein und scanne den QR-Code.
 4. Vergleiche und bestätige den sechsstelligen Code auf beiden Geräten. Erst dann kann die Unterschrift übertragen werden.
+
+## Lokalen Autostart einrichten oder beenden
+
+Nach der Installation erscheinen auf dem Desktop zwei zusätzliche Aktionen: **„SignLocal Companion Autostart aktivieren“** richtet einen Autostart nur für das angemeldete Windows-Benutzerkonto ein und startet den Companion anschließend. **„SignLocal Companion Autostart beenden“** entfernt die Aufgabe und beendet den lokalen Hintergrundprozess. Der manuelle Start bleibt weiterhin nutzbar.
+
+Der Autostart prüft vor jedem Start, ob Windows in einem privaten Netzwerk eine private IPv4-Adresse besitzt. Ohne diese Voraussetzung wartet er und stellt keine Signaturkopplung bereit. Das lokale Zertifikat wird nur bei einem tatsächlichen Wechsel dieser Adresse erneuert; Schlüssel und PDFs verbleiben auf dem Windows-PC.
 
 ## Wenn etwas nicht funktioniert
 

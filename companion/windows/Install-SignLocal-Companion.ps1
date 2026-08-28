@@ -16,7 +16,9 @@ $AppName = "SignLocal LAN Companion"
 $InstallRoot = Join-Path $env:LOCALAPPDATA "SignLocal\Companion"
 $CertificateRoot = Join-Path $env:LOCALAPPDATA "SignLocal\certs"
 $FirewallRuleName = "SignLocal LAN Companion (private WLAN)"
-$SourceZip = "https://github.com/mexx-bb/Signlocal/archive/refs/heads/mobile-signlocal.zip"
+$TaskName = "SignLocal LAN Companion Local Autostart"
+$LogRoot = Join-Path $env:LOCALAPPDATA "SignLocal\logs"
+$BundledCompanion = Join-Path $PSScriptRoot "companion"
 
 function Write-Stage([string]$Message) {
   Write-Host "`n[$AppName] $Message" -ForegroundColor Cyan
@@ -106,18 +108,14 @@ try {
     throw "mkcert wurde installiert, ist aber in dieser PowerShell noch nicht verfügbar. Schließe das Fenster und starte das Skript erneut."
   }
 
-  Write-Stage "Lokale Companion-Dateien werden aus deinem GitHub-Branch geladen …"
-  $temporaryRoot = Join-Path $env:TEMP ("signlocal-install-" + [Guid]::NewGuid().ToString("N"))
-  $zipPath = Join-Path $temporaryRoot "signlocal.zip"
-  New-Item -ItemType Directory -Force -Path $temporaryRoot | Out-Null
-  Invoke-WebRequest -Uri $SourceZip -OutFile $zipPath -UseBasicParsing
-  Expand-Archive -Path $zipPath -DestinationPath $temporaryRoot -Force
-  $sourceCompanion = Get-ChildItem -Path $temporaryRoot -Directory | ForEach-Object { Join-Path $_.FullName "companion" } | Where-Object { Test-Path (Join-Path $_ "server.mjs") } | Select-Object -First 1
-  if (-not $sourceCompanion) { throw "Der Companion-Ordner konnte im GitHub-Download nicht gefunden werden." }
+  Write-Stage "Mitgelieferte lokale Companion-Dateien werden vorbereitet …"
+  foreach ($requiredFile in @("server.mjs", "package.json", "scripts\prepare-local-cert.sh", "public\index.html", "public\mobile.html", "public\desktop.js", "public\mobile.js", "public\app.css")) {
+    if (-not (Test-Path (Join-Path $BundledCompanion $requiredFile))) { throw "Die mitgelieferten Companion-Dateien sind unvollständig ($requiredFile). Lade das aktuelle SignLocal-Windows-Paket erneut herunter." }
+  }
 
   if (Test-Path $InstallRoot) { Remove-Item -Recurse -Force $InstallRoot }
   New-Item -ItemType Directory -Force -Path $InstallRoot | Out-Null
-  Copy-Item -Path (Join-Path $sourceCompanion "*") -Destination $InstallRoot -Recurse -Force
+  Copy-Item -Path (Join-Path $BundledCompanion "*") -Destination $InstallRoot -Recurse -Force
 
   Write-Stage "Lokale Companion-Abhängigkeiten werden eingerichtet …"
   Push-Location $InstallRoot
@@ -161,6 +159,82 @@ node server.mjs
 pause
 "@ | Set-Content -Path $runScript -Encoding Ascii
 
+  $backgroundScript = Join-Path $InstallRoot "Start-SignLocal-Companion-Background.ps1"
+  @"
+# Lokaler Benutzerhintergrunddienst: läuft ausschließlich mit privater IPv4-Adresse.
+`$ErrorActionPreference = "Continue"
+`$InstallRoot = Join-Path `$env:LOCALAPPDATA "SignLocal\Companion"
+`$CertificateRoot = Join-Path `$env:LOCALAPPDATA "SignLocal\certs"
+`$LogRoot = Join-Path `$env:LOCALAPPDATA "SignLocal\logs"
+`$AllowedOrigin = "$AllowedOrigin"
+New-Item -ItemType Directory -Force -Path `$LogRoot | Out-Null
+
+function Test-PrivateIPv4([string]`$Address) { return `$Address -match '^(10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)' }
+function Get-PrivateWirelessAddress {
+  `$route = Get-NetRoute -DestinationPrefix "0.0.0.0/0" -ErrorAction Stop | Sort-Object -Property RouteMetric, InterfaceMetric | Select-Object -First 1
+  `$profile = Get-NetConnectionProfile -InterfaceIndex `$route.InterfaceIndex -ErrorAction Stop
+  if (`$profile.NetworkCategory -ne "Private") { throw "Kein privates Netzwerk aktiv." }
+  `$ip = Get-NetIPAddress -InterfaceIndex `$route.InterfaceIndex -AddressFamily IPv4 | Where-Object { Test-PrivateIPv4 `$_.IPAddress } | Select-Object -First 1 -ExpandProperty IPAddress
+  if (-not `$ip) { throw "Keine private IPv4-Adresse aktiv." }
+  return `$ip
+}
+
+while (`$true) {
+  try {
+    `$localIp = Get-PrivateWirelessAddress
+    `$node = (Get-Command node -ErrorAction Stop).Source
+    `$certificatePath = Join-Path `$CertificateRoot "signlocal-lan-cert.pem"
+    `$keyPath = Join-Path `$CertificateRoot "signlocal-lan-key.pem"
+    `$publicCaPath = Join-Path `$CertificateRoot "Signlocal-Local-CA.pem"
+    `$hostRecord = Join-Path `$CertificateRoot "signlocal-lan-host.txt"
+    `$storedHost = if (Test-Path `$hostRecord) { (Get-Content -Raw `$hostRecord).Trim() } else { "" }
+    if (-not (Test-Path `$certificatePath) -or -not (Test-Path `$keyPath) -or -not (Test-Path `$publicCaPath) -or `$storedHost -ne `$localIp) {
+      & mkcert -cert-file `$certificatePath -key-file `$keyPath `$localIp 2>&1 | Out-File -Append -Encoding utf8 (Join-Path `$LogRoot "companion.log")
+      if (`$LASTEXITCODE -ne 0) { throw "Lokales Zertifikat konnte nicht erneuert werden." }
+      `$caRoot = (& mkcert -CAROOT).Trim()
+      Copy-Item -Force -Path (Join-Path `$caRoot "rootCA.pem") -Destination `$publicCaPath
+      Set-Content -Path `$hostRecord -Value `$localIp -Encoding ascii
+    }
+    `$env:SIGNLOCAL_TLS_KEY = `$keyPath; `$env:SIGNLOCAL_TLS_CERT = `$certificatePath; `$env:SIGNLOCAL_HOST = `$localIp
+    `$env:SIGNLOCAL_ALLOWED_ORIGIN = `$AllowedOrigin; `$env:SIGNLOCAL_CA_DOWNLOAD = "1"; `$env:SIGNLOCAL_CA_FILE = `$publicCaPath; `$env:SIGNLOCAL_PORT = "8787"
+    & `$node (Join-Path `$InstallRoot "server.mjs") 2>&1 | Out-File -Append -Encoding utf8 (Join-Path `$LogRoot "companion.log")
+  } catch {
+    "`$(Get-Date -Format s) Lokaler Companion wartet: `$(`$_.Exception.Message)" | Out-File -Append -Encoding utf8 (Join-Path `$LogRoot "companion.log")
+  }
+  Start-Sleep -Seconds 30
+}
+"@ | Set-Content -Path $backgroundScript -Encoding utf8
+
+  $autostartScript = Join-Path $InstallRoot "SignLocal-Companion-Autostart.ps1"
+  @"
+# Bewusstes Ein- und Ausschalten des lokalen Benutzer-Autostarts.
+[CmdletBinding()]
+param([ValidateSet("Enable", "Disable", "Status")][string]`$Action = "Status")
+`$ErrorActionPreference = "Stop"
+`$TaskName = "$TaskName"
+`$BackgroundScript = Join-Path `$env:LOCALAPPDATA "SignLocal\Companion\Start-SignLocal-Companion-Background.ps1"
+function Stop-LocalCompanion {
+  Get-CimInstance Win32_Process -Filter "Name = 'node.exe'" -ErrorAction SilentlyContinue | Where-Object { `$_.CommandLine -like "*SignLocal*Companion*server.mjs*" } | ForEach-Object { Stop-Process -Id `$_.ProcessId -Force -ErrorAction SilentlyContinue }
+}
+switch (`$Action) {
+  "Enable" {
+    if (-not (Test-Path `$BackgroundScript)) { throw "Der lokale Companion-Hintergrundstarter fehlt. Führe die aktuelle SignLocal-Installation erneut aus." }
+    `$command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "' + `$BackgroundScript + '"'
+    & schtasks.exe /Create /TN `$TaskName /TR `$command /SC ONLOGON /RL LIMITED /F | Out-Null
+    if (`$LASTEXITCODE -ne 0) { throw "Der lokale Autostart konnte nicht eingerichtet werden." }
+    & schtasks.exe /Run /TN `$TaskName | Out-Null
+    Write-Host "Autostart aktiviert. Der Companion läuft nur in einem privaten Netzwerk und wartet sonst sicher." -ForegroundColor Green
+  }
+  "Disable" {
+    & schtasks.exe /End /TN `$TaskName 2>`$null | Out-Null
+    & schtasks.exe /Delete /TN `$TaskName /F 2>`$null | Out-Null
+    Stop-LocalCompanion
+    Write-Host "Autostart beendet. Der manuelle Desktop-Start bleibt verfügbar." -ForegroundColor Yellow
+  }
+  "Status" { & schtasks.exe /Query /TN `$TaskName 2>`$null; if (`$LASTEXITCODE -ne 0) { Write-Host "Autostart ist nicht aktiv." } }
+}
+"@ | Set-Content -Path $autostartScript -Encoding utf8
+
   $shortcutPath = Join-Path ([Environment]::GetFolderPath("Desktop")) "SignLocal Companion starten.lnk"
   $shell = New-Object -ComObject WScript.Shell
   $shortcut = $shell.CreateShortcut($shortcutPath)
@@ -170,13 +244,31 @@ pause
   $shortcut.Description = "Startet den lokalen SignLocal-Unterschriftenpad-Companion im privaten WLAN"
   $shortcut.Save()
 
-  Remove-Item -Recurse -Force $temporaryRoot -ErrorAction SilentlyContinue
+  $autostartEnable = Join-Path ([Environment]::GetFolderPath("Desktop")) "SignLocal Companion Autostart aktivieren.lnk"
+  $enableShortcut = $shell.CreateShortcut($autostartEnable)
+  $enableShortcut.TargetPath = "powershell.exe"
+  $enableShortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$autostartScript`" -Action Enable"
+  $enableShortcut.WorkingDirectory = $InstallRoot
+  $enableShortcut.Description = "Aktiviert den lokalen SignLocal Companion beim Windows-Anmelden"
+  $enableShortcut.Save()
+
+  $autostartDisable = Join-Path ([Environment]::GetFolderPath("Desktop")) "SignLocal Companion Autostart beenden.lnk"
+  $disableShortcut = $shell.CreateShortcut($autostartDisable)
+  $disableShortcut.TargetPath = "powershell.exe"
+  $disableShortcut.Arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$autostartScript`" -Action Disable"
+  $disableShortcut.WorkingDirectory = $InstallRoot
+  $disableShortcut.Description = "Beendet den lokalen SignLocal Companion Autostart"
+  $disableShortcut.Save()
+
   Write-Host "`nInstallation abgeschlossen." -ForegroundColor Green
   Write-Host "Desktop-Start: $shortcutPath"
+  Write-Host "Autostart bewusst aktivieren: $autostartEnable"
+  Write-Host "Autostart beenden: $autostartDisable"
   Write-Host "Öffentliche CA-Datei für dein iPad/iPhone: $publicCaPath"
   Write-Host "Wichtig: Die CA-Datei enthält keinen privaten Schlüssel. Übertrage niemals die Datei signlocal-lan-key.pem."
   Write-Host "Nutze den Companion nur im selben privaten WLAN. Der Companion startet nicht in öffentlichen oder Gäste-Netzen."
   Write-Host "Nach einem WLAN-Wechsel dieses Installationspaket erneut starten, damit das Zertifikat zur neuen lokalen IP passt."
+  Write-Host "Der optionale Autostart erkennt einen privaten Netzwerkwechsel beim Anmelden und erneuert das lokale Zertifikat nur dann."
   Write-Host "Für Außendienst ohne Internet: Laptop-Hotspot einschalten, Mobilgerät damit verbinden und danach den Desktop-Start verwenden."
   if (-not $NoStart) { Start-Process -FilePath "cmd.exe" -ArgumentList "/k `"$runScript`"" }
 } catch {
