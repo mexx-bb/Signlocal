@@ -108,6 +108,6 @@
 - [x] Den Ablauf einer abgelaufenen dauerhaften Pad-Bindung automatisiert prüfen; abgelaufene Pads dürfen nicht als bereit oder vertrauenswürdig erscheinen.
 - [x] Den aktuellen vollständigen Signlocal-Quellstand ohne lokale Schlüssel, Zertifikate, Laufzeitdaten oder Builddateien auf GitHub bereitstellen und den Remote-Commit prüfen.
 - [x] Eine klare Anleitung für unabhängiges externes Hosting der Website und den weiterhin getrennten lokalen Companion ergänzen.
-- [ ] Den gemeldeten Erreichbarkeitsfehler der Website beziehungsweise des lokalen Companions anhand von URL, Startweg und Logs eingrenzen.
+- [x] Den gemeldeten Erreichbarkeitsfehler der Website beziehungsweise des lokalen Companions anhand von URL, Startweg und Logs eingrenzen.
 - [x] Die aktuell verwendeten lokalen Signlocal-Logos als versionsfähige Quellassets für GitHub einbinden, ohne die Website-Bereitstellung mit großen lokalen Dateien zu belasten.
 - [x] Den wiederverwendbaren lokalen Signatur-Skill auf dauerhafte Mitarbeiter-Pads, lokale Wiederverbindung, bewusste Trennung und externe HTTPS-Herkünfte aktualisieren und validieren.
