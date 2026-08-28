@@ -98,36 +98,10 @@ function vitePluginManusDebugCollector(): Plugin {
     },
 
     configureServer(server: ViteDevServer) {
-      // POST /__manus__/logs: Browser sends logs (written directly to files)
-      server.middlewares.use("/__manus__/logs", (req, res, next) => {
+      server.middlewares.use("/__manus__/logs", (req, res) => {
         if (req.method !== "POST") {
-          return next();
-        }
-
-        const handlePayload = (payload: any) => {
-          // Write logs directly to files
-          if (payload.consoleLogs?.length > 0) {
-            writeToLogFile("browserConsole", payload.consoleLogs);
-          }
-          if (payload.networkRequests?.length > 0) {
-            writeToLogFile("networkRequests", payload.networkRequests);
-          }
-          if (payload.sessionEvents?.length > 0) {
-            writeToLogFile("sessionReplay", payload.sessionEvents);
-          }
-
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ success: true }));
-        };
-
-        const reqBody = (req as { body?: unknown }).body;
-        if (reqBody && typeof reqBody === "object") {
-          try {
-            handlePayload(reqBody);
-          } catch (e) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: String(e) }));
-          }
+          res.writeHead(405, { "Content-Type": "text/plain" });
+          res.end("Method Not Allowed");
           return;
         }
 
@@ -138,11 +112,40 @@ function vitePluginManusDebugCollector(): Plugin {
 
         req.on("end", () => {
           try {
-            const payload = JSON.parse(body);
-            handlePayload(payload);
-          } catch (e) {
-            res.writeHead(400, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ success: false, error: String(e) }));
+            const data = JSON.parse(body);
+            const { logs, type } = data as { logs: unknown[]; type: string };
+
+            if (!Array.isArray(logs) || logs.length === 0) {
+              res.writeHead(400, { "Content-Type": "text/plain" });
+              res.end("Invalid logs format: expected non-empty array");
+              return;
+            }
+
+            // Map type to LogSource
+            let source: LogSource;
+            switch (type) {
+              case "console":
+                source = "browserConsole";
+                break;
+              case "network":
+                source = "networkRequests";
+                break;
+              case "sessionReplay":
+                source = "sessionReplay";
+                break;
+              default:
+                res.writeHead(400, { "Content-Type": "text/plain" });
+                res.end(`Unknown log type: ${type}`);
+                return;
+            }
+
+            writeToLogFile(source, logs);
+
+            res.writeHead(200, { "Content-Type": "text/plain" });
+            res.end("OK");
+          } catch {
+            res.writeHead(400, { "Content-Type": "text/plain" });
+            res.end("Invalid JSON");
           }
         });
       });
@@ -206,6 +209,7 @@ function vitePluginStorageProxy(): Plugin {
 const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
 
 export default defineConfig({
+  base: process.env.VITE_BASE || "./",
   plugins,
   resolve: {
     alias: {
