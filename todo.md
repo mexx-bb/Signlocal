@@ -113,4 +113,4 @@
 - [x] Den wiederverwendbaren lokalen Signatur-Skill auf dauerhafte Mitarbeiter-Pads, lokale Wiederverbindung, bewusste Trennung und externe HTTPS-Herkünfte aktualisieren und validieren.
 - [x] Eine einfache Schritt-für-Schritt-Anleitung für vollständig lokale Außendiensteinsätze ohne Internet erstellen, einschließlich Laptop-Hotspot, iPad-/Android-Pad und sicherer Fehlergrenzen.
 - [x] Die aktuelle Repository-Struktur auf Vollständigkeit, externe Hosting-Fähigkeit und ausgeschlossene lokale Geheimnisse prüfen.
-- [ ] Den nach der letzten Aktualisierung entstandenen Code- und Dokumentationsstand erneut sicher auf GitHub übertragen und den Remote-Commit prüfen.
+- [x] Den nach der letzten Aktualisierung entstandenen Code- und Dokumentationsstand erneut sicher auf GitHub übertragen und den Remote-Commit prüfen.
