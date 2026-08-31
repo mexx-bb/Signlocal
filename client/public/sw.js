@@ -1,6 +1,6 @@
 /* Signlocal PWA cache: stores only application shell resources, never user documents. */
 const CACHE = "signlocal-shell-v1";
-const APP_SHELL = ["/", "/manifest.webmanifest", "/assets/signlocal-mark.svg"];
+const APP_SHELL = ["./", "./manifest.webmanifest", "./assets/signlocal-mark.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(APP_SHELL)));

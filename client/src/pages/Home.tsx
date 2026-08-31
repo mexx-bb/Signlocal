@@ -20,10 +20,11 @@ import { LocalSignaturePairing } from "@/components/LocalSignaturePairing";
 
 pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker;
 
-const HERO_IMAGE = "/assets/signlocal-hero.svg";
-const ILLUSTRATION_IMAGE = "/assets/signlocal-illustration.svg";
-const DETAIL_IMAGE = "/assets/signlocal-path-detail.svg";
-const MARK_IMAGE = "/assets/signlocal-mark.svg";
+const BASE = import.meta.env.BASE_URL.replace(/\/+$/, "") + "/";
+const HERO_IMAGE = `${BASE}assets/signlocal-hero.svg`;
+const ILLUSTRATION_IMAGE = `${BASE}assets/signlocal-illustration.svg`;
+const DETAIL_IMAGE = `${BASE}assets/signlocal-path-detail.svg`;
+const MARK_IMAGE = `${BASE}assets/signlocal-mark.svg`;
 
 type Signature = { id: string; image: string; x: number; y: number; page: number; width: number; source?: "local" | "mobile"; signerName?: string; signedAt?: string };
 type LogEntry = { time: string; message: string };
@@ -246,7 +247,7 @@ export default function Home() {
   useEffect(() => {
     const resize = () => setPageWidth(Math.max(280, Math.min(720, window.innerWidth - 48)));
     resize(); window.addEventListener("resize", resize);
-    if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+    if ("serviceWorker" in navigator) navigator.serviceWorker.register(`${BASE}sw.js`).catch(() => undefined);
     void (async () => {
       const settings = await getVaultSettings();
       setVaultConfigured(Boolean(settings)); setFaceIdEnabled(Boolean(settings?.faceIdCredentialId));
