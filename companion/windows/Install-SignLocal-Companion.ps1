@@ -5,7 +5,7 @@
 #>
 [CmdletBinding()]
 param(
-  [string]$AllowedOrigin = "https://signlocal-etd6sbfb.manus.space",
+  [string]$AllowedOrigin = "https://mexx-bb.github.io",
   [switch]$NoStart
 )
 

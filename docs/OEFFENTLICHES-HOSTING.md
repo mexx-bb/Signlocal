@@ -30,3 +30,5 @@ Netlify und Vercel wurden in der Vergangenheit mit abweichenden Repository- oder
 ## Veröffentlichungsprüfung
 
 Nach jedem Produktionspush muss der GitHub-Actions-Lauf **Deploy to GitHub Pages** erfolgreich enden. Anschließend soll die öffentliche Adresse mindestens den Button **„PDF, Word oder Bild wählen“**, die Word-/Bildhinweise und beide Companion-Downloads zeigen. Die Website verarbeitet PDF-, DOCX- und Bilddateien im Browser; sie überträgt Dokumente und Signaturen nicht automatisch an GitHub Pages.
+
+Für die lokale Companion-Verbindung ist die erlaubte Browser-Herkunft bei GitHub Pages exakt `https://mexx-bb.github.io`, **ohne** `/Signlocal/`. Neue Windows- und macOS-Companion-Pakete verwenden diese Herkunft standardmäßig. Für eine eigene HTTPS-Domain muss sie bei der Installation bewusst auf deren Schema und Host ohne Pfad geändert werden.

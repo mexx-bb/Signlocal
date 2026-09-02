@@ -24,11 +24,11 @@ Der Companion akzeptiert aus Sicherheitsgründen nur die exakt festgelegte Websi
 
 | System | Sichere Einstellung |
 |---|---|
-| Windows | `Install-SignLocal-Companion.ps1 -AllowedOrigin "https://sign.example.de"` |
-| macOS | `SIGNLOCAL_ALLOWED_ORIGIN="https://sign.example.de" ./Install-SignLocal-Companion.command` |
-| Manuell | Vor dem Companion-Start `SIGNLOCAL_ALLOWED_ORIGIN=https://sign.example.de` setzen. Nur Schema und Host ohne Pfad verwenden. |
+| Windows | Standard: `https://mexx-bb.github.io`. Eigene HTTPS-Domain: `Install-SignLocal-Companion.ps1 -AllowedOrigin "https://sign.example.de"` |
+| macOS | Standard: `https://mexx-bb.github.io`. Eigene HTTPS-Domain: `SIGNLOCAL_ALLOWED_ORIGIN="https://sign.example.de" ./Install-SignLocal-Companion.command` |
+| Manuell | Vor dem Companion-Start `SIGNLOCAL_ALLOWED_ORIGIN=https://mexx-bb.github.io` setzen. Nur Schema und Host ohne Pfad verwenden. |
 
-Die Adresse muss genau der öffentlich aufgerufenen Website entsprechen, etwa `https://sign.example.de`. Zusätze wie `/app`, `?test=1`, `http://` oder eine andere Subdomain werden bewusst abgewiesen. So kann keine fremde Website Signaturanfragen an den lokalen Companion stellen.
+Für GitHub Pages lautet die sichere Herkunft **`https://mexx-bb.github.io`** – bewusst ohne den Pfad `/Signlocal/`, weil die Browser-Herkunft nur aus Schema, Host und gegebenenfalls Port besteht. Zusätze wie `/app`, `?test=1`, `http://` oder eine andere Subdomain werden bewusst abgewiesen. So kann keine fremde Website Signaturanfragen an den lokalen Companion stellen.
 
 ## Dauerhaftes Mitarbeiter-Signaturpad
 

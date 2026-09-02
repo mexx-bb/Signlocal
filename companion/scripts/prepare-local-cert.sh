@@ -7,7 +7,7 @@ IFS=$'\n\t'
 umask 077
 
 DEFAULT_OUTPUT_DIR="${HOME}/signlocal-lan/certs"
-DEFAULT_ORIGIN="https://signlocal-etd6sbfb.manus.space"
+DEFAULT_ORIGIN="https://mexx-bb.github.io"
 OUTPUT_DIR="$DEFAULT_OUTPUT_DIR"
 HOST=""
 ALLOWED_ORIGIN="$DEFAULT_ORIGIN"
@@ -26,7 +26,7 @@ Optionen:
   --output-dir <pfad>                  Geschützter Ablageort außerhalb des Projekts.
                                        Standard: ~/signlocal-lan/certs
   --origin <https-origin>              Exakte HTTPS-Adresse der geöffneten Signlocal-PDF-App.
-                                       Standard: https://signlocal-etd6sbfb.manus.space
+                                       Standard: https://mexx-bb.github.io
   --force                              Vorhandene Companion-Zertifikate bewusst ersetzen.
   --help                               Diese Hilfe ausgeben.
 
@@ -134,7 +134,7 @@ else
   fail "--host muss eine private IPv4-Adresse oder ein lokaler .local-Name sein; „${HOST}“ ist nicht zulässig."
 fi
 
-[[ "$ALLOWED_ORIGIN" =~ ^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?$ ]] || fail "--origin muss ausschließlich eine HTTPS-Herkunft ohne Pfad enthalten, z. B. https://signlocal-etd6sbfb.manus.space."
+[[ "$ALLOWED_ORIGIN" =~ ^https://[A-Za-z0-9.-]+(:[0-9]{1,5})?$ ]] || fail "--origin muss ausschließlich eine HTTPS-Herkunft ohne Pfad enthalten, z. B. https://mexx-bb.github.io."
 
 mkdir -p "$OUTPUT_DIR"
 chmod 700 "$OUTPUT_DIR"

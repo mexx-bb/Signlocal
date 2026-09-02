@@ -45,7 +45,7 @@ chmod +x "$MOCK_BIN/mkcert"
 PATH="$MOCK_BIN:$PATH" FAKE_MKCERT_ROOT="$MOCK_CA_ROOT" \
   bash "$TARGET_SCRIPT" \
     --host 192.168.178.25 \
-    --origin https://signlocal-etd6sbfb.manus.space \
+    --origin https://mexx-bb.github.io \
     --output-dir "$OUTPUT_DIR" > "$TEST_ROOT/output.log"
 
 [[ -s "$OUTPUT_DIR/signlocal-lan-cert.pem" ]]

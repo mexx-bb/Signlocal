@@ -165,7 +165,7 @@ LOCAL_IP="$(ipconfig getifaddr en0)"
 export SIGNLOCAL_TLS_KEY="$HOME/signlocal-lan/certs/signlocal-lan-key.pem"
 export SIGNLOCAL_TLS_CERT="$HOME/signlocal-lan/certs/signlocal-lan-cert.pem"
 export SIGNLOCAL_HOST="$LOCAL_IP"
-export SIGNLOCAL_ALLOWED_ORIGIN="https://signlocal-etd6sbfb.manus.space"
+export SIGNLOCAL_ALLOWED_ORIGIN="https://mexx-bb.github.io"
 pnpm start
 ```
 
@@ -179,7 +179,7 @@ $CertDir = Join-Path $env:USERPROFILE "signlocal-lan\certs"
 $env:SIGNLOCAL_TLS_KEY = Join-Path $CertDir "signlocal-lan-key.pem"
 $env:SIGNLOCAL_TLS_CERT = Join-Path $CertDir "signlocal-lan-cert.pem"
 $env:SIGNLOCAL_HOST = $LocalIp
-$env:SIGNLOCAL_ALLOWED_ORIGIN = "https://signlocal-etd6sbfb.manus.space"
+$env:SIGNLOCAL_ALLOWED_ORIGIN = "https://mexx-bb.github.io"
 pnpm start
 ```
 
