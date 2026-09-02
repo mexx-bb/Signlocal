@@ -1,0 +1,8 @@
+packages:
+  - "."
+
+allowBuilds:
+  '@tailwindcss/oxide': true
+  canvas: false
+  core-js: false
+  esbuild: true
