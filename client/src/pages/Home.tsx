@@ -89,7 +89,7 @@ const INK_COLORS = [
 ] as const;
 const SIGNATURE_CANVAS_WIDTH = 740;
 const SIGNATURE_CANVAS_HEIGHT = 260;
-const SIGNATURE_RASTER_SCALE = 3;
+const SIGNATURE_RASTER_SCALE = 4;
 
 function now() {
   return new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" }).format(new Date());

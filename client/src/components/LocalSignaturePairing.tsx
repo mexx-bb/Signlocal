@@ -15,6 +15,26 @@ export type RemoteSignatureDetails = { signerName?: string; signedAt?: string; s
 type CaptionDetails = { signerName: string; signedPlace: string; showDate: boolean; dateFormat: SignatureDateFormat };
 export type LocalSignaturePairingHandle = { requestOfficeSignature: () => void };
 const COMPANION_ORIGIN_KEY = "signlocal-companion-origin";
+const SIGNATURE_RASTER_SCALE = 4;
+
+function drawSmoothStroke(context: CanvasRenderingContext2D, points: readonly (readonly [number, number])[]) {
+  const [first, ...following] = points;
+  if (!first) return;
+  context.beginPath();
+  context.moveTo(first[0], first[1]);
+  if (following.length === 1) {
+    context.lineTo(following[0][0], following[0][1]);
+  } else {
+    for (let index = 0; index < following.length - 1; index += 1) {
+      const current = following[index];
+      const next = following[index + 1];
+      context.quadraticCurveTo(current[0], current[1], (current[0] + next[0]) / 2, (current[1] + next[1]) / 2);
+    }
+    const last = following[following.length - 1];
+    context.quadraticCurveTo(last[0], last[1], last[0], last[1]);
+  }
+  context.stroke();
+}
 
 function normalizeOrigin(value: string) {
   const trimmed = value.trim().replace(/\/$/, "");
@@ -38,7 +58,7 @@ export function toSignatureImage(points: unknown, color: unknown, details: Remot
   const strokes = normalizeStrokes(points);
   const displayWidth = 740;
   const displayHeight = details.signerName || details.signedAt || details.signedPlace ? 320 : 260;
-  const rasterScale = 3;
+  const rasterScale = SIGNATURE_RASTER_SCALE;
   const canvas = document.createElement("canvas");
   canvas.width = displayWidth * rasterScale;
   canvas.height = displayHeight * rasterScale;
@@ -60,9 +80,7 @@ export function toSignatureImage(points: unknown, color: unknown, details: Remot
       context.fill();
       return;
     }
-    context.beginPath();
-    mapped.forEach(([pointX, pointY], index) => index ? context.lineTo(pointX, pointY) : context.moveTo(pointX, pointY));
-    context.stroke();
+    drawSmoothStroke(context, mapped);
   });
   const date = details.showDate !== false && details.signedAt && !Number.isNaN(Date.parse(details.signedAt)) ? new Intl.DateTimeFormat("de-DE", { dateStyle: "medium" }).format(new Date(details.signedAt)) : "";
   const label = [details.signerName?.trim(), details.signedPlace?.trim(), date].filter(Boolean).join(" · ");

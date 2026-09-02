@@ -155,9 +155,9 @@ describe("LocalSignaturePairing – Verbindungsbestätigung", () => {
 });
 
 describe("LocalSignaturePairing – Signaturbild", () => {
-  it("erhält einen einzelnen Punkt und rastert die Mobil-Signatur dreifach hochaufgelöst", () => {
+  it("erhält einen einzelnen Punkt und rastert die Mobil-Signatur vierfach hochaufgelöst", () => {
     const context = {
-      setTransform: vi.fn(), clearRect: vi.fn(), beginPath: vi.fn(), arc: vi.fn(), fill: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), stroke: vi.fn(), fillText: vi.fn(),
+      setTransform: vi.fn(), clearRect: vi.fn(), beginPath: vi.fn(), arc: vi.fn(), fill: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), quadraticCurveTo: vi.fn(), stroke: vi.fn(), fillText: vi.fn(),
       strokeStyle: "", fillStyle: "", lineWidth: 0, lineCap: "", lineJoin: "", font: "",
     } as unknown as CanvasRenderingContext2D;
     vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context);
@@ -165,10 +165,23 @@ describe("LocalSignaturePairing – Signaturbild", () => {
 
     const image = toSignatureImage([[[0.5, 0.35]]], "#155e63", {});
 
-    expect(image).toBe("data:image/png;2220x780");
-    expect(context.setTransform).toHaveBeenCalledWith(3, 0, 0, 3, 0, 0);
+    expect(image).toBe("data:image/png;2960x1040");
+    expect(context.setTransform).toHaveBeenCalledWith(4, 0, 0, 4, 0, 0);
     expect(context.arc).toHaveBeenCalledTimes(1);
     expect(context.fill).toHaveBeenCalledTimes(1);
     expect(context.stroke).not.toHaveBeenCalled();
+  });
+
+  it("zeichnet mehrpunktige Mobilstriche als geglättete Kurven statt als kantige Segmente", () => {
+    const context = {
+      setTransform: vi.fn(), clearRect: vi.fn(), beginPath: vi.fn(), arc: vi.fn(), fill: vi.fn(), moveTo: vi.fn(), lineTo: vi.fn(), quadraticCurveTo: vi.fn(), stroke: vi.fn(), fillText: vi.fn(),
+      strokeStyle: "", fillStyle: "", lineWidth: 0, lineCap: "", lineJoin: "", font: "",
+    } as unknown as CanvasRenderingContext2D;
+    vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue(context);
+    vi.spyOn(HTMLCanvasElement.prototype, "toDataURL").mockReturnValue("data:image/png;smooth");
+
+    expect(toSignatureImage([[[0.1, 0.8], [0.35, 0.2], [0.62, 0.7], [0.9, 0.3]]], "#155e63", {})).toBe("data:image/png;smooth");
+    expect(context.quadraticCurveTo).toHaveBeenCalled();
+    expect(context.stroke).toHaveBeenCalledTimes(1);
   });
 });
