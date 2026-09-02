@@ -36,6 +36,8 @@ Ein iPad, Android-Tablet oder Smartphone kann nach der ersten bestätigten Koppl
 
 Die dauerhafte Bindung ist auf 30 Tage begrenzt und lässt sich am Mobilgerät über **„Dieses Signaturpad trennen“** jederzeit bewusst löschen. Nach Ablauf, Trennung, neuem Gerät oder einem Wechsel des privaten Netzwerks wird wieder sicher neu gekoppelt. iOS und Android können die Pad-Seite aus dem gesperrten Hintergrund nicht zuverlässig rein lokal öffnen; das Gerät muss für direkte Aufforderungen sichtbar und entsperrt bleiben.
 
+Eine kurz gehaltene Schritt-für-Schritt-Anleitung für die Vorbereitung, den Einsatz ohne Internet und die Fehlerhilfe liegt unter [`docs/AUSSENDIENST-OHNE-INTERNET.md`](docs/AUSSENDIENST-OHNE-INTERNET.md).
+
 ## Wenn sich die Seite nicht öffnet
 
 Die veröffentlichte Signlocal-Seite ist unter `https://signlocal-etd6sbfb.manus.space/` erreichbar. Wenn die **lokale Pad-Seite** nicht öffnet, ist das nicht dieselbe Website: Zuerst muss der Companion auf dem Mac oder Windows-PC gestartet sein. Anschließend wird auf dem Mobilgerät ausschließlich die vom Companion angezeigte private Adresse wie `https://192.168.1.20:8787` aufgerufen.

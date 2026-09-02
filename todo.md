@@ -111,3 +111,19 @@
 - [x] Den gemeldeten Erreichbarkeitsfehler der Website beziehungsweise des lokalen Companions anhand von URL, Startweg und Logs eingrenzen.
 - [x] Die aktuell verwendeten lokalen Signlocal-Logos als versionsfähige Quellassets für GitHub einbinden, ohne die Website-Bereitstellung mit großen lokalen Dateien zu belasten.
 - [x] Den wiederverwendbaren lokalen Signatur-Skill auf dauerhafte Mitarbeiter-Pads, lokale Wiederverbindung, bewusste Trennung und externe HTTPS-Herkünfte aktualisieren und validieren.
+- [x] Eine einfache Schritt-für-Schritt-Anleitung für vollständig lokale Außendiensteinsätze ohne Internet erstellen, einschließlich Laptop-Hotspot, iPad-/Android-Pad und sicherer Fehlergrenzen.
+- [x] Die aktuelle Repository-Struktur auf Vollständigkeit, externe Hosting-Fähigkeit und ausgeschlossene lokale Geheimnisse prüfen.
+- [x] Den nach der letzten Aktualisierung entstandenen Code- und Dokumentationsstand erneut sicher auf GitHub übertragen und den Remote-Commit prüfen.
+- [ ] Die Vercel-Bereitstellung mit dem aktuellen Branch `mobile-signlocal` vergleichen und die Ursache für die veraltete Ansicht feststellen.
+- [ ] Den korrekten Vercel-Deploy-Weg für die aktuelle Signlocal-Anwendung dokumentieren und gegen den GitHub-Quellstand prüfen.
+- [ ] Die nicht mehr vorhandene Vercel-Deployment-Adresse durch eine bewusste Entscheidung für Netlify oder eine erneute Vercel-Projektverknüpfung ablösen.
+- [ ] Die widersprüchlichen GitHub-Quellen `mexx-bb/Signlocal` und `mexx-bb/signlocal-mobile` sowie die Netlify-Verknüpfung eindeutig bereinigen, damit kein alter Stand zurückkehrt.
+- [ ] Den aktuellen öffentlichen Netlify-Produktionsstand gegen Word/DOCX-, Bild-/HEIC-, Companion- und Asset-Funktionen erneut prüfen.
+- [ ] Die GitHub-Pages-Auslieferung unter mexx-bb.github.io/Signlocal mit der aktuellen vollständigen Anwendung vergleichen und die alte Quellversion eindeutig bestimmen.
+- [ ] Den GitHub-Pages-Workflow und die veröffentlichte Quelle auf den vollständigen aktuellen Signlocal-Stand korrigieren und öffentlich prüfen.
+- [ ] Netlify als alleinigen öffentlichen Signlocal-Zugang festlegen und die abgelöste Vercel-Route in der Betriebsdokumentation klar kennzeichnen.
+- [ ] Den aktuellen Netlify-Deploy gegen die eingecheckten Markenbilder und Companion-Downloads prüfen, damit keine Manus-spezifischen Assetpfade mehr ausgeliefert werden.
+- [x] Die Netlify-Bereitstellung unter mobile-signlocal.netlify.app mit dem aktuellen GitHub-Produktionsbranch vergleichen.
+- [x] Word-/DOCX-, Bild-/HEIC-, Companion- und Download-Funktionen auf der extern ausgelieferten Netlify-Version prüfen.
+- [x] Den wiederholt fehlschlagenden Netlify-Deploy mit seinen aktuellen Build-Daten, der Projektquelle und dem Veröffentlichungsordner vollständig eingrenzen.
+- [x] Die vollständige aktuelle Signlocal-Ausgabe aus einem verlässlichen Veröffentlichungsweg auf mobile-signlocal.netlify.app ausliefern und gegen die öffentliche Adresse prüfen.

@@ -1,3 +1,4 @@
+import { jsxLocPlugin } from "@builder.io/vite-plugin-jsx-loc";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import fs from "node:fs";
@@ -202,10 +203,12 @@ function vitePluginStorageProxy(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
+const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy()];
 
 export default defineConfig({
-  base: process.env.VITE_BASE || "./",
+  base: process.env.GITHUB_ACTIONS === "true" || process.env.GITHUB_ACTIONS === "1"
+    ? "/Signlocal/"
+    : process.env.VITE_BASE || "./",
   plugins,
   resolve: {
     alias: {
