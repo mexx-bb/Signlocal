@@ -38,9 +38,9 @@ Die dauerhafte Bindung ist auf 30 Tage begrenzt und lässt sich am Mobilgerät �
 
 Eine kurz gehaltene Schritt-für-Schritt-Anleitung für die Vorbereitung, den Einsatz ohne Internet und die Fehlerhilfe liegt unter [`docs/AUSSENDIENST-OHNE-INTERNET.md`](docs/AUSSENDIENST-OHNE-INTERNET.md).
 
-## Wenn sich die Seite nicht öffnet
+## Öffentliche Website und lokale Pad-Seite
 
-Die veröffentlichte Signlocal-Seite ist unter `https://signlocal-etd6sbfb.manus.space/` erreichbar. Wenn die **lokale Pad-Seite** nicht öffnet, ist das nicht dieselbe Website: Zuerst muss der Companion auf dem Mac oder Windows-PC gestartet sein. Anschließend wird auf dem Mobilgerät ausschließlich die vom Companion angezeigte private Adresse wie `https://192.168.1.20:8787` aufgerufen.
+Die vollständige öffentliche Signlocal-Version ist unter `https://mexx-bb.github.io/Signlocal/` erreichbar. Wenn die **lokale Pad-Seite** nicht öffnet, ist das nicht dieselbe Website: Zuerst muss der Companion auf dem Mac oder Windows-PC gestartet sein. Anschließend wird auf dem Mobilgerät ausschließlich die vom Companion angezeigte private Adresse wie `https://192.168.1.20:8787` aufgerufen.
 
 Nutze nur ein eigenes privates WLAN, einen eigenen Laptop-Hotspot oder einen privaten Reiserouter. Öffentliche und Gäste-Netze sind ausdrücklich ausgeschlossen. Bei einer Zertifikatswarnung nicht fortfahren: lokale IP, die installierte Signlocal-CA und ihren am Computer angezeigten SHA-256-Fingerabdruck prüfen.
 
