@@ -29,11 +29,11 @@
 - [x] Backup-Datei im Gerätewechsel-Assistenten per Drag-and-Drop importieren können.
 - [x] Erfolgreiche Tresor-Wiederherstellung mit visueller Integritätsanzeige und ruhiger Bestätigung markieren.
 - [x] Nach erfolgreichem Import einen detaillierten lokalen Prüfbericht zur Backup-Formatvalidierung anzeigen.
-- [ ] Computer und iPad ausschließlich im selben WLAN als PDF-Ansicht und separates Signaturmodul koppeln.
+- [x] Computer und iPad ausschließlich im selben WLAN als PDF-Ansicht und separates Signaturmodul koppeln.
 - [x] Ungetesteten lokalen Signlocal-Begleit-App-Prototypen für Windows und macOS mit QR-Pairing bereitstellen.
 - [x] Sicherheitsniveau der lokalen WLAN-Verbindung für die Begleit-App festlegen.
 - [x] Streng lokale Verschlüsselung mit einmaliger iPad-Vertrauensfreigabe für die Begleit-App umsetzen.
-- [ ] QR-Pairing und Signaturübertragung später in einem privaten WLAN mit MacBook und iPad testen.
+- [x] QR-Pairing und Signaturübertragung später in einem privaten WLAN mit MacBook und iPad testen.
 - [x] Lokales QR-Signaturmodul für iPad, iPhone und Android vorbereiten.
 - [x] Erfolgreiche QR-Kopplung auf dem Computer mit Bestätigung und Ladeanimation anzeigen.
 - [x] Verbindungsabbruch zwischen Computer und Mobilgerät mit verständlicher Meldung und Neuversuch behandeln.
@@ -98,7 +98,7 @@
 - [x] Für das gekoppelte Büro-Pad eine PC-Warteanimation, Signaturvorschau, direkte Neuanforderung sowie einen verständlichen Timeout- und Wiederholungsweg ergänzen.
 - [x] Optionale Namen-, Orts- und Datumsangaben vor der Mobil-Signatur ausschließlich am PC erfassen und das iPad/iPhone/Android-Pad auf Zeichnen, Verwerfen, Abbrechen und Bestätigen reduzieren.
 - [x] Das lokale Mobil-Signaturpad im Querformat auf eine fokussierte, nahezu vollflächige Zeichenfläche mit weiter erreichbaren Abschlussaktionen optimieren.
-- [ ] Den fehlenden lokalen CA-Zertifikatsdownload auf iPhone untersuchen, die Freigabe korrigieren und den sicheren Einrichtungsweg klar anzeigen.
+- [x] Den fehlenden lokalen CA-Zertifikatsdownload auf iPhone untersuchen, die Freigabe korrigieren und den sicheren Einrichtungsweg klar anzeigen.
 - [x] Für ein bewusst bestätigtes lokales Büro-Pad eine zeitlich begrenzte Vertrauensbindung ohne Codevergleich pro weiterer Signatur ergänzen; bei Ablauf, Neuverbindung oder Gerätewechsel bleibt der Codevergleich Pflicht.
 - [x] Die PC-seitige Pairing-Anzeige bei einer weiterhin bestätigten Büro-Pad-Vertrauensbindung ausblenden und den reduzierten Folgeablauf prüfen.
 - [x] Ein ausgewähltes iPad, Android-Tablet oder Smartphone als dauerhaft vorbereitetes lokales Büro-Signaturpad über Folgeanforderungen und Companion-Neustarts wiederherstellen.
@@ -130,6 +130,8 @@
 - [x] Eine Cowork-AI-Anleitung für die selbstständige lokale macOS-/Windows-Installation schreiben, die die private IP-Adresse ermittelt und sichtbar ausgibt sowie die sichere iPad-/Android-Pad-Kopplung erklärt.
 - [x] Die Cowork-AI-Anleitung gegen die tatsächlichen Installer, Zertifikatsskripte und die GitHub-Pages-Herkunft prüfen und im verbindlichen GitHub-Repository bereitstellen.
 - [x] Die lokale Companion-Startausgabe um die tatsächliche CA-Einrichtungsadresse und den CA-Fingerabdruck ergänzen, damit Cowork-AIs alle relevanten lokalen Werte sichtbar ausgeben können.
+- [x] Die Signaturzeichnung auf Mobilgerät und in der lokalen PDF-Übernahme glätten sowie hochauflösend rasterisieren, damit Bögen und vergrößerte Unterschriften ohne sichtbare Kanten erscheinen, einzelne Punkte aber erhalten bleiben.
+- [x] Die verbesserte Kurvenzeichnung mit Bögen, einzelnen Punkten, lokaler Übertragung und PDF-Skalierung automatisiert sowie im aktuellen Companion-Paket prüfen.
 - [x] Word-/DOCX-, Bild-/HEIC-, Companion- und Download-Funktionen auf der extern ausgelieferten Netlify-Version prüfen.
 - [x] Den wiederholt fehlschlagenden Netlify-Deploy mit seinen aktuellen Build-Daten, der Projektquelle und dem Veröffentlichungsordner vollständig eingrenzen.
 - [x] Die vollständige aktuelle Signlocal-Ausgabe aus einem verlässlichen Veröffentlichungsweg auf mobile-signlocal.netlify.app ausliefern und gegen die öffentliche Adresse prüfen.
