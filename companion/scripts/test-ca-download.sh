@@ -53,6 +53,9 @@ for _ in $(seq 1 20); do
 done
 
 test -s "$TEST_ROOT/setup.html"
+grep -q 'Signlocal LAN Companion läuft nur lokal unter https://127.0.0.1:18787' "$LOG_FILE"
+grep -q 'Signlocal CA-Einrichtung läuft lokal unter http://127.0.0.1:18788/ca-setup.html' "$LOG_FILE"
+grep -q 'CA-Fingerabdruck (SHA-256):' "$LOG_FILE"
 grep -q 'Signlocal-Local-CA.pem' "$TEST_ROOT/setup.html"
 grep -q 'SHA-256:' "$TEST_ROOT/setup.html"
 grep -q 'class="qr"' "$TEST_ROOT/setup.html"

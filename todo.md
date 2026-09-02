@@ -7,7 +7,7 @@
 - [x] PDF-Worker und PDF-Ladepfad für iPhone-Safari korrigieren und im Produktions-Build prüfen.
 - [x] Unterschriftsdialog weicher gestalten und im iPhone-Querformat bildschirmfüllend auslegen.
 - [x] Gesetzte Unterschriften per Touch verschieben und über einen sichtbaren Griff skalieren.
-- [ ] Ursache der Veröffentlichungsblockade ermitteln und einen veröffentlichungsfähigen Stand sichern.
+- [x] Ursache der Veröffentlichungsblockade ermitteln und einen veröffentlichungsfähigen Stand sichern.
 - [x] Mehrere Unterschriften auf unterschiedlichen PDF-Seiten übersichtlich setzen und verwalten.
 - [x] Letzte Unterschrift mehrfach auf derselben Seite setzen und als Kugelschreiber-Blau zeichnen.
 - [x] Stiftbewegungen bei der Unterschrift behutsam glätten, ohne die individuelle Form zu verfälschen.
@@ -31,8 +31,8 @@
 - [x] Nach erfolgreichem Import einen detaillierten lokalen Prüfbericht zur Backup-Formatvalidierung anzeigen.
 - [ ] Computer und iPad ausschließlich im selben WLAN als PDF-Ansicht und separates Signaturmodul koppeln.
 - [x] Ungetesteten lokalen Signlocal-Begleit-App-Prototypen für Windows und macOS mit QR-Pairing bereitstellen.
-- [ ] Sicherheitsniveau der lokalen WLAN-Verbindung für die Begleit-App festlegen.
-- [ ] Streng lokale Verschlüsselung mit einmaliger iPad-Vertrauensfreigabe für die Begleit-App umsetzen.
+- [x] Sicherheitsniveau der lokalen WLAN-Verbindung für die Begleit-App festlegen.
+- [x] Streng lokale Verschlüsselung mit einmaliger iPad-Vertrauensfreigabe für die Begleit-App umsetzen.
 - [ ] QR-Pairing und Signaturübertragung später in einem privaten WLAN mit MacBook und iPad testen.
 - [x] Lokales QR-Signaturmodul für iPad, iPhone und Android vorbereiten.
 - [x] Erfolgreiche QR-Kopplung auf dem Computer mit Bestätigung und Ladeanimation anzeigen.
@@ -114,16 +114,22 @@
 - [x] Eine einfache Schritt-für-Schritt-Anleitung für vollständig lokale Außendiensteinsätze ohne Internet erstellen, einschließlich Laptop-Hotspot, iPad-/Android-Pad und sicherer Fehlergrenzen.
 - [x] Die aktuelle Repository-Struktur auf Vollständigkeit, externe Hosting-Fähigkeit und ausgeschlossene lokale Geheimnisse prüfen.
 - [x] Den nach der letzten Aktualisierung entstandenen Code- und Dokumentationsstand erneut sicher auf GitHub übertragen und den Remote-Commit prüfen.
-- [ ] Die Vercel-Bereitstellung mit dem aktuellen Branch `mobile-signlocal` vergleichen und die Ursache für die veraltete Ansicht feststellen.
-- [ ] Den korrekten Vercel-Deploy-Weg für die aktuelle Signlocal-Anwendung dokumentieren und gegen den GitHub-Quellstand prüfen.
-- [ ] Die nicht mehr vorhandene Vercel-Deployment-Adresse durch eine bewusste Entscheidung für Netlify oder eine erneute Vercel-Projektverknüpfung ablösen.
-- [ ] Die widersprüchlichen GitHub-Quellen `mexx-bb/Signlocal` und `mexx-bb/signlocal-mobile` sowie die Netlify-Verknüpfung eindeutig bereinigen, damit kein alter Stand zurückkehrt.
-- [ ] Den aktuellen öffentlichen Netlify-Produktionsstand gegen Word/DOCX-, Bild-/HEIC-, Companion- und Asset-Funktionen erneut prüfen.
-- [ ] Die GitHub-Pages-Auslieferung unter mexx-bb.github.io/Signlocal mit der aktuellen vollständigen Anwendung vergleichen und die alte Quellversion eindeutig bestimmen.
-- [ ] Den GitHub-Pages-Workflow und die veröffentlichte Quelle auf den vollständigen aktuellen Signlocal-Stand korrigieren und öffentlich prüfen.
-- [ ] Netlify als alleinigen öffentlichen Signlocal-Zugang festlegen und die abgelöste Vercel-Route in der Betriebsdokumentation klar kennzeichnen.
-- [ ] Den aktuellen Netlify-Deploy gegen die eingecheckten Markenbilder und Companion-Downloads prüfen, damit keine Manus-spezifischen Assetpfade mehr ausgeliefert werden.
+- [x] Die Vercel-Bereitstellung mit dem aktuellen Branch `mobile-signlocal` vergleichen und die Ursache für die veraltete Ansicht feststellen.
+- [x] Den früheren Vercel-Deploy-Weg in den Betriebsunterlagen ausdrücklich als abgelöst dokumentieren.
+- [x] Die nicht mehr vorhandene Vercel-Deployment-Adresse durch eine bewusste Entscheidung für GitHub Pages als alleinigen öffentlichen Zugang ablösen.
+- [x] Die Rollen von `mexx-bb/Signlocal` und `mexx-bb/signlocal-mobile` sowie die Abkehr von Netlify in den Betriebsunterlagen eindeutig festhalten.
+- [x] Netlify in den Betriebsunterlagen ausdrücklich als abgelösten und nicht weiter zu verwendenden Veröffentlichungsweg festhalten.
+- [x] Die GitHub-Pages-Auslieferung unter mexx-bb.github.io/Signlocal mit der aktuellen vollständigen Anwendung vergleichen und die alte Quellversion eindeutig bestimmen.
+- [x] Den GitHub-Pages-Workflow und die veröffentlichte Quelle auf den vollständigen aktuellen Signlocal-Stand korrigieren und öffentlich prüfen.
+- [x] Den früheren Netlify-Bereitstellungsweg in den Betriebsunterlagen ausdrücklich als abgelöst dokumentieren.
+- [x] GitHub Pages als einzigen öffentlichen Signlocal-Zugang in den Projekt- und Betriebsunterlagen verbindlich festlegen.
+- [x] GitHub Pages als einzigen öffentlichen Signlocal-Zugang in den Projekt- und Betriebsunterlagen verbindlich festlegen.
 - [x] Die Netlify-Bereitstellung unter mobile-signlocal.netlify.app mit dem aktuellen GitHub-Produktionsbranch vergleichen.
+- [x] Die Standardherkunft der macOS- und Windows-Companion-Installer auf `https://mexx-bb.github.io` umstellen, damit GitHub Pages ohne manuelle Herkunftsänderung sicher verbinden kann.
+- [x] Die aktualisierten Companion-Pakete sowie die strenge Herkunftsprüfung für GitHub Pages, fremde Seiten und lokale Tests prüfen.
+- [ ] Eine Cowork-AI-Anleitung für die selbstständige lokale macOS-/Windows-Installation schreiben, die die private IP-Adresse ermittelt und sichtbar ausgibt sowie die sichere iPad-/Android-Pad-Kopplung erklärt.
+- [ ] Die Cowork-AI-Anleitung gegen die tatsächlichen Installer, Zertifikatsskripte und die GitHub-Pages-Herkunft prüfen und im verbindlichen GitHub-Repository bereitstellen.
+- [ ] Die lokale Companion-Startausgabe um die tatsächliche CA-Einrichtungsadresse und den CA-Fingerabdruck ergänzen, damit Cowork-AIs alle relevanten lokalen Werte sichtbar ausgeben können.
 - [x] Word-/DOCX-, Bild-/HEIC-, Companion- und Download-Funktionen auf der extern ausgelieferten Netlify-Version prüfen.
 - [x] Den wiederholt fehlschlagenden Netlify-Deploy mit seinen aktuellen Build-Daten, der Projektquelle und dem Veröffentlichungsordner vollständig eingrenzen.
 - [x] Die vollständige aktuelle Signlocal-Ausgabe aus einem verlässlichen Veröffentlichungsweg auf mobile-signlocal.netlify.app ausliefern und gegen die öffentliche Adresse prüfen.

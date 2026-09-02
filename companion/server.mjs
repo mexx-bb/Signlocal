@@ -345,5 +345,13 @@ setInterval(() => {
 }, 15_000).unref();
 
 loadPads();
-server.listen(port, publicHost, () => { console.log(`Signlocal LAN Companion läuft nur lokal unter ${publicOrigin}`); console.log("Öffne die PDF-App, starte die lokale Sitzung, scanne den QR-Code oder nutze ein bereits bereitstehendes Büro-Signaturpad und bestätige den sechsstelligen Code auf beiden Geräten."); if (!allowedWebOrigin) console.log("Hinweis: Für die Übergabe an die veröffentlichte PDF-App SIGNLOCAL_ALLOWED_ORIGIN auf deren HTTPS-Adresse setzen."); });
+server.listen(port, publicHost, () => {
+  console.log(`Signlocal LAN Companion läuft nur lokal unter ${publicOrigin}`);
+  if (caDownloadEnabled && caFingerprint) {
+    console.log(`Signlocal CA-Einrichtung läuft lokal unter ${caDownloadOrigin}/ca-setup.html`);
+    console.log(`CA-Fingerabdruck (SHA-256): ${caFingerprint}`);
+  }
+  console.log("Öffne die PDF-App, starte die lokale Sitzung, scanne den QR-Code oder nutze ein bereits bereitstehendes Büro-Signaturpad und bestätige den sechsstelligen Code auf beiden Geräten.");
+  if (!allowedWebOrigin) console.log("Hinweis: Für die Übergabe an die veröffentlichte PDF-App SIGNLOCAL_ALLOWED_ORIGIN auf deren HTTPS-Adresse setzen.");
+});
 startCaDownloadServer();
