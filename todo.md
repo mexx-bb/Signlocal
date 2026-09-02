@@ -127,9 +127,9 @@
 - [x] Die Netlify-Bereitstellung unter mobile-signlocal.netlify.app mit dem aktuellen GitHub-Produktionsbranch vergleichen.
 - [x] Die Standardherkunft der macOS- und Windows-Companion-Installer auf `https://mexx-bb.github.io` umstellen, damit GitHub Pages ohne manuelle Herkunftsänderung sicher verbinden kann.
 - [x] Die aktualisierten Companion-Pakete sowie die strenge Herkunftsprüfung für GitHub Pages, fremde Seiten und lokale Tests prüfen.
-- [ ] Eine Cowork-AI-Anleitung für die selbstständige lokale macOS-/Windows-Installation schreiben, die die private IP-Adresse ermittelt und sichtbar ausgibt sowie die sichere iPad-/Android-Pad-Kopplung erklärt.
-- [ ] Die Cowork-AI-Anleitung gegen die tatsächlichen Installer, Zertifikatsskripte und die GitHub-Pages-Herkunft prüfen und im verbindlichen GitHub-Repository bereitstellen.
-- [ ] Die lokale Companion-Startausgabe um die tatsächliche CA-Einrichtungsadresse und den CA-Fingerabdruck ergänzen, damit Cowork-AIs alle relevanten lokalen Werte sichtbar ausgeben können.
+- [x] Eine Cowork-AI-Anleitung für die selbstständige lokale macOS-/Windows-Installation schreiben, die die private IP-Adresse ermittelt und sichtbar ausgibt sowie die sichere iPad-/Android-Pad-Kopplung erklärt.
+- [x] Die Cowork-AI-Anleitung gegen die tatsächlichen Installer, Zertifikatsskripte und die GitHub-Pages-Herkunft prüfen und im verbindlichen GitHub-Repository bereitstellen.
+- [x] Die lokale Companion-Startausgabe um die tatsächliche CA-Einrichtungsadresse und den CA-Fingerabdruck ergänzen, damit Cowork-AIs alle relevanten lokalen Werte sichtbar ausgeben können.
 - [x] Word-/DOCX-, Bild-/HEIC-, Companion- und Download-Funktionen auf der extern ausgelieferten Netlify-Version prüfen.
 - [x] Den wiederholt fehlschlagenden Netlify-Deploy mit seinen aktuellen Build-Daten, der Projektquelle und dem Veröffentlichungsordner vollständig eingrenzen.
 - [x] Die vollständige aktuelle Signlocal-Ausgabe aus einem verlässlichen Veröffentlichungsweg auf mobile-signlocal.netlify.app ausliefern und gegen die öffentliche Adresse prüfen.
